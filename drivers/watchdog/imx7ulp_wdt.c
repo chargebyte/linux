@@ -321,6 +321,10 @@ static int imx7ulp_wdt_probe(struct platform_device *pdev)
 	if (!imx7ulp_wdt)
 		return -ENOMEM;
 
+	imx7ulp_wdt->hw = of_device_get_match_data(dev);
+	if (!imx7ulp_wdt->hw)
+		return -ENODEV;
+
 	platform_set_drvdata(pdev, imx7ulp_wdt);
 
 	imx7ulp_wdt->base = devm_platform_ioremap_resource(pdev, 0);
@@ -350,7 +354,6 @@ static int imx7ulp_wdt_probe(struct platform_device *pdev)
 	watchdog_set_drvdata(wdog, imx7ulp_wdt);
 	watchdog_set_nowayout(wdog, nowayout);
 
-	imx7ulp_wdt->hw = of_device_get_match_data(dev);
 	ret = imx7ulp_wdt_init(imx7ulp_wdt, wdog->timeout * imx7ulp_wdt->hw->wdog_clock_rate);
 	if (ret)
 		return ret;
