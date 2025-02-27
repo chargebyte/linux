@@ -117,6 +117,13 @@
 	status = "okay";
 };
 
+/* X8 MCU */
+&lpuart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	status = "okay";
+};
+
 /* X13 RS485_2 */
 &lpuart5 {
 	pinctrl-names = "default";
@@ -368,6 +375,13 @@
 	pinctrl_flexcan1_en: flexcan1engrp {
 		fsl,pins = <
 			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x31e // CAN1_EN
+		>;
+	};
+
+	pinctrl_uart2: uart2grp {
+		fsl,pins = <
+			MX93_PAD_UART2_RXD__LPUART2_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
+			MX93_PAD_UART2_TXD__LPUART2_TX 		0x30e // drive strength: X3, slew rate: slightly fast, pull up
 		>;
 	};
 	
