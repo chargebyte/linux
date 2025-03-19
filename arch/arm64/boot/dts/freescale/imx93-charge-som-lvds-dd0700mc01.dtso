@@ -19,7 +19,7 @@
 		compatible = "pwm-backlight";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_lvdsbl_en>;
-		enable-gpios = <&gpio4 16 GPIO_ACTIVE_HIGH>;
+		enable-gpios = <&gpio4 16 GPIO_ACTIVE_LOW>;
 		brightness-levels= <0 4 8 16 32 64 128 255>;
 		default-brightness-level = <6>;
 		pwms = <&tpm5 2 50000 0>;
