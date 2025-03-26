@@ -1609,7 +1609,7 @@ static const struct panel_desc dataimage_scf0700c48ggu18 = {
 };
 
 static const struct display_timing distec_dd0700mc01_timings = {
-	.pixelclock = { 25000000, 30400000, 45000000 },
+	.pixelclock = { 25000000, 42857142, 45000000 },
 	.hactive = { 800, 800, 800 },
 	.hfront_porch = { 8, 75, 75 },
 	.hback_porch = { 8, 75, 75 },
