@@ -72,13 +72,19 @@ static void imx93_ldb_encoder_enable(struct drm_encoder *encoder)
 	struct imx93_ldb_channel *imx93_ldb_ch = enc_to_imx93_ldb_ch(encoder);
 	struct imx93_ldb *imx93_ldb = imx93_ldb_ch->imx93_ldb;
 	struct ldb *ldb = &imx93_ldb->base;
+	int ret;
 
-	clk_prepare_enable(imx93_ldb->clk_root);
+	ret = clk_prepare_enable(imx93_ldb->clk_root);
+	if (ret)
+		pr_err("unable to prepare clock: %d\n", ret);
 
 	ldb->ldb_ctrl &= ~LDB_CH0_MODE_EN_MASK;
 	ldb->ldb_ctrl |= LDB_CH0_MODE_EN_TO_DI0;
 
-	phy_power_on(imx93_ldb_ch->phy);
+	ret = phy_power_on(imx93_ldb_ch->phy);
+	if (ret)
+		pr_err("unable to power on phy: %d\n", ret);
+
 	imx93_ldb_ch->phy_is_on = true;
 }
 
@@ -91,17 +97,24 @@ imx93_ldb_encoder_atomic_mode_set(struct drm_encoder *encoder,
 	struct imx93_ldb *imx93_ldb = imx93_ldb_ch->imx93_ldb;
 	struct drm_display_mode *mode = &crtc_state->adjusted_mode;
 	unsigned long serial_clk;
+	int ret;
 
 	serial_clk = mode->clock * 7000UL;
-	clk_set_rate(imx93_ldb->clk_root, serial_clk);
+	ret = clk_set_rate(imx93_ldb->clk_root, serial_clk);
+	if (ret)
+		pr_err("unable to set rate: %d\n", ret);
 }
 
 static void imx93_ldb_encoder_disable(struct drm_encoder *encoder)
 {
 	struct imx93_ldb_channel *imx93_ldb_ch = enc_to_imx93_ldb_ch(encoder);
 	struct imx93_ldb *imx93_ldb = imx93_ldb_ch->imx93_ldb;
+	int ret;
 
-	phy_power_off(imx93_ldb_ch->phy);
+	ret = phy_power_off(imx93_ldb_ch->phy);
+	if (ret)
+		pr_err("unable to power off phy: %d\n", ret);
+
 	imx93_ldb_ch->phy_is_on = false;
 
 	clk_disable_unprepare(imx93_ldb->clk_root);
