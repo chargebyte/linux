@@ -105,8 +105,11 @@ phy_write(struct phy *phy, unsigned int reg, unsigned int value)
 static int imx8mp_lvds_phy_init(struct phy *phy)
 {
 	struct imx8mp_lvds_phy_priv *priv = dev_get_drvdata(phy->dev.parent);
+	int ret;
 
-	clk_prepare_enable(priv->apb_clk);
+	ret = clk_prepare_enable(priv->apb_clk);
+	if (ret)
+		return ret;
 
 	mutex_lock(&priv->lock);
 	phy_write(phy, priv->devdata->lvds_ctrl,
@@ -125,8 +128,11 @@ static int imx8mp_lvds_phy_power_on(struct phy *phy)
 	unsigned int id = lvds_phy->id;
 	unsigned int val;
 	bool bg_en;
+	int ret;
 
-	clk_prepare_enable(priv->apb_clk);
+	ret = clk_prepare_enable(priv->apb_clk);
+	if (ret)
+		return ret;
 
 	mutex_lock(&priv->lock);
 	val = phy_read(phy, priv->devdata->lvds_ctrl);
@@ -161,8 +167,11 @@ static int imx8mp_lvds_phy_power_off(struct phy *phy)
 	struct imx8mp_lvds_phy *lvds_phy = phy_get_drvdata(phy);
 	unsigned int id = lvds_phy->id;
 	unsigned int val;
+	int ret;
 
-	clk_prepare_enable(priv->apb_clk);
+	ret = clk_prepare_enable(priv->apb_clk);
+	if (ret)
+		return ret;
 
 	mutex_lock(&priv->lock);
 	val = phy_read(phy, priv->devdata->lvds_ctrl);
