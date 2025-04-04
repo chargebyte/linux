@@ -291,6 +291,19 @@ struct lpuart_port {
 	bool			is_cs7; /* Set to true when character size is 7 */
 					/* and the parity is enabled		*/
 	bool			dma_idle_int;
+	bool			last_tx;
+	int			last_rx_type;
+	int			last_rx_copied;
+	u32			count_rx_complete;
+	u32			count_dma_idle;
+	u64			ts_tx;
+	u64			ts_int;
+	u64			ts_rx_complete;
+	u64			ts_dma_idle;
+	u64			ts_dma_idle_data;
+#ifdef CONFIG_DEBUG_FS
+	struct dentry		*device_root;
+#endif
 };
 
 struct lpuart_soc_data {
@@ -356,6 +369,61 @@ static const struct of_device_id lpuart_dt_ids[] = {
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
+
+/*
+ * Debug fs
+ */
+#ifdef CONFIG_DEBUG_FS
+#include <linux/debugfs.h>
+#include <linux/uaccess.h>
+#include <linux/seq_file.h>
+
+static int state_show(struct seq_file *s, void *p)
+{
+	struct lpuart_port *sport = s->private;
+	struct dma_chan *chan = sport->dma_rx_chan;
+	struct circ_buf *ring = &sport->rx_ring;
+	struct dma_tx_state state;
+	enum dma_status dmastat;
+
+	seq_printf(s, "RX FIFO size: %d\n", sport->rxfifo_size);
+	seq_printf(s, "Last TX: %d\n", sport->last_tx);
+	seq_printf(s, "Last RX type: %d\n", sport->last_rx_type);
+	seq_printf(s, "Last RX bytes copied: %d\n", sport->last_rx_copied);
+	seq_printf(s, "Count DMA RX complete: %u\n", sport->count_rx_complete);
+	seq_printf(s, "Count DMA idle: %u\n", sport->count_dma_idle);
+	seq_printf(s, "TS last TX             : %llu\n", sport->ts_tx);
+	seq_printf(s, "TS last interrupt      : %llu\n", sport->ts_int);
+	seq_printf(s, "TS last DMA RX complete: %llu\n", sport->ts_rx_complete);
+	seq_printf(s, "TS last DMA idle       : %llu\n", sport->ts_dma_idle);
+	seq_printf(s, "TS last DMA idle + data: %llu\n", sport->ts_dma_idle_data);
+
+	dmastat = dmaengine_tx_status(chan, sport->dma_rx_cookie, &state);
+	if (dmastat == DMA_ERROR) {
+		dev_err(sport->port.dev, "Rx DMA transfer failed!\n");
+		return 0;
+	}
+
+	ring->head = sport->rx_sgl.length - state.residue;
+
+	seq_printf(s, "RX count: %d\n", CIRC_CNT(ring->head, ring->tail, sport->rx_sgl.length));
+
+	return 0;
+}
+
+DEFINE_SHOW_ATTRIBUTE(state);
+
+static void lpuart_init_debugfs(struct lpuart_port *sport)
+{
+	sport->device_root = debugfs_create_dir(dev_name(sport->port.dev),
+					       NULL);
+
+	debugfs_create_file("state", 0400, sport->device_root, sport, &state_fops);
+}
+
+#else
+static inline void lpuart_init_debugfs(struct lpuart_port *sport) {}
+#endif
 
 /* Forward declare this for the dma callbacks*/
 static void lpuart_dma_tx_complete(void *arg);
@@ -814,6 +882,9 @@ static void lpuart32_start_tx(struct uart_port *port)
 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
 	unsigned long temp;
 
+	sport->last_tx = true;
+	sport->ts_tx = ktime_get_ns();
+
 	if (sport->lpuart_dma_tx_use) {
 		if (!lpuart_stopped_or_empty(port))
 			lpuart_dma_tx(sport);
@@ -1118,6 +1189,9 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
 	unsigned long flags;
 	int count, copied;
 
+	sport->last_tx = false;
+	sport->last_rx_copied = 0;
+
 	if (lpuart_is_32(sport)) {
 		unsigned long sr = lpuart32_read(&sport->port, UARTSTAT);
 
@@ -1224,6 +1298,7 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
 			sport->port.icount.buf_overrun++;
 		ring->tail = 0;
 		sport->port.icount.rx += copied;
+		sport->last_rx_copied += copied;
 	}
 
 	/* Finally we read data from tail to head */
@@ -1238,6 +1313,7 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
 			ring->head = 0;
 		ring->tail = ring->head;
 		sport->port.icount.rx += copied;
+		sport->last_rx_copied += copied;
 	}
 
 	sport->last_residue = state.residue;
@@ -1257,6 +1333,9 @@ static void lpuart_dma_rx_complete(void *arg)
 {
 	struct lpuart_port *sport = arg;
 
+	sport->last_rx_type = 1;
+	sport->ts_rx_complete = ktime_get_ns();
+	sport->count_rx_complete++;
 	lpuart_copy_rx_to_tty(sport);
 }
 
@@ -1276,10 +1355,15 @@ static void lpuart32_dma_idleint(struct lpuart_port *sport)
 
 	ring->head = sport->rx_sgl.length - state.residue;
 	count = CIRC_CNT(ring->head, ring->tail, sport->rx_sgl.length);
+	sport->last_rx_type = 2;
+	sport->ts_dma_idle = ktime_get_ns();
 
 	/* Check if new data received before copying */
-	if (count)
+	if (count) {
+		sport->count_dma_idle++;
+		sport->ts_dma_idle_data = sport->ts_dma_idle;
 		lpuart_copy_rx_to_tty(sport);
+	}
 }
 
 static irqreturn_t lpuart32_int(int irq, void *dev_id)
@@ -1290,6 +1374,7 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
 	sts = lpuart32_read(&sport->port, UARTSTAT);
 	rxcount = lpuart32_read(&sport->port, UARTWATER);
 	rxcount = rxcount >> UARTWATER_RXCNT_OFF;
+	sport->ts_int = ktime_get_ns();
 
 	if ((sts & UARTSTAT_RDRF || rxcount > 0) && !sport->lpuart_dma_rx_use)
 		lpuart32_rxint(sport);
@@ -2959,6 +3044,8 @@ static int lpuart_probe(struct platform_device *pdev)
 			       dev_name(&pdev->dev), sport);
 	if (ret)
 		goto failed_irq_request;
+
+	lpuart_init_debugfs(sport);
 
 	return 0;
 
