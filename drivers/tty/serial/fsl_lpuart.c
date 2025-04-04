@@ -120,6 +120,7 @@
  * Used to reset all internal logic and registers, except the Global Register.
  */
 #define UART_GLOBAL		0x8
+#define UART_PINCFG		0xc
 
 /* 32-bit register definition */
 #define UARTBAUD		0x00
@@ -130,6 +131,7 @@
 #define UARTMODIR		0x14
 #define UARTFIFO		0x18
 #define UARTWATER		0x1c
+#define UARTDATARO		0x20
 
 #define UARTBAUD_MAEN1		0x80000000
 #define UARTBAUD_MAEN2		0x40000000
@@ -369,61 +371,6 @@ static const struct of_device_id lpuart_dt_ids[] = {
 	{ /* sentinel */ }
 };
 MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
-
-/*
- * Debug fs
- */
-#ifdef CONFIG_DEBUG_FS
-#include <linux/debugfs.h>
-#include <linux/uaccess.h>
-#include <linux/seq_file.h>
-
-static int state_show(struct seq_file *s, void *p)
-{
-	struct lpuart_port *sport = s->private;
-	struct dma_chan *chan = sport->dma_rx_chan;
-	struct circ_buf *ring = &sport->rx_ring;
-	struct dma_tx_state state;
-	enum dma_status dmastat;
-
-	seq_printf(s, "RX FIFO size: %d\n", sport->rxfifo_size);
-	seq_printf(s, "Last TX: %d\n", sport->last_tx);
-	seq_printf(s, "Last RX type: %d\n", sport->last_rx_type);
-	seq_printf(s, "Last RX bytes copied: %d\n", sport->last_rx_copied);
-	seq_printf(s, "Count DMA RX complete: %u\n", sport->count_rx_complete);
-	seq_printf(s, "Count DMA idle: %u\n", sport->count_dma_idle);
-	seq_printf(s, "TS last TX             : %llu\n", sport->ts_tx);
-	seq_printf(s, "TS last interrupt      : %llu\n", sport->ts_int);
-	seq_printf(s, "TS last DMA RX complete: %llu\n", sport->ts_rx_complete);
-	seq_printf(s, "TS last DMA idle       : %llu\n", sport->ts_dma_idle);
-	seq_printf(s, "TS last DMA idle + data: %llu\n", sport->ts_dma_idle_data);
-
-	dmastat = dmaengine_tx_status(chan, sport->dma_rx_cookie, &state);
-	if (dmastat == DMA_ERROR) {
-		dev_err(sport->port.dev, "Rx DMA transfer failed!\n");
-		return 0;
-	}
-
-	ring->head = sport->rx_sgl.length - state.residue;
-
-	seq_printf(s, "RX count: %d\n", CIRC_CNT(ring->head, ring->tail, sport->rx_sgl.length));
-
-	return 0;
-}
-
-DEFINE_SHOW_ATTRIBUTE(state);
-
-static void lpuart_init_debugfs(struct lpuart_port *sport)
-{
-	sport->device_root = debugfs_create_dir(dev_name(sport->port.dev),
-					       NULL);
-
-	debugfs_create_file("state", 0400, sport->device_root, sport, &state_fops);
-}
-
-#else
-static inline void lpuart_init_debugfs(struct lpuart_port *sport) {}
-#endif
 
 /* Forward declare this for the dma callbacks*/
 static void lpuart_dma_tx_complete(void *arg);
@@ -2934,6 +2881,83 @@ static int lpuart_global_reset(struct lpuart_port *sport)
 	clk_disable_unprepare(sport->ipg_clk);
 	return 0;
 }
+
+/*
+ * Debug fs
+ */
+#ifdef CONFIG_DEBUG_FS
+#include <linux/debugfs.h>
+#include <linux/uaccess.h>
+#include <linux/seq_file.h>
+
+static int state_show(struct seq_file *s, void *p)
+{
+	struct lpuart_port *sport = s->private;
+	struct dma_chan *chan = sport->dma_rx_chan;
+	struct circ_buf *ring = &sport->rx_ring;
+	struct dma_tx_state state;
+	enum dma_status dmastat;
+
+	seq_printf(s, "RX FIFO size: %d\n", sport->rxfifo_size);
+	seq_printf(s, "Last TX: %d\n", sport->last_tx);
+	seq_printf(s, "Last RX type: %d\n", sport->last_rx_type);
+	seq_printf(s, "Last RX bytes copied: %d\n", sport->last_rx_copied);
+	seq_printf(s, "Count DMA RX complete: %u\n", sport->count_rx_complete);
+	seq_printf(s, "Count DMA idle: %u\n", sport->count_dma_idle);
+	seq_printf(s, "TS last TX             : %llu\n", sport->ts_tx);
+	seq_printf(s, "TS last interrupt      : %llu\n", sport->ts_int);
+	seq_printf(s, "TS last DMA RX complete: %llu\n", sport->ts_rx_complete);
+	seq_printf(s, "TS last DMA idle       : %llu\n", sport->ts_dma_idle);
+	seq_printf(s, "TS last DMA idle + data: %llu\n", sport->ts_dma_idle_data);
+
+	dmastat = dmaengine_tx_status(chan, sport->dma_rx_cookie, &state);
+	if (dmastat == DMA_ERROR) {
+		dev_err(sport->port.dev, "Rx DMA transfer failed!\n");
+		return 0;
+	}
+
+	ring->head = sport->rx_sgl.length - state.residue;
+
+	seq_printf(s, "RX count: %d\n", CIRC_CNT(ring->head, ring->tail, sport->rx_sgl.length));
+
+	return 0;
+}
+
+static int regs_show(struct seq_file *s, void *p)
+{
+	struct lpuart_port *sport = s->private;
+
+	pm_runtime_get_sync(sport->port.dev);
+
+	seq_printf(s, "PINCFG: 0x%08x\n", readl(sport->port.membase - IMX_REG_OFF + UART_PINCFG));
+	seq_printf(s, "BAUD  : 0x%08x\n", lpuart32_read(&sport->port, UARTBAUD));
+	seq_printf(s, "STAT  : 0x%08x\n", lpuart32_read(&sport->port, UARTSTAT));
+	seq_printf(s, "CTRL  : 0x%08x\n", lpuart32_read(&sport->port, UARTCTRL));
+	seq_printf(s, "FIFO  : 0x%08x\n", lpuart32_read(&sport->port, UARTFIFO));
+	seq_printf(s, "WATER : 0x%08x\n", lpuart32_read(&sport->port, UARTWATER));
+	seq_printf(s, "DATARO: 0x%08x\n", lpuart32_read(&sport->port, UARTDATARO));
+
+	pm_runtime_mark_last_busy(sport->port.dev);
+	pm_runtime_put_autosuspend(sport->port.dev);
+
+	return 0;
+}
+
+DEFINE_SHOW_ATTRIBUTE(state);
+DEFINE_SHOW_ATTRIBUTE(regs);
+
+static void lpuart_init_debugfs(struct lpuart_port *sport)
+{
+	sport->device_root = debugfs_create_dir(dev_name(sport->port.dev),
+					       NULL);
+
+	debugfs_create_file("state", 0400, sport->device_root, sport, &state_fops);
+	debugfs_create_file("regs", 0400, sport->device_root, sport, &regs_fops);
+}
+
+#else
+static inline void lpuart_init_debugfs(struct lpuart_port *sport) {}
+#endif
 
 static int lpuart_probe(struct platform_device *pdev)
 {
