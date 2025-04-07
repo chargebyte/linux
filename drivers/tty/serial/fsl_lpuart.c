@@ -298,6 +298,9 @@ struct lpuart_port {
 	int			last_rx_copied;
 	u32			count_rx_complete;
 	u32			count_dma_idle;
+	u32			count_ma1f;
+	u32			count_m21f;
+	u32			int_sts;
 	u64			ts_tx;
 	u64			ts_int;
 	u64			ts_rx_complete;
@@ -1316,23 +1319,29 @@ static void lpuart32_dma_idleint(struct lpuart_port *sport)
 static irqreturn_t lpuart32_int(int irq, void *dev_id)
 {
 	struct lpuart_port *sport = dev_id;
-	unsigned long sts, rxcount;
+	unsigned long rxcount;
 
-	sts = lpuart32_read(&sport->port, UARTSTAT);
+	sport->int_sts = lpuart32_read(&sport->port, UARTSTAT);
 	rxcount = lpuart32_read(&sport->port, UARTWATER);
 	rxcount = rxcount >> UARTWATER_RXCNT_OFF;
 	sport->ts_int = ktime_get_ns();
 
-	if ((sts & UARTSTAT_RDRF || rxcount > 0) && !sport->lpuart_dma_rx_use)
+	if ((sport->int_sts & UARTSTAT_RDRF || rxcount > 0) && !sport->lpuart_dma_rx_use)
 		lpuart32_rxint(sport);
 
-	if ((sts & UARTSTAT_TDRE) && !sport->lpuart_dma_tx_use)
+	if ((sport->int_sts & UARTSTAT_TDRE) && !sport->lpuart_dma_tx_use)
 		lpuart32_txint(sport);
 
-	if ((sts & UARTSTAT_IDLE) && sport->lpuart_dma_rx_use && sport->dma_idle_int)
+	if ((sport->int_sts & UARTSTAT_IDLE) && sport->lpuart_dma_rx_use && sport->dma_idle_int)
 		lpuart32_dma_idleint(sport);
 
-	lpuart32_write(&sport->port, sts, UARTSTAT);
+	if (sport->int_sts & UARTSTAT_MA1F)
+		sport->count_ma1f++;
+
+	if (sport->int_sts & UARTSTAT_M21F)
+		sport->count_m21f++;
+
+	lpuart32_write(&sport->port, sport->int_sts, UARTSTAT);
 	return IRQ_HANDLED;
 }
 
@@ -2904,6 +2913,9 @@ static int state_show(struct seq_file *s, void *p)
 	seq_printf(s, "Last RX bytes copied: %d\n", sport->last_rx_copied);
 	seq_printf(s, "Count DMA RX complete: %u\n", sport->count_rx_complete);
 	seq_printf(s, "Count DMA idle: %u\n", sport->count_dma_idle);
+	seq_printf(s, "Count MATCH1: %u\n", sport->count_ma1f);
+	seq_printf(s, "Count MATCH2: %u\n", sport->count_m21f);
+	seq_printf(s, "Last interrupt STAT: 0x%08x\n", sport->int_sts);
 	seq_printf(s, "TS last TX             : %llu\n", sport->ts_tx);
 	seq_printf(s, "TS last interrupt      : %llu\n", sport->ts_int);
 	seq_printf(s, "TS last DMA RX complete: %llu\n", sport->ts_rx_complete);
@@ -2933,6 +2945,7 @@ static int regs_show(struct seq_file *s, void *p)
 	seq_printf(s, "BAUD  : 0x%08x\n", lpuart32_read(&sport->port, UARTBAUD));
 	seq_printf(s, "STAT  : 0x%08x\n", lpuart32_read(&sport->port, UARTSTAT));
 	seq_printf(s, "CTRL  : 0x%08x\n", lpuart32_read(&sport->port, UARTCTRL));
+	seq_printf(s, "MATCH : 0x%08x\n", lpuart32_read(&sport->port, UARTMATCH));
 	seq_printf(s, "FIFO  : 0x%08x\n", lpuart32_read(&sport->port, UARTFIFO));
 	seq_printf(s, "WATER : 0x%08x\n", lpuart32_read(&sport->port, UARTWATER));
 	seq_printf(s, "DATARO: 0x%08x\n", lpuart32_read(&sport->port, UARTDATARO));
