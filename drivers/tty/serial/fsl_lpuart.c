@@ -301,8 +301,10 @@ struct lpuart_port {
 	u32			count_ma1f;
 	u32			count_m21f;
 	u32			int_sts;
+	u32			down_sts;
 	u64			ts_tx;
 	u64			ts_int;
+	u64			ts_rxedgif;
 	u64			ts_rx_complete;
 	u64			ts_dma_idle;
 	u64			ts_dma_idle_data;
@@ -1326,6 +1328,9 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
 	rxcount = rxcount >> UARTWATER_RXCNT_OFF;
 	sport->ts_int = ktime_get_ns();
 
+	if (sport->int_sts & UARTSTAT_RXEDGIF)
+		sport->ts_rxedgif = sport->ts_int;
+
 	if ((sport->int_sts & UARTSTAT_RDRF || rxcount > 0) && !sport->lpuart_dma_rx_use)
 		lpuart32_rxint(sport);
 
@@ -2008,8 +2013,14 @@ static void lpuart32_shutdown(struct uart_port *port)
 	spin_lock_irqsave(&port->lock, flags);
 
 	/* clear status */
-	temp = lpuart32_read(&sport->port, UARTSTAT);
-	lpuart32_write(&sport->port, temp, UARTSTAT);
+	sport->down_sts = lpuart32_read(&sport->port, UARTSTAT);
+	if (sport->down_sts & UARTSTAT_RXEDGIF)
+		sport->ts_rxedgif = ktime_get_ns();
+
+	if ((sport->down_sts & UARTSTAT_IDLE) && sport->lpuart_dma_rx_use && sport->dma_idle_int)
+		sport->ts_dma_idle = ktime_get_ns();
+
+	lpuart32_write(&sport->port, sport->down_sts, UARTSTAT);
 
 	/* disable Rx/Tx DMA */
 	temp = lpuart32_read(port, UARTBAUD);
@@ -2916,7 +2927,9 @@ static int state_show(struct seq_file *s, void *p)
 	seq_printf(s, "Count MATCH1: %u\n", sport->count_ma1f);
 	seq_printf(s, "Count MATCH2: %u\n", sport->count_m21f);
 	seq_printf(s, "Last interrupt STAT: 0x%08x\n", sport->int_sts);
+	seq_printf(s, "shutdown STAT      : 0x%08x\n", sport->down_sts);
 	seq_printf(s, "TS last TX             : %llu\n", sport->ts_tx);
+	seq_printf(s, "TS last RX pin edge    : %llu\n", sport->ts_rxedgif);
 	seq_printf(s, "TS last interrupt      : %llu\n", sport->ts_int);
 	seq_printf(s, "TS last DMA RX complete: %llu\n", sport->ts_rx_complete);
 	seq_printf(s, "TS last DMA idle       : %llu\n", sport->ts_dma_idle);
@@ -2941,14 +2954,15 @@ static int regs_show(struct seq_file *s, void *p)
 
 	pm_runtime_get_sync(sport->port.dev);
 
-	seq_printf(s, "PINCFG: 0x%08x\n", readl(sport->port.membase - IMX_REG_OFF + UART_PINCFG));
-	seq_printf(s, "BAUD  : 0x%08x\n", lpuart32_read(&sport->port, UARTBAUD));
-	seq_printf(s, "STAT  : 0x%08x\n", lpuart32_read(&sport->port, UARTSTAT));
-	seq_printf(s, "CTRL  : 0x%08x\n", lpuart32_read(&sport->port, UARTCTRL));
-	seq_printf(s, "MATCH : 0x%08x\n", lpuart32_read(&sport->port, UARTMATCH));
-	seq_printf(s, "FIFO  : 0x%08x\n", lpuart32_read(&sport->port, UARTFIFO));
-	seq_printf(s, "WATER : 0x%08x\n", lpuart32_read(&sport->port, UARTWATER));
-	seq_printf(s, "DATARO: 0x%08x\n", lpuart32_read(&sport->port, UARTDATARO));
+	seq_printf(s, "PINCFG   : 0x%08x\n", readl(sport->port.membase - IMX_REG_OFF + UART_PINCFG));
+	seq_printf(s, "BAUD     : 0x%08x\n", lpuart32_read(&sport->port, UARTBAUD));
+	seq_printf(s, "STAT     : 0x%08x\n", lpuart32_read(&sport->port, UARTSTAT));
+	seq_printf(s, "CTRL     : 0x%08x\n", lpuart32_read(&sport->port, UARTCTRL));
+	seq_printf(s, "MATCH    : 0x%08x\n", lpuart32_read(&sport->port, UARTMATCH));
+	seq_printf(s, "UARTMODIR: 0x%08x\n", lpuart32_read(&sport->port, UARTMODIR));
+	seq_printf(s, "FIFO     : 0x%08x\n", lpuart32_read(&sport->port, UARTFIFO));
+	seq_printf(s, "WATER    : 0x%08x\n", lpuart32_read(&sport->port, UARTWATER));
+	seq_printf(s, "DATARO   : 0x%08x\n", lpuart32_read(&sport->port, UARTDATARO));
 
 	pm_runtime_mark_last_busy(sport->port.dev);
 	pm_runtime_put_autosuspend(sport->port.dev);
