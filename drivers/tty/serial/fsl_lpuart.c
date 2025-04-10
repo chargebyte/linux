@@ -2938,6 +2938,7 @@ static int state_show(struct seq_file *s, void *p)
 	enum dma_status dmastat;
 
 	seq_printf(s, "RX FIFO size: %d\n", sport->rxfifo_size);
+	seq_printf(s, "RX watermark: %d\n", sport->rx_watermark);
 	seq_printf(s, "Last TX: %d\n", sport->last_tx);
 	seq_printf(s, "Last RX type: %d\n", sport->last_rx_type);
 	seq_printf(s, "Last RX bytes copied: %d\n", sport->last_rx_copied);
