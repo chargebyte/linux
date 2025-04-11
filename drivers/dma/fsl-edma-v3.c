@@ -1177,8 +1177,10 @@ static irqreturn_t fsl_edma3_tx_handler(int irq, void *dev_id)
 	base_addr = fsl_chan->membase;
 
 	intr = readl(base_addr + EDMA_CH_INT);
-	if (!intr)
-		goto irq_handled;
+	if (!intr) {
+		spin_unlock(&fsl_chan->vchan.lock);
+		return IRQ_NONE;
+	}
 
 	writel(1, base_addr + EDMA_CH_INT);
 
