@@ -135,6 +135,13 @@
 	status = "okay";
 };
 
+/* X11 UART7 */
+&lpuart7 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart7>;
+	status = "okay";
+};
+
 &lpi2c1 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default", "gpio";
@@ -384,6 +391,13 @@
 			MX93_PAD_DAP_TDI__LPUART5_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
 			MX93_PAD_DAP_TDO_TRACESWO__LPUART5_TX	0x30e // drive strength: X3, slew rate: slightly fast, pull up
 			MX93_PAD_DAP_TMS_SWDIO__LPUART5_RTS_B	0x31e // drive strength: X4, slew rate: slightly fast, pull up
+		>;
+	};
+
+	pinctrl_uart7: uart7grp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO09__LPUART7_RX		0x31e
+			MX93_PAD_GPIO_IO08__LPUART7_TX		0x30e
 		>;
 	};
 
