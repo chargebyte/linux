@@ -186,9 +186,9 @@
 
 &gpio2 {
 	// 30 pins (0..29)
-	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "", "", \
-			  "", "", "", "", "", "", "", "", "BACKLIGHT_PWM", "", \
-			  "", "", "X11_I2C5_SDA", "X11_I2C5_SCL", "USER_RED", "", "", "", "", "";
+	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "X11_SPI_EXT_CS0", "X11_SPI_EXT_MISO", \
+			  "X11_SPI_EXT_MOSI", "X11_SPI_EXT_CLK", "", "", "", "", "", "", "BACKLIGHT_PWM", "", \
+			  "", "", "X11_I2C5_SDA", "X11_I2C5_SCL", "USER_RED", "X11_CAN2_TX", "X11_PWM5_3", "X11_CAN2_RX", "", "";
 };
 
 &gpio3 {
@@ -197,7 +197,7 @@
 	// 32 pins (0..31)
 	gpio-line-names = "SD2_nCD", "", "", "", "", "", "", "SD2_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "", "", "", "", "", "", "X11_GPIO3_26", "X11_GPIO3_27", "", "", \
+			  "", "X11_SD3_CMD", "X11_SD3_D0", "X11_SD3_D1", "X11_SD3_D2", "X11_SD3_D3", "X11_GPIO3_26", "X11_GPIO3_27", "", "", \
 			  "PCIe_NW_DISABLE", "";
 
 	PCIe_NW_DISABLE {
