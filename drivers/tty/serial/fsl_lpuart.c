@@ -291,6 +291,9 @@ struct lpuart_port {
 	bool			is_cs7; /* Set to true when character size is 7 */
 					/* and the parity is enabled		*/
 	bool			dma_idle_int;
+#ifdef CONFIG_DEBUG_FS
+	struct dentry		*device_root;
+#endif
 };
 
 struct lpuart_soc_data {
@@ -405,6 +408,48 @@ static inline void lpuart32_write(struct uart_port *port, u32 val,
 		break;
 	}
 }
+
+/*
+ * Debug fs
+ */
+#ifdef CONFIG_DEBUG_FS
+#include <linux/debugfs.h>
+#include <linux/uaccess.h>
+#include <linux/seq_file.h>
+
+static int regs_show(struct seq_file *s, void *p)
+{
+	struct lpuart_port *sport = s->private;
+
+	pm_runtime_get_sync(sport->port.dev);
+
+	seq_printf(s, "BAUD     : 0x%08x\n", lpuart32_read(&sport->port, UARTBAUD));
+	seq_printf(s, "STAT     : 0x%08x\n", lpuart32_read(&sport->port, UARTSTAT));
+	seq_printf(s, "CTRL     : 0x%08x\n", lpuart32_read(&sport->port, UARTCTRL));
+	seq_printf(s, "MATCH    : 0x%08x\n", lpuart32_read(&sport->port, UARTMATCH));
+	seq_printf(s, "UARTMODIR: 0x%08x\n", lpuart32_read(&sport->port, UARTMODIR));
+	seq_printf(s, "FIFO     : 0x%08x\n", lpuart32_read(&sport->port, UARTFIFO));
+	seq_printf(s, "WATER    : 0x%08x\n", lpuart32_read(&sport->port, UARTWATER));
+
+	pm_runtime_mark_last_busy(sport->port.dev);
+	pm_runtime_put_autosuspend(sport->port.dev);
+
+	return 0;
+}
+
+DEFINE_SHOW_ATTRIBUTE(regs);
+
+static void lpuart_init_debugfs(struct lpuart_port *sport)
+{
+	sport->device_root = debugfs_create_dir(dev_name(sport->port.dev),
+					       NULL);
+
+	debugfs_create_file("regs", 0400, sport->device_root, sport, &regs_fops);
+}
+
+#else
+static inline void lpuart_init_debugfs(struct lpuart_port *sport) {}
+#endif
 
 static int __lpuart_enable_clks(struct lpuart_port *sport, bool is_en)
 {
@@ -2978,6 +3023,8 @@ static int lpuart_probe(struct platform_device *pdev)
 				DRIVER_NAME, sport);
 	if (ret)
 		goto failed_irq_request;
+
+	lpuart_init_debugfs(sport);
 
 	return 0;
 
