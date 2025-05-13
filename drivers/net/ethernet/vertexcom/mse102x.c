@@ -88,6 +88,7 @@ struct mse102x_net_spi {
 	struct gpio_desc	*spi_int;
 
 	bool 			valid_cmd_received;
+	u16			last_invalid_cmd;
 
 #ifdef CONFIG_DEBUG_FS
 	struct dentry		*device_root;
@@ -114,6 +115,11 @@ static int mse102x_info_show(struct seq_file *s, void *what)
 		   mses->spidev->mode);
 	seq_printf(s, "Received valid CMD once : %s\n",
 		   str_yes_no(mses->valid_cmd_received));
+
+	if (mses->last_invalid_cmd != DET_CMD) {
+		seq_printf(s, "Last invalid CMD        : 0x%04x\n",
+			   mses->last_invalid_cmd);
+	}
 
 	return 0;
 }
@@ -202,6 +208,7 @@ static int mse102x_rx_cmd_spi(struct mse102x_net *mse, u8 *rxb)
 				    __func__, *cmd);
 		mse->stats.invalid_cmd++;
 		ret = -EIO;
+		mses->last_invalid_cmd = be16_to_cpu(*cmd);
 	} else {
 		memcpy(rxb, trx + 2, 2);
 		mses->valid_cmd_received = true;
@@ -743,6 +750,7 @@ static int mse102x_probe_spi(struct spi_device *spi)
 	}
 
 	mses->spidev = spi;
+	mses->last_invalid_cmd = DET_CMD;
 	mutex_init(&mses->lock);
 	INIT_WORK(&mses->tx_work, mse102x_tx_work);
 
