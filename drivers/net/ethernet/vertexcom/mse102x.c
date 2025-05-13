@@ -544,7 +544,8 @@ static int mse102x_net_open(struct net_device *ndev)
 	 * So poll for possible packet(s) to re-arm the interrupt.
 	 */
 	mutex_lock(&mses->lock);
-	mse102x_rx_pkt_spi(mse);
+	if (mse102x_rx_pkt_spi(mse) == IRQ_NONE)
+		mse102x_rx_pkt_spi(mse);
 	mutex_unlock(&mses->lock);
 
 	netif_dbg(mse, ifup, ndev, "network device up\n");
