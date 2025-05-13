@@ -1,0 +1,76 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (C) 2025 chargebyte GmbH
+ */
+
+#include "imx93-charge-som-dc-evb.dts"
+
+/ {
+	model = "chargebyte Charge SOM test fixture";
+
+	aliases {
+		/delete-property/ rtc0;
+		/delete-property/ rtc1;
+	};
+};
+
+/delete-node/ &rv3028;
+
+&flexcan1 {
+	status = "disabled";
+};
+
+&gpio3 {
+	/delete-node/ PCIe_NW_DISABLE;	// remove GPIO hog
+};
+
+&gpio4 {
+	/delete-node/ PCIe_N_RESET;	// remote GPIO hog
+};
+
+&iomuxc {
+	pinctrl_usdhc3_default: usdhc3grp {
+		fsl,pins = <
+			MX93_PAD_SD3_CLK__USDHC3_CLK		0x179e
+			MX93_PAD_SD3_CMD__USDHC3_CMD		0x4000139e
+			MX93_PAD_SD3_DATA0__USDHC3_DATA0	0x4000138e
+			MX93_PAD_SD3_DATA1__USDHC3_DATA1	0x4000138e
+			MX93_PAD_SD3_DATA2__USDHC3_DATA2	0x4000138e
+			MX93_PAD_SD3_DATA3__USDHC3_DATA3	0x4000139e
+		>;
+	};
+};
+
+&lpuart4 {
+	status = "disabled";
+};
+
+&lpuart5 {
+	status = "disabled";
+};
+
+&reg_can {
+	status = "disabled";
+};
+
+&tpm5 {
+	status = "disabled";
+};
+
+/* Additional SD card interface (limited to 50 MHz) */
+&usdhc3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usdhc3_default>;
+	bus-width = <4>;
+	broken-cd;
+	no-1-8-v;
+	status = "okay";
+};
+
+&user_leds {
+	status = "disabled";
+};
+
+&user_keys {
+	status = "disabled";
+};
