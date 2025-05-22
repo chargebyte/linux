@@ -109,6 +109,10 @@
 	wakeup-source;
 };
 
+&ethphy1 {
+	ti,leds-polarity = <0>; // active-low
+};
+
 /* X16 CAN1 */
 &flexcan1 {
 	pinctrl-names = "default";
