@@ -464,6 +464,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-segin.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb-V0R1.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-testfixture.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y.dtb
 
 imx93-phyboard-nash-jtag-dtbs += imx93-phyboard-nash.dtb \
 			  imx93-phyboard-nash-jtag.dtbo
