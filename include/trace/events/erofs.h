@@ -66,8 +66,8 @@ TRACE_EVENT(erofs_fill_inode,
 	TP_fast_assign(
 		__entry->dev		= inode->i_sb->s_dev;
 		__entry->nid		= EROFS_I(inode)->nid;
-		__entry->blkaddr	= erofs_blknr(erofs_iloc(inode));
-		__entry->ofs		= erofs_blkoff(erofs_iloc(inode));
+		__entry->blkaddr	= erofs_blknr(inode->i_sb, erofs_iloc(inode));
+		__entry->ofs		= erofs_blkoff(inode->i_sb, erofs_iloc(inode));
 	),
 
 	TP_printk("dev = (%d,%d), nid = %llu, blkaddr %u ofs %u",
@@ -230,24 +230,6 @@ DEFINE_EVENT(erofs__map_blocks_exit, z_erofs_map_blocks_iter_exit,
 		 unsigned int flags, int ret),
 
 	TP_ARGS(inode, map, flags, ret)
-);
-
-TRACE_EVENT(erofs_destroy_inode,
-	TP_PROTO(struct inode *inode),
-
-	TP_ARGS(inode),
-
-	TP_STRUCT__entry(
-		__field(	dev_t,		dev		)
-		__field(	erofs_nid_t,	nid		)
-	),
-
-	TP_fast_assign(
-		__entry->dev	= inode->i_sb->s_dev;
-		__entry->nid	= EROFS_I(inode)->nid;
-	),
-
-	TP_printk("dev = (%d,%d), nid = %llu", show_dev_nid(__entry))
 );
 
 #endif /* _TRACE_EROFS_H */
