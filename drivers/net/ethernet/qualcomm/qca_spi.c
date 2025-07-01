@@ -899,15 +899,17 @@ qca_spi_probe(struct spi_device *spi)
 	legacy_mode = of_property_read_bool(spi->dev.of_node,
 					    "qca,legacy-mode");
 
-	if (qcaspi_clkspeed)
-		spi->max_speed_hz = qcaspi_clkspeed;
-	else if (!spi->max_speed_hz)
-		spi->max_speed_hz = QCASPI_CLK_SPEED;
+	if (qcaspi_clkspeed == 0) {
+		if (spi->max_speed_hz)
+			qcaspi_clkspeed = spi->max_speed_hz;
+		else
+			qcaspi_clkspeed = QCASPI_CLK_SPEED;
+	}
 
-	if (spi->max_speed_hz < QCASPI_CLK_SPEED_MIN ||
-	    spi->max_speed_hz > QCASPI_CLK_SPEED_MAX) {
-		dev_err(&spi->dev, "Invalid clkspeed: %u\n",
-			spi->max_speed_hz);
+	if ((qcaspi_clkspeed < QCASPI_CLK_SPEED_MIN) ||
+	    (qcaspi_clkspeed > QCASPI_CLK_SPEED_MAX)) {
+		dev_err(&spi->dev, "Invalid clkspeed: %d\n",
+			qcaspi_clkspeed);
 		return -EINVAL;
 	}
 
@@ -932,13 +934,14 @@ qca_spi_probe(struct spi_device *spi)
 		return -EINVAL;
 	}
 
-	dev_info(&spi->dev, "ver=%s, clkspeed=%u, burst_len=%d, pluggable=%d\n",
+	dev_info(&spi->dev, "ver=%s, clkspeed=%d, burst_len=%d, pluggable=%d\n",
 		 QCASPI_DRV_VERSION,
-		 spi->max_speed_hz,
+		 qcaspi_clkspeed,
 		 qcaspi_burst_len,
 		 qcaspi_pluggable);
 
 	spi->mode = SPI_MODE_3;
+	spi->max_speed_hz = qcaspi_clkspeed;
 	if (spi_setup(spi) < 0) {
 		dev_err(&spi->dev, "Unable to setup SPI device\n");
 		return -EFAULT;
