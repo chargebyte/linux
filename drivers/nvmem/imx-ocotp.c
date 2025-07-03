@@ -142,6 +142,7 @@ struct ocotp_params {
 	void (*set_timing)(struct ocotp_priv *priv);
 	struct ocotp_ctrl_reg ctrl;
 	bool reverse_mac_address;
+	size_t bank_desc_size;
 	const char **bank_desc;
 };
 
@@ -620,6 +621,7 @@ static const struct ocotp_params imx6ul_params = {
 	.bank_address_words = 0,
 	.set_timing = imx_ocotp_set_imx6_timing,
 	.ctrl = IMX_OCOTP_BM_CTRL_DEFAULT,
+	.bank_desc_size = ARRAY_SIZE(imx6ul_otp_desc) * ARRAY_SIZE(imx6ul_otp_desc[0]),
 	.bank_desc = (const char **)imx6ul_otp_desc,
 };
 
@@ -628,6 +630,7 @@ static const struct ocotp_params imx6ull_params = {
 	.bank_address_words = 0,
 	.set_timing = imx_ocotp_set_imx6_timing,
 	.ctrl = IMX_OCOTP_BM_CTRL_DEFAULT,
+	.bank_desc_size = ARRAY_SIZE(imx6ull_otp_desc) * ARRAY_SIZE(imx6ull_otp_desc[0]),
 	.bank_desc = (const char **)imx6ull_otp_desc,
 };
 
@@ -699,7 +702,8 @@ static int imx_ocotp_probe(struct platform_device *pdev)
 	struct nvmem_device *nvmem;
 	struct attribute **attrs;
 	const char **desc;
-	int i, num;
+	size_t num;
+	int i;
 	int ret;
 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
@@ -729,7 +733,7 @@ static int imx_ocotp_probe(struct platform_device *pdev)
 	nvmem = devm_nvmem_register(dev, &imx_ocotp_nvmem_config);
 
 	desc = priv->params->bank_desc;
-	num = priv->params->nregs;
+	num = priv->params->bank_desc_size;
 
 	if (!desc)
 		return PTR_ERR_OR_ZERO(nvmem);
