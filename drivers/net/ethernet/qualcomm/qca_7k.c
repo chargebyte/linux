@@ -15,12 +15,16 @@
 #include "qca_7k.h"
 
 void
-qcaspi_spi_error(struct qcaspi *qca)
+qcaspi_spi_error(struct qcaspi *qca, int err)
 {
 	if (qca->sync != QCASPI_SYNC_READY)
 		return;
 
-	netdev_err(qca->net_dev, "spi error\n");
+	if (err)
+		netdev_err(qca->net_dev, "spi error: %d\n", err);
+	else
+		netdev_err(qca->net_dev, "spi error\n");
+
 	qca->sync = QCASPI_SYNC_UNKNOWN;
 	qca->stats.spi_err++;
 }
@@ -59,7 +63,7 @@ qcaspi_read_register(struct qcaspi *qca, u16 reg, u16 *result)
 		ret = msg.status;
 
 	if (ret)
-		qcaspi_spi_error(qca);
+		qcaspi_spi_error(qca, ret);
 	else
 		*result = be16_to_cpu(rx_data);
 
@@ -98,7 +102,7 @@ __qcaspi_write_register(struct qcaspi *qca, u16 reg, u16 value)
 		ret = msg.status;
 
 	if (ret)
-		qcaspi_spi_error(qca);
+		qcaspi_spi_error(qca, ret);
 
 	return ret;
 }
