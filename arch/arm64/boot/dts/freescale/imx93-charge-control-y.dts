@@ -21,14 +21,14 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_user_leds>;
 		
-		USER_RED {
+		led-user-red {
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_BOOT;
 			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "timer";
 		};
 
-		USER_GREEN {
+		led-user-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_SD;
 			gpios = <&gpio2 16 GPIO_ACTIVE_HIGH>;
@@ -97,7 +97,7 @@
 	status = "okay";
 
 	ethernet@0 {
-		compatible = "microchip,lan8651";
+		compatible = "microchip,lan8651", "microchip,lan8650";
 		reg = <0>;
 		interrupt-parent = <&gpio2>;
 		interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
@@ -130,13 +130,12 @@
 &mdio {
 	ethphy2: ethernet-phy@2 {
 		reg = <2>;
-		compatible = "ethernet-phy-id2000.a111", "ethernet-phy-ieee802.3-c22";
+		compatible = "ethernet-phy-ieee802.3-c22";
 		reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
 		reset-assert-us = <30>;
 	};
 };
 
-/* EEPROM SPI */
 &lpi2c3 {
 	pinctrl-names = "default", "gpio";
 	pinctrl-0 = <&pinctrl_lpi2c3>;
@@ -169,7 +168,7 @@
 
 /* SD */
 &usdhc2 {
-	pinctrl-names = "default", "state_100mhz", "state_200mhz";
+	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2_default>;
 	bus-width = <4>;
 	no-1-8-v;
