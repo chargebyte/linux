@@ -56,6 +56,36 @@
 	status = "okay";
 };
 
+&gpio1 {
+	// 16 pins (0..15)
+	gpio-line-names = "", "", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
+			  "CHSTOP_IN", "SPI_TPM_nCS0", "", "", "", "";
+};
+
+&gpio2 {
+	// 30 pins (0..29)
+	gpio-line-names = "X_LAN_nCS", "", "", "", "", "", "", "X_LAN_nIRQ", "", "", \
+			  "", "GREEN_LED", "", "", "", "", "", "", "", "", \
+			  "", "", "", "", "RED_LED", "", "", "", "", "";
+};
+
+&gpio3 {
+	// 32 pins (0..31)
+	gpio-line-names = "SD2_nCD", "", "", "", "", "", "", "SD2_nRESET", "", "", \
+			  "", "", "", "", "", "", "", "", "", "", \
+			  "", "", "", "", "", "", "", "", "X_TDI", "X_TMS_SWDIO", \
+			  "", "X_TDO";
+};
+
+&gpio4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gpio4>;
+	// 30 pins (0..29)
+	gpio-line-names = "", "", "", "", "", "", "", "", "", "", \
+			  "", "", "SAFETY_BOOTMODE_SET", "ENET1_nRST", "", "", "", "", "", "", \
+			  "", "SOM_EEPROM_WP", "", "SOM_RESET_PHY", "", "", "", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
+};
+
 /* Console */
 &lpuart1 {
 	pinctrl-names = "default";
