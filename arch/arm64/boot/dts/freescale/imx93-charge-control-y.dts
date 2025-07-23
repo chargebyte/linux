@@ -169,7 +169,8 @@
 /* SD */
 &usdhc2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_usdhc2_default>;
+	pinctrl-0 = <&pinctrl_usdhc2_default>, <&pinctrl_usdhc2_cd>;
+	cd-gpios = <&gpio3 00 GPIO_ACTIVE_LOW>;
 	bus-width = <4>;
 	no-1-8-v;
 	status = "okay";
@@ -204,6 +205,12 @@
 	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmcgrp {
 		fsl,pins = <
 			MX93_PAD_SD2_RESET_B__GPIO3_IO07	0x31e // X_SD2_nRESET
+		>;
+	};
+
+	pinctrl_usdhc2_cd: usdhc2cdgrp {
+		fsl,pins = <
+			MX93_PAD_SD2_CD_B__GPIO3_IO00		0x31e
 		>;
 	};
 
