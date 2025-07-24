@@ -56,6 +56,36 @@
 	status = "okay";
 };
 
+&gpio1 {
+	// 16 pins (0..15)
+	gpio-line-names = "", "", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
+			  "CHSTOP_IN", "SPI_TPM_nCS0", "", "", "", "";
+};
+
+&gpio2 {
+	// 30 pins (0..29)
+	gpio-line-names = "X_LAN_nCS", "", "", "", "", "", "", "X_LAN_nIRQ", "", "", \
+			  "", "GREEN_LED", "", "", "", "", "", "", "", "", \
+			  "", "", "", "", "RED_LED", "", "", "", "", "";
+};
+
+&gpio3 {
+	// 32 pins (0..31)
+	gpio-line-names = "SD2_nCD", "", "", "", "", "", "", "SD2_nRESET", "", "", \
+			  "", "", "", "", "", "", "", "", "", "", \
+			  "", "", "", "", "", "", "", "", "X_TDI", "X_TMS_SWDIO", \
+			  "", "X_TDO";
+};
+
+&gpio4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gpio4>;
+	// 30 pins (0..29)
+	gpio-line-names = "", "", "", "", "", "", "", "", "", "", \
+			  "", "", "SAFETY_BOOTMODE_SET", "ENET1_nRST", "", "", "", "", "", "", \
+			  "", "SOM_EEPROM_WP", "", "SOM_RESET_PHY", "", "", "", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
+};
+
 /* Console */
 &lpuart1 {
 	pinctrl-names = "default";
@@ -169,7 +199,8 @@
 /* SD */
 &usdhc2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_usdhc2_default>;
+	pinctrl-0 = <&pinctrl_usdhc2_default>, <&pinctrl_usdhc2_cd>;
+	cd-gpios = <&gpio3 00 GPIO_ACTIVE_LOW>;
 	bus-width = <4>;
 	no-1-8-v;
 	status = "okay";
@@ -207,6 +238,12 @@
 		>;
 	};
 
+	pinctrl_usdhc2_cd: usdhc2cdgrp {
+		fsl,pins = <
+			MX93_PAD_SD2_CD_B__GPIO3_IO00		0x31e
+		>;
+	};
+
 	/* need to config the SION for data and cmd pad, refer to ERR052021 */
 	pinctrl_usdhc2_default: usdhc2grp {
 		fsl,pins = <
@@ -216,7 +253,6 @@
 			MX93_PAD_SD2_DATA1__USDHC2_DATA1	0x4000138e
 			MX93_PAD_SD2_DATA2__USDHC2_DATA2	0x4000138e
 			MX93_PAD_SD2_DATA3__USDHC2_DATA3	0x4000139e
-			MX93_PAD_SD2_VSELECT__USDHC2_VSELECT	0x51e
 		>;
 	};
 
