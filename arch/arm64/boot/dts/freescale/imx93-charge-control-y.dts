@@ -31,7 +31,7 @@
 		led-user-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_SD;
-			gpios = <&gpio2 16 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio2 11 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "mmc1";
 		};
 	};
@@ -222,7 +222,7 @@
 	pinctrl_user_leds: userledgrp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // USER_RED
-			MX93_PAD_GPIO_IO16__GPIO2_IO16		0x31e // USER_GREEN
+			MX93_PAD_GPIO_IO11__GPIO2_IO11		0x31e // USER_GREEN
 		>;
 	};
 
