@@ -196,6 +196,15 @@
 	};
 };
 
+&usbphynop1 {
+	status = "disabled";
+};
+
+&usbphynop2 {
+	status = "disabled";
+};
+
+
 /* SD */
 &usdhc2 {
 	pinctrl-names = "default";
