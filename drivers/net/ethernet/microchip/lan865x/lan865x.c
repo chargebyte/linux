@@ -364,8 +364,11 @@ static int lan865x_probe(struct spi_device *spi)
 	}
 
 	/* Get the MAC address from the SPI device tree node */
-	if (device_get_ethdev_address(&spi->dev, netdev))
+	if (device_get_ethdev_address(&spi->dev, netdev)) {
 		eth_hw_addr_random(netdev);
+		dev_warn(netdev->dev.parent, "Using random MAC address: %pM\n",
+			 netdev->dev_addr);
+	}
 
 	ret = lan865x_set_hw_macaddr(priv, netdev->dev_addr);
 	if (ret) {
