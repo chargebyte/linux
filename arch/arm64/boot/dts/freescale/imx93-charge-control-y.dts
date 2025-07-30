@@ -12,6 +12,12 @@
 	model = "chargebyte Charge Control Y";
 	compatible = "chargebyte,imx93-charge-control-y", "phytec,imx93-phycore-som", "fsl,imx93";
 
+	aliases {
+		ethernet0 = &fec;
+		ethernet1 = &lan8651;
+		ethernet2 = &eqos;
+	};
+
 	chosen {
 		stdout-path = &lpuart1;
 	};
@@ -126,7 +132,7 @@
 	cs-gpios = <&gpio2 00 GPIO_ACTIVE_LOW>;
 	status = "okay";
 
-	ethernet@0 {
+	lan8651: ethernet@0 {
 		compatible = "microchip,lan8651", "microchip,lan8650";
 		reg = <0>;
 		interrupt-parent = <&gpio2>;
