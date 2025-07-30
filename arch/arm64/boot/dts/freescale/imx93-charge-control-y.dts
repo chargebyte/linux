@@ -160,7 +160,9 @@
 &mdio {
 	ethphy2: ethernet-phy@2 {
 		reg = <2>;
-		compatible = "ethernet-phy-ieee802.3-c22";
+		/* FIXME: the following PHY ID must be hardcoded otherwise
+		          the PHY will not be found after cold start */
+		compatible = "ethernet-phy-id2000.a150", "ethernet-phy-ieee802.3-c22";
 		reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
 		reset-assert-us = <30>;
 	};
