@@ -65,7 +65,7 @@
 &gpio1 {
 	// 16 pins (0..15)
 	gpio-line-names = "", "", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
-			  "CHSTOP_IN", "SPI_TPM_nCS0", "", "", "", "";
+			  "", "SPI_TPM_nCS0", "", "", "", "";
 };
 
 &gpio2 {
