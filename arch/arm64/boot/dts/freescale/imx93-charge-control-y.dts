@@ -87,7 +87,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpio4>;
 	// 30 pins (0..29)
-	gpio-line-names = "", "", "", "", "", "", "", "", "", "", \
+	gpio-line-names = "", "", "X_RTC_nINT", "", "", "", "", "", "", "", \
 			  "", "", "SAFETY_BOOTMODE_SET", "ENET1_nRST", "", "", "", "", "", "", \
 			  "", "SOM_EEPROM_WP", "", "SOM_RESET_PHY", "", "", "", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 };
@@ -171,6 +171,30 @@
 		compatible = "ethernet-phy-id2000.a150", "ethernet-phy-ieee802.3-c22";
 		reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
 		reset-assert-us = <30>;
+	};
+};
+
+/* RTC (available since V0R5) */
+&lpi2c1 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_lpi2c1>;
+	pinctrl-1 = <&pinctrl_lpi2c1_gpio>;
+	scl-gpios = <&gpio1 00 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	sda-gpios = <&gpio1 01 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	rv3028: rtc@52 {
+		compatible = "microcrystal,rv3028";
+		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&gpio4>;
+		wakeup-source;
+		trickle-resistor-ohms = <3000>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_rtc>;
+		reg = <0x52>;
 	};
 };
 
@@ -298,10 +322,31 @@
 		>;
 	};
 
+	pinctrl_lpi2c1: lpi2c1grp {
+		/* sion, drive strength: X2, slew rate: fast, pull up, open drain */
+		fsl,pins = <
+			MX93_PAD_I2C1_SCL__LPI2C1_SCL		0x40000b86
+			MX93_PAD_I2C1_SDA__LPI2C1_SDA		0x40000b86
+		>;
+	};
+
+	pinctrl_lpi2c1_gpio: lpi2c1gpiogrp {
+		fsl,pins = <
+			MX93_PAD_I2C1_SCL__GPIO1_IO00		0x40000b9e
+			MX93_PAD_I2C1_SDA__GPIO1_IO01		0x40000b9e
+		>;
+	};
+
 	pinctrl_lpi2c3_gpio: lpi2c3gpiogrp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO28__GPIO2_IO28		0x40000b9e
 			MX93_PAD_GPIO_IO29__GPIO2_IO29		0x40000b9e
+		>;
+	};
+
+	pinctrl_rtc: rtcgrp {
+		fsl,pins = <
+			MX93_PAD_ENET1_TD3__GPIO4_IO02		0x31e // X_RTC_nINT
 		>;
 	};
 
