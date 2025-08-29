@@ -147,7 +147,7 @@
 /* Ethernet 2 */
 &eqos {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_eqos>;
+	pinctrl-0 = <&pinctrl_eqos &pinctrl_eqos_strap>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy2>;
 	assigned-clocks = <&clk IMX93_CLK_ENET_TIMER2>,
@@ -261,14 +261,19 @@
 	pinctrl_eqos: eqosgrp {
 		fsl,pins = <
 			MX93_PAD_ENET1_TD2__CCM_ENET_QOS_CLOCK_GENERATE_REF_CLK		0x4000057e
-			MX93_PAD_ENET1_RD0__ENET_QOS_RGMII_RD0				0x57e
-			MX93_PAD_ENET1_RD1__ENET_QOS_RGMII_RD1				0x57e
 			MX93_PAD_ENET1_TD0__ENET_QOS_RGMII_TD0				0x50e
 			MX93_PAD_ENET1_TD1__ENET_QOS_RGMII_TD1				0x50e
-			MX93_PAD_ENET1_RX_CTL__ENET_QOS_RGMII_RX_CTL			0x57e
 			MX93_PAD_ENET1_TX_CTL__ENET_QOS_RGMII_TX_CTL			0x50e
-			MX93_PAD_ENET1_RXC__ENET_QOS_RX_ER				0x57e
 			MX93_PAD_ENET1_RD3__GPIO4_IO13					0x102
+		>;
+	};
+
+	pinctrl_eqos_strap: eqosstrapgrp {
+		fsl,pins = <
+			MX93_PAD_ENET1_RXC__ENET_QOS_RX_ER		0x57e	// PHY RX_ER
+			MX93_PAD_ENET1_RD0__ENET_QOS_RGMII_RD0		0x57e	// PHY RX_D0
+			MX93_PAD_ENET1_RD1__ENET_QOS_RGMII_RD1		0x57e	// PHY RX_D1
+			MX93_PAD_ENET1_RX_CTL__ENET_QOS_RGMII_RX_CTL	0x57e	// PHY CRS_DV
 		>;
 	};
 
