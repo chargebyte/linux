@@ -2057,10 +2057,16 @@ static int fec_enet_mdio_read_c22(struct mii_bus *bus, int mii_id, int regnum)
 	struct fec_enet_private *fep = bus->priv;
 	struct device *dev = &fep->pdev->dev;
 	int ret = 0, frame_start, frame_addr, frame_op;
+	static int logged = 0;
 
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret < 0)
 		return ret;
+
+	if ((logged & 1 << regnum) == 0) {
+		netdev_info(fep->netdev, "MDIO read %d\n", regnum);
+		logged |= 1 << regnum;
+	}
 
 	/* C22 read */
 	frame_op = FEC_MMFR_OP_READ;

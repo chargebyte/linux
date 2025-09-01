@@ -3113,6 +3113,9 @@ static void gpiod_set_raw_value_commit(struct gpio_desc *desc, bool value)
 
 	gc = desc->gdev->chip;
 	trace_gpio_value(desc_to_gpio(desc), 0, value);
+	if (desc->name && strcmp(desc->name, "ENET1_nRST") == 0)
+		pr_info("ENET1_nRST = %d\n", value);
+
 	gc->set(gc, gpio_chip_hwgpio(desc), value);
 }
 
