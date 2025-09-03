@@ -144,10 +144,16 @@
 	};
 };
 
+/* Ethernet 1 */
+&fec {
+	/* HACK: Since MDIO bus is handled by FEC all PHY strap pins and
+	 * reference clock must be initialized at the same time.
+	 */
+	pinctrl-0 = <&pinctrl_fec &pinctrl_eqos &pinctrl_eqos_strap>;
+};
+
 /* Ethernet 2 */
 &eqos {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_eqos &pinctrl_eqos_strap>;
 	phy-mode = "rmii";
 	phy-handle = <&ethphy2>;
 	assigned-clocks = <&clk IMX93_CLK_ENET_TIMER2>,
@@ -264,7 +270,6 @@
 			MX93_PAD_ENET1_TD0__ENET_QOS_RGMII_TD0				0x50e
 			MX93_PAD_ENET1_TD1__ENET_QOS_RGMII_TD1				0x50e
 			MX93_PAD_ENET1_TX_CTL__ENET_QOS_RGMII_TX_CTL			0x50e
-			MX93_PAD_ENET1_RD3__GPIO4_IO13					0x102
 		>;
 	};
 
