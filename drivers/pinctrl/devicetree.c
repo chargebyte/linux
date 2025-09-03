@@ -153,7 +153,8 @@ static int dt_to_map_one_config(struct pinctrl *p,
 	of_node_put(np_pctldev);
 
 	if ((strcmp(np_config->name, "fecgrp") == 0) ||
-	    (strcmp(np_config->name, "eqosgrp") == 0))
+	    (strcmp(np_config->name, "eqosgrp") == 0) ||
+	    (strcmp(np_config->name, "eqosstrapgrp") == 0))
 		dev_info(p->dev, "%s: %s\n", __func__, np_config->name);
 
 	/*
