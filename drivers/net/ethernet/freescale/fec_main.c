@@ -2239,7 +2239,8 @@ static void fec_enet_phy_reset_after_clk_enable(struct net_device *ndev)
 		phy_dev = of_phy_find_device(fep->phy_node);
 		ret = phy_reset_after_clk_enable(phy_dev);
 		netdev_info(ndev, "Reset PHY: phy_node: %d\n", ret);
-		put_device(&phy_dev->mdio.dev);
+		if (phy_dev)
+			put_device(&phy_dev->mdio.dev);
 	}
 }
 
