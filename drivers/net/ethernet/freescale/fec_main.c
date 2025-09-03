@@ -2223,9 +2223,11 @@ static void fec_enet_phy_reset_after_clk_enable(struct net_device *ndev)
 {
 	struct fec_enet_private *fep = netdev_priv(ndev);
 	struct phy_device *phy_dev = ndev->phydev;
+	int ret;
 
 	if (phy_dev) {
-		phy_reset_after_clk_enable(phy_dev);
+		ret = phy_reset_after_clk_enable(phy_dev);
+		netdev_info(ndev, "Reset PHY: phy_dev: %d\n", ret);
 	} else if (fep->phy_node) {
 		/*
 		 * If the PHY still is not bound to the MAC, but there is
@@ -2235,7 +2237,8 @@ static void fec_enet_phy_reset_after_clk_enable(struct net_device *ndev)
 		 * the PHY reset.
 		 */
 		phy_dev = of_phy_find_device(fep->phy_node);
-		phy_reset_after_clk_enable(phy_dev);
+		ret = phy_reset_after_clk_enable(phy_dev);
+		netdev_info(ndev, "Reset PHY: phy_node: %d\n", ret);
 		put_device(&phy_dev->mdio.dev);
 	}
 }
