@@ -2063,9 +2063,9 @@ static int fec_enet_mdio_read_c22(struct mii_bus *bus, int mii_id, int regnum)
 	if (ret < 0)
 		return ret;
 
-	if ((logged & 1 << regnum) == 0) {
-		netdev_info(fep->netdev, "MDIO read %d\n", regnum);
-		logged |= 1 << regnum;
+	if ((logged & 1 << mii_id) == 0) {
+		dev_info(dev, "MDIO read %d\n", mii_id);
+		logged |= 1 << mii_id;
 	}
 
 	/* C22 read */
