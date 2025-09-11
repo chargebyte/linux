@@ -9,8 +9,6 @@
 #include <linux/kernel.h>
 #include <linux/phy.h>
 #include <linux/oa_tc6.h>
-#include <linux/of.h>
-#include <linux/of_net.h>
 
 #define DRV_NAME			"lan8650"
 
@@ -388,7 +386,7 @@ static int lan865x_probe(struct spi_device *spi)
 	}
 
 	/* Get the MAC address from the SPI device tree node */
-	if (of_get_ethdev_address(spi->dev.of_node, netdev)) {
+	if (device_get_ethdev_address(&spi->dev, netdev)) {
 		eth_hw_addr_random(netdev);
 		dev_warn(netdev->dev.parent, "Using random MAC address: %pM\n",
 			 netdev->dev_addr);
