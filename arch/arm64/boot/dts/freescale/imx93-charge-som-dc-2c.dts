@@ -180,6 +180,32 @@
 	};	
 };
 
+&lpspi3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lpspi3>;
+	num-cs = <1>;
+	cs-gpios = <&gpio2 8 GPIO_ACTIVE_HIGH>;
+	status = "okay";
+
+	ethernet@0 {
+		compatible = "vertexcom,mse1021";
+		reg = <0>;
+		int-gpios = <&gpio4 6 GPIO_ACTIVE_HIGH>;
+		spi-cpha;
+		spi-cpol;
+		spi-max-frequency = <7142857>;
+
+		// nvmem-cells = <&eth1_host_mac_address 0>;
+		// nvmem-cell-names = "mac-address";
+	};
+};
+
+&lpuart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	status = "okay";
+};
+
 &usbotg1 {
 	vbus-supply = <&reg_usb_otg1_vbus>;
 	over-current-active-low;
@@ -207,22 +233,22 @@
 
 &gpio2 {
 	// 30 pins (0..29)
-	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "X11_SPI_EXT_CS0", "X11_SPI_EXT_MISO", \
-			  "X11_SPI_EXT_MOSI", "X11_SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "BACKLIGHT_PWM", "", \
-			  "", "", "X11_I2C5_SDA", "X11_I2C5_SCL", "", "X11_CAN2_TX", "X11_PWM5_3", "X11_CAN2_RX", "", "";
+	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_EXT_CS0", "SPI_EXT_MISO", \
+			  "SPI_EXT_MOSI", "SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "BACKLIGHT_PWM", "", \
+			  "", "", "I2C5_SDA", "I2C5_SCL", "GPIOEXP_nINT", "CAN2_TX", "TOUCH_nINT", "CAN2_RX", "", "";
 };
 
 &gpio3 {
 	// 32 pins (0..31)
-	gpio-line-names = "SD2_nCD", "", "", "", "", "", "", "SD2_nRESET", "", "", \
+	gpio-line-names = "RESET_nGPIO", "IMX9_DIN3", "IMX9_DIN4", "IMX9_DIN5", "IMX9_DIN6", "IMX9_DIN7", "IMX9_DIN8", "TOUCH_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "", "X11_SD3_CMD", "X11_SD3_D0", "X11_SD3_D1", "X11_SD3_D2", "X11_SD3_D3", "USER_ORANGE", "USER_GREEN", "LPUART5_RX", "LPUART5_RTS_B", \
+			  "", "nPLC2_RESET_INT", "nSAFETY2_RESET_INT", "SAFETY2_BOOTMODE_SET", "IMX9_DIN1", "IMX9_DIN2", "USER_ORANGE", "USER_GREEN", "LPUART5_RX", "LPUART5_RTS_B", \
 			  "PCIe_NW_DISABLE", "LPUART5_TX";
 };
 
 &gpio4 {
 	// 30 pins (0..29)
-	gpio-line-names = "USB1_ID", "", "RTC_nINT", "ETH2_nINT", "USB1_OC", "", "PCIe_N_RESET", "DL_REQ_INTR_SPI", "ETH2_nRESET", "nPLC_RESET_INT", \
+	gpio-line-names = "USB1_ID", "", "RTC_nINT", "ETH2_nINT", "USB1_OC", "", "SPI_PLC_nINT0", "DL_REQ_INTR_SPI", "ETH2_nRESET", "nPLC_RESET_INT", \
 			  "", "CHSTOP2_IN", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "DISPLAY_EN", "", "", "", "", \
 			  "", "SOM_EEPROM_WP", "", "SOM_RESET_PHY", "", "", "WS2812B", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 
@@ -258,9 +284,27 @@
 		>;
 	};
 
+	pinctrl_lpspi3: lpspi3grp {
+		/* drive strength: X2, slew rate: fast, no pull */
+		fsl,pins = <
+			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x186 // SPI_PLC_nINT0
+			MX93_PAD_GPIO_IO08__GPIO2_IO08		0x186 // SPI_EXT_CS0
+			MX93_PAD_GPIO_IO09__LPSPI3_SIN		0x186
+			MX93_PAD_GPIO_IO10__LPSPI3_SOUT		0x186
+			MX93_PAD_GPIO_IO11__LPSPI3_SCK		0x186
+		>;
+	};
+
+	pinctrl_uart2: uart2grp {
+		fsl,pins = <
+			MX93_PAD_UART2_RXD__LPUART2_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
+			MX93_PAD_UART2_TXD__LPUART2_TX 		0x30e // drive strength: X3, slew rate: slightly fast, pull up
+		>;
+	};
+
 	pinctrl_gpiokeys: keygrp {
 		fsl,pins = <
-			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x31e // CHSTOP1_IN
+			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x31e // CHSTOP_IN
 		>;
 	};
 
