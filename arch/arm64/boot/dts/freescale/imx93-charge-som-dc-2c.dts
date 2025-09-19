@@ -61,13 +61,13 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_gpiokeys>;
 
-		chstop1_in {
+		switch-chstop1-in {
 			label = "CHSTOP1_IN";
 			gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
 			linux,code = <108>;
 		};
 
-		chstop2_in {
+		switch-chstop2-in {
 			label = "CHSTOP2_IN";
 			gpios = <&gpio4 11 GPIO_ACTIVE_HIGH>;
 			linux,code = <108>;
@@ -79,14 +79,14 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_user_leds>;
 		
-		user_orange {
+		led-orange {
 			color = <LED_COLOR_ID_ORANGE>;
 			function = LED_FUNCTION_BOOT;
 			gpios = <&gpio3 26 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "timer";
 		};
 
-		user_green {
+		led-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_BOOT;
 			gpios = <&gpio3 27 GPIO_ACTIVE_HIGH>;
@@ -184,7 +184,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lpspi3>;
 	num-cs = <1>;
-	cs-gpios = <&gpio2 8 GPIO_ACTIVE_HIGH>;
+	cs-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;
 	status = "okay";
 
 	ethernet@0 {
@@ -218,10 +218,12 @@
 	dr_mode = "host";
 	status = "okay";
 
+	/* For MAC address later ...
 	lan9500: ethernet@1 {
 		compatible = "usb424,9500";
 		reg = <1>;
 	};
+	*/
 };
 
 // FIXME
@@ -243,7 +245,7 @@
 	gpio-line-names = "RESET_nGPIO", "IMX9_DIN3", "IMX9_DIN4", "IMX9_DIN5", "IMX9_DIN6", "IMX9_DIN7", "IMX9_DIN8", "TOUCH_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
 			  "", "nPLC2_RESET_INT", "nSAFETY2_RESET_INT", "SAFETY2_BOOTMODE_SET", "IMX9_DIN1", "IMX9_DIN2", "USER_ORANGE", "USER_GREEN", "LPUART5_RX", "LPUART5_RTS_B", \
-			  "PCIe_NW_DISABLE", "LPUART5_TX";
+			  "DL_REQ_INTR_SPI", "LPUART5_TX";
 };
 
 &gpio4 {
@@ -252,7 +254,7 @@
 			  "", "CHSTOP2_IN", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "DISPLAY_EN", "", "", "", "", \
 			  "", "SOM_EEPROM_WP", "", "SOM_RESET_PHY", "", "", "WS2812B", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 
-	ETH2_nRESET {
+	eth2-reset-hog {
 		gpio-hog;
 		gpios = <8 GPIO_ACTIVE_HIGH>;
 		output-high;
@@ -359,7 +361,7 @@
 		>;
 	};
 
-	pinctrl_ws2812b: ws2812b {
+	pinctrl_ws2812b: ws2812bgrp {
 		fsl,pins = <
 			MX93_PAD_ENET2_RD2__FLEXIO2_FLEXIO26	0x31e // WS2812B
 		>;
