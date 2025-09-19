@@ -166,6 +166,30 @@
 		compatible = "microchip,24fc256";
 		reg = <0x50>;
 		pagesize = <64>;
+
+		nvmem-layout {
+			compatible = "fixed-layout";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			plc2_host_mac_address: base-mac-address@12 {
+				compatible = "mac-base";
+				reg = <0x12 0x6>;
+				#nvmem-cell-cells = <1>;
+			};
+
+			plc2_fw_mac_address: base-mac-address@18 {
+				compatible = "mac-base";
+				reg = <0x18 0x6>;
+				#nvmem-cell-cells = <1>;
+			};
+
+			lan9500_mac_address: base-mac-address@1e {
+				compatible = "mac-base";
+				reg = <0x1e 0x6>;
+				#nvmem-cell-cells = <1>;
+			};
+		};
 	};
 	
 	rv3028: rtc@52 {
@@ -195,8 +219,8 @@
 		spi-cpol;
 		spi-max-frequency = <7142857>;
 
-		// nvmem-cells = <&eth1_host_mac_address 0>;
-		// nvmem-cell-names = "mac-address";
+		nvmem-cells = <&plc2_host_mac_address 0>;
+		nvmem-cell-names = "mac-address";
 	};
 };
 
@@ -222,6 +246,9 @@
 	lan9500: ethernet@1 {
 		compatible = "usb424,9500";
 		reg = <1>;
+
+		nvmem-cells = <&lan9500_mac_address 0>;
+		nvmem-cell-names = "mac-address";
 	};
 	*/
 };
@@ -245,12 +272,12 @@
 	gpio-line-names = "RESET_nGPIO", "IMX9_DIN3", "IMX9_DIN4", "IMX9_DIN5", "IMX9_DIN6", "IMX9_DIN7", "IMX9_DIN8", "TOUCH_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
 			  "", "nPLC2_RESET_INT", "nSAFETY2_RESET_INT", "SAFETY2_BOOTMODE_SET", "IMX9_DIN1", "IMX9_DIN2", "USER_ORANGE", "USER_GREEN", "LPUART5_RX", "LPUART5_RTS_B", \
-			  "DL_REQ_INTR_SPI", "LPUART5_TX";
+			  "PLC2_DL_INTR_SPI", "LPUART5_TX";
 };
 
 &gpio4 {
 	// 30 pins (0..29)
-	gpio-line-names = "USB1_ID", "", "RTC_nINT", "ETH2_nINT", "USB1_OC", "", "SPI_PLC_nINT0", "DL_REQ_INTR_SPI", "ETH2_nRESET", "nPLC_RESET_INT", \
+	gpio-line-names = "USB1_ID", "", "RTC_nINT", "ETH2_nINT", "USB1_OC", "", "SPI_PLC2_nINT0", "DL_REQ_INTR_SPI", "ETH2_nRESET", "nPLC_RESET_INT", \
 			  "", "CHSTOP2_IN", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "DISPLAY_EN", "", "", "", "", \
 			  "", "SOM_EEPROM_WP", "", "SOM_RESET_PHY", "", "", "WS2812B", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 
