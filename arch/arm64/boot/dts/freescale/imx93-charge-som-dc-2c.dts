@@ -5,6 +5,7 @@
 
 /dts-v1/;
 
+#include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
 #include "imx93-phycore-som.dtsi"
 #include "imx93-charge-som.dtsi"
@@ -13,7 +14,7 @@
 	model = "chargebyte Charge SOM DC 2C";
 	compatible = "chargebyte,imx93-charge-som-dc-2c", "chargebyte,imx93-charge-som",
 		     "phytec,imx93-phycore-som", "fsl,imx93";
-	
+
 	aliases {
 		rtc0 = &rv3028;
 		rtc1 = &bbnsm_rtc;
@@ -27,7 +28,7 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-name = "CAN1_EN";
 	};
-	
+
 	reg_can2: regulator-can {
 		compatible = "regulator-fixed";
 		gpio = <&gpio_exp 39 GPIO_ACTIVE_HIGH>;
@@ -64,21 +65,21 @@
 		switch-chstop1-in {
 			label = "CHSTOP1_IN";
 			gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
-			linux,code = <108>;
+			linux,code = <KEY_F1>;
 		};
 
 		switch-chstop2-in {
 			label = "CHSTOP2_IN";
 			gpios = <&gpio4 11 GPIO_ACTIVE_HIGH>;
-			linux,code = <108>;
+			linux,code = <KEY_F2>;
 		};
 	};
-	
+
 	user_leds: user-leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_user_leds>;
-		
+
 		led-orange {
 			color = <LED_COLOR_ID_ORANGE>;
 			function = LED_FUNCTION_BOOT;
@@ -99,10 +100,6 @@
 
 &bbnsm_pwrkey {
 	status = "disabled";
-};
-
-&ethphy1 {
-	ti,leds-polarity = <0>; // active-low
 };
 
 &flexcan1 {
@@ -153,19 +150,30 @@
 		#gpio-cells = <2>;
 		interrupt-parent = <&gpio2>;
 		interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
-		
+
 		// 5 x 8 pins (0..39)
 		gpio-line-names = "DOUT1_EN", "DOUT2_EN", "DOUT3_EN", "DOUT4_EN", "DOUT5_EN", "DOUT6_EN", "DOUT7_EN", "DOUT8_EN", \
 		                  "DOUT9_EN", "DOUT10_EN", "DOUT11_EN", "DOUT12_EN", "DOUT13_EN", "DOUT14_EN", "DOUT15_EN", "DOUT16_EN", \
-      		                  "nDOUT1_ST", "nDOUT2_ST", "nDOUT3_ST", "nDOUT4_ST", "nDOUT5_ST", "nDOUT6_ST", "nDOUT7_ST", "nDOUT8_ST", \
-      		                  "nDOUT9_ST", "nDOUT10_ST", "nDOUT11_ST", "nDOUT12_ST", "nDOUT13_ST", "nDOUT14_ST", "nDOUT15_ST", "nDOUT16_ST", \
-       		                  "GPIO_EXP_1", "GPIO_EXP_2", "HW_REV1", "HW_REV2", "HW_REV3", "UART_MUX_IN", "CAN1_EN", "CAN2_EN";
+		                  "nDOUT1_ST", "nDOUT2_ST", "nDOUT3_ST", "nDOUT4_ST", "nDOUT5_ST", "nDOUT6_ST", "nDOUT7_ST", "nDOUT8_ST", \
+		                  "nDOUT9_ST", "nDOUT10_ST", "nDOUT11_ST", "nDOUT12_ST", "nDOUT13_ST", "nDOUT14_ST", "nDOUT15_ST", "nDOUT16_ST", \
+		                  "GPIO_EXP_1", "GPIO_EXP_2", "HW_REV1", "HW_REV2", "HW_REV3", "UART_MUX_IN", "CAN1_EN", "CAN2_EN";
 	};
 
 	eeprom@50 {
-		compatible = "microchip,24fc256";
+		compatible = "microchip,24c256";
 		reg = <0x50>;
 		pagesize = <64>;
+	};
+
+	rv3028: rtc@52 {
+		compatible = "microcrystal,rv3028";
+		reg = <0x52>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_rtc>;
+		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&gpio4>;
+		wakeup-source;
+		trickle-resistor-ohms = <3000>;
 
 		nvmem-layout {
 			compatible = "fixed-layout";
@@ -191,17 +199,6 @@
 			};
 		};
 	};
-	
-	rv3028: rtc@52 {
-		compatible = "microcrystal,rv3028";
-		reg = <0x52>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_rtc>;
-		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
-		interrupt-parent = <&gpio4>;
-		wakeup-source;
-		trickle-resistor-ohms = <3000>;
-	};	
 };
 
 &lpspi3 {
@@ -233,7 +230,6 @@
 &usbotg1 {
 	vbus-supply = <&reg_usb_otg1_vbus>;
 	over-current-active-low;
-	dr_mode = "host";
 	status = "okay";
 };
 
@@ -297,7 +293,7 @@
 &iomuxc {
 
 	/delete-node/ pinctrl_leds;
-	
+
 	pinctrl_lpi2c1: lpi2c1grp {
 		/* sion, drive strength: X2, slew rate: fast, pull up, open drain */
 		fsl,pins = <
@@ -333,7 +329,8 @@
 
 	pinctrl_gpiokeys: keygrp {
 		fsl,pins = <
-			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x31e // CHSTOP_IN
+			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x31e // CHSTOP1_IN
+			MX93_PAD_ENET1_RD1__GPIO4_IO11		0x31e // CHSTOP2_IN
 		>;
 	};
 
@@ -344,14 +341,14 @@
 			// MX93_PAD_ENET1_MDIO__HSIOMIX_OTG_PWR1 not connected
 		>;
 	};
-	
+
 	pinctrl_user_leds: userledgrp {
 		fsl,pins = <
 			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x31e // USER_ORANGE
 			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x31e // USER_GREEN
 		>;
 	};
-	
+
 	pinctrl_rtc: rtcgrp {
 		fsl,pins = <
 			MX93_PAD_ENET1_TD3__GPIO4_IO02		0x31e // RTC_nINT
@@ -371,7 +368,7 @@
 			MX93_PAD_DAP_TDI__CAN2_TX		0x1382
 		>;
 	};
-	
+
 	pinctrl_uart4: uart4grp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO15__LPUART4_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
@@ -379,7 +376,7 @@
 			MX93_PAD_GPIO_IO17__LPUART4_RTS_B	0x31e // drive strength: X4, slew rate: slightly fast, pull up
 		>;
 	};
-	
+
 	pinctrl_uart5: uart5grp {
 		fsl,pins = <
 			MX93_PAD_DAP_TDI__LPUART5_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up

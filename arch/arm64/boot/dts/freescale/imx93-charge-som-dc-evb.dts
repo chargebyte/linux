@@ -7,6 +7,7 @@
 
 /dts-v1/;
 
+#include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
 #include "imx93-phycore-som.dtsi"
 #include "imx93-charge-som.dtsi"
@@ -15,7 +16,7 @@
 	model = "chargebyte Charge SOM Evaluation Kit";
 	compatible = "chargebyte,imx93-charge-som-dc-evb", "chargebyte,imx93-charge-som",
 		     "phytec,imx93-phycore-som", "fsl,imx93";
-	
+
 	aliases {
 		rtc0 = &rv3028;
 		rtc1 = &bbnsm_rtc;
@@ -55,7 +56,7 @@
 		enable-active-high;
 		regulator-boot-on;
 	};
-	
+
 	reg_usdhc2_vmmc: regulator-usdhc2 {
 		compatible = "regulator-fixed";
 		gpio = <&gpio3 7 GPIO_ACTIVE_HIGH>;
@@ -82,15 +83,15 @@
 		CHSTOP_IN {
 			label = "CHSTOP_IN";
 			gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
-			linux,code = <108>;
+			linux,code = <KEY_F1>;
 		};
 	};
-	
+
 	user_leds: user-leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_user_leds>;
-		
+
 		USER_RED {
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_BOOT;
@@ -149,7 +150,7 @@
 	#address-cells = <1>;
 	#size-cells = <0>;
 	status = "okay";
-	
+
 	rv3028: rtc@52 {
 		compatible = "microcrystal,rv3028";
 		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
@@ -250,7 +251,7 @@
 &iomuxc {
 
 	/delete-node/ pinctrl_leds;
-	
+
 	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmcgrp {
 		fsl,pins = <
 			MX93_PAD_SD2_RESET_B__GPIO3_IO07	0x31e
@@ -301,7 +302,7 @@
 			MX93_PAD_SD2_VSELECT__USDHC2_VSELECT    0x51e
 		>;
 	};
-	
+
 	pinctrl_lpi2c1: lpi2c1grp {
 		/* sion, drive strength: X2, slew rate: fast, pull up, open drain */
 		fsl,pins = <
@@ -337,25 +338,25 @@
 			MX93_PAD_ENET1_RX_CTL__GPIO4_IO08	0x31e // USB2_PWREN
 		>;
 	};
-	
+
 	pinctrl_user_leds: userledgrp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // USER_RED
 		>;
 	};
-	
+
 	pinctrl_hog3: hog3grp {
 		fsl,pins = <
 			MX93_PAD_DAP_TCLK_SWCLK__GPIO3_IO30	0x31e // PCIe_NW_DISABLE
 		>;
 	};
-	
+
 	pinctrl_hog4: hog4grp {
 		fsl,pins = <
 			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x31e // PCIe_N_RESET
 		>;
 	};
-	
+
 	pinctrl_rtc: rtcgrp {
 		fsl,pins = <
 			MX93_PAD_ENET1_TD3__GPIO4_IO02		0x31e // RTC_nINT
@@ -374,7 +375,7 @@
 			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x31e // CAN1_EN
 		>;
 	};
-	
+
 	pinctrl_uart4: uart4grp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO15__LPUART4_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
@@ -382,7 +383,7 @@
 			MX93_PAD_GPIO_IO17__LPUART4_RTS_B	0x31e // drive strength: X4, slew rate: slightly fast, pull up
 		>;
 	};
-	
+
 	pinctrl_uart5: uart5grp {
 		fsl,pins = <
 			MX93_PAD_DAP_TDI__LPUART5_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
