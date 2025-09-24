@@ -60,10 +60,6 @@
 	/delete-node/ leds;
 };
 
-&ethphy1 {
-	ti,leds-polarity = <0>; // active-low
-};
-
 &lpi2c1 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default", "gpio";
@@ -96,9 +92,15 @@
 		#address-cells = <1>;
 		#size-cells = <1>;
 
-		partition@0 {
-			label = "testdata";
-			reg = <0x0 0x100000>; // 1 MB
+		partitions {
+				compatible = "fixed-partitions";
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				partition@0 {
+						label = "testdata";
+						reg = <0x0 0x100000>; // 1 MB
+				};
 		};
 	};
 };
@@ -149,6 +151,7 @@
 			  "", "SOM_EEPROM_WP", "", "SOM_RESET_PHY", "", "", "CAN1_EN", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 };
 
+/* SD card 1: limited to 50 MHz due to long cable by omitting pin mode 100/200 MHz */
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2_default>, <&pinctrl_usdhc2_cd>;
