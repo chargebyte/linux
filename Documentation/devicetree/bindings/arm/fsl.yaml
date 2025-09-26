@@ -97,6 +97,7 @@ properties:
               - fsl,imx28-evk
               - i2se,duckbill
               - i2se,duckbill-2
+              - i2se,imx28-ievachargese
               - karo,tx28                 # Ka-Ro electronics TX28 module
               - lwn,imx28-btt3
               - lwn,imx28-xea
