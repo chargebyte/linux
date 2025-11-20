@@ -120,12 +120,16 @@
 };
 
 &gpio1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_hog1>;
 	// 16 pins (0..15)
 	gpio-line-names = "I2C1_SCL", "I2C1_SDA", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
 			  "CHSTOP_IN", "SPI_TPM_nCS0", "", "", "", "";
 };
 
 &gpio2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_hog2>;
 	// 30 pins (0..29)
 	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "X11_SPI_EXT_CS0", "X11_SPI_EXT_MISO", \
 			  "X11_SPI_EXT_MOSI", "X11_SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "BACKLIGHT_PWM", "", \
@@ -257,15 +261,44 @@
 		>;
 	};
 
+	pinctrl_hog1: hog1grp {
+		fsl,pins = <
+			MX93_PAD_UART2_RXD__GPIO1_IO06		0x31e // LPUART2_RX
+			MX93_PAD_UART2_TXD__GPIO1_IO07		0x31e // LPUART2_TX
+			MX93_PAD_PDM_CLK__GPIO1_IO08		0x31e // CAN1_TX
+			MX93_PAD_PDM_BIT_STREAM0__GPIO1_IO09	0x31e // CAN1_RX
+			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x31e // CHSTOP_IN
+		>;
+	};
+
+	pinctrl_hog2: hog2grp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO14__GPIO2_IO14		0x31e // LPUART4_TX
+			MX93_PAD_GPIO_IO15__GPIO2_IO15		0x31e // LPUART4_RX
+			MX93_PAD_GPIO_IO17__GPIO2_IO17		0x31e // LPUART4_RTS_B
+			MX93_PAD_GPIO_IO18__GPIO2_IO18		0x31e // BACKLIGHT_PWM
+			MX93_PAD_GPIO_IO23__GPIO2_IO23		0x31e // X11_I2C5_SCL
+			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // USER_RED
+			MX93_PAD_GPIO_IO25__GPIO2_IO25		0x31e // X11_CAN2_RX
+			MX93_PAD_GPIO_IO26__GPIO2_IO26		0x31e // X11_PWM5_3
+			MX93_PAD_GPIO_IO27__GPIO2_IO27		0x31e // X11_CAN2_TX
+		>;
+	};
+
 	pinctrl_hog3: hog3grp {
 		fsl,pins = <
+			MX93_PAD_DAP_TDI__GPIO3_IO28		0x31e // LPUART5_RX
+			MX93_PAD_DAP_TMS_SWDIO__GPIO3_IO29	0x31e // LPUART5_RTS_B
 			MX93_PAD_DAP_TCLK_SWCLK__GPIO3_IO30	0x31e // PCIe_NW_DISABLE
+			MX93_PAD_DAP_TDO_TRACESWO__GPIO3_IO31	0x31e // LPUART5_TX
 		>;
 	};
 
 	pinctrl_hog4: hog4grp {
 		fsl,pins = <
+			MX93_PAD_ENET1_TD3__GPIO4_IO02		0x31e // RTC_nINT
 			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x31e // PCIe_N_RESET
+			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x31e // CAN1_EN
 		>;
 	};
 
@@ -277,8 +310,8 @@
 
 	pinctrl_clko: clkogrp {
 		fsl,pins = <
-			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x31e
-			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x31e
+			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x31e // X11_GPIO3_26
+			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x31e // X11_GPIO3_27
 		>;
 	};
 };
