@@ -76,7 +76,26 @@ static inline const struct group_desc *imx_pinctrl_find_group_by_name(
 static void imx_pin_dbg_show(struct pinctrl_dev *pctldev, struct seq_file *s,
 		   unsigned offset)
 {
+	struct imx_pinctrl *ipctl = pinctrl_dev_get_drvdata(pctldev);
+	const struct imx_pinctrl_soc_info *info = ipctl->info;
+	const struct imx_pin_reg *pin_reg;
+	unsigned long mux;
+
 	seq_printf(s, "%s", dev_name(pctldev->dev));
+
+	if (info->flags & IMX_USE_SCU)
+		return;
+
+	pin_reg = &ipctl->pin_regs[offset];
+	if (pin_reg->mux_reg == -1)
+		return;
+
+	mux = readl(ipctl->base + pin_reg->mux_reg);
+
+	if (info->flags & SHARE_MUX_CONF_REG)
+		mux &= ~info->mux_mask;
+
+	seq_printf(s, " mux: 0x%lx", mux);
 }
 
 #define IMX_SCMI_NUM_CFG 4
