@@ -198,7 +198,7 @@
 	// 32 pins (0..31)
 	gpio-line-names = "SD2_nCD", "", "", "", "", "", "", "SD2_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "", "", "", "", "", "", "SPI_PLC_nINT0", "nPLC_RESET_INT", "", "", \
+			  "SOM_EMMC_nRESET", "", "", "", "", "", "SPI_PLC_nINT0", "nPLC_RESET_INT", "", "", \
 			  "PCIe_NW_DISABLE", "";
 
 	PCIe_NW_DISABLE {

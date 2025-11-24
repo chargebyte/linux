@@ -142,7 +142,7 @@
 	// 32 pins (0..31)
 	gpio-line-names = "SD2_nCD", "", "", "", "", "", "", "SD2_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "", "X11_SD3_CMD", "X11_SD3_D0", "X11_SD3_D1", "X11_SD3_D2", "X11_SD3_D3", "X11_GPIO3_26", "X11_GPIO3_27", "LPUART5_RX", "LPUART5_RTS_B", \
+			  "SOM_EMMC_nRESET", "X11_SD3_CMD", "X11_SD3_D0", "X11_SD3_D1", "X11_SD3_D2", "X11_SD3_D3", "X11_GPIO3_26", "X11_GPIO3_27", "LPUART5_RX", "LPUART5_RTS_B", \
 			  "PCIe_NW_DISABLE", "LPUART5_TX";
 };
 
