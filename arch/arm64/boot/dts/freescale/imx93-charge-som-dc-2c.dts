@@ -275,7 +275,7 @@
 	// 30 pins (0..29)
 	gpio-line-names = "USB1_ID", "", "RTC_nINT", "ETH2_nINT", "USB1_OC", "", "SPI_PLC2_nINT0", "DL_REQ_INTR_SPI", "ETH2_nRESET", "nPLC_RESET_INT", \
 			  "", "CHSTOP2_IN", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "", "DISPLAY_EN", "", "", "", \
-			  "", "SOM_EEPROM_WP", "", "SOM_RESET_PHY", "", "", "WS2812B", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
+			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "WS2812B", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 
 	eth2-reset-hog {
 		gpio-hog;
