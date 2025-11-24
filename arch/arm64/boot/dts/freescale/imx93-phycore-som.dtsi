@@ -174,6 +174,8 @@
 	eeprom@50 {
 		compatible = "atmel,24c32";
 		reg = <0x50>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_eeprom>;
 		pagesize = <32>;
 		vcc-supply = <&buck4>;
 	};
@@ -196,9 +198,9 @@
 /* eMMC */
 &usdhc1 {
 	pinctrl-names = "default", "state_100mhz", "state_200mhz";
-	pinctrl-0 = <&pinctrl_usdhc1>;
-	pinctrl-1 = <&pinctrl_usdhc1_100mhz>;
-	pinctrl-2 = <&pinctrl_usdhc1_200mhz>;
+	pinctrl-0 = <&pinctrl_usdhc1>, <&pinctrl_usdhc1_reset>;
+	pinctrl-1 = <&pinctrl_usdhc1_100mhz>, <&pinctrl_usdhc1_reset>;
+	pinctrl-2 = <&pinctrl_usdhc1_200mhz>, <&pinctrl_usdhc1_reset>;
 	bus-width = <8>;
 	non-removable;
 	no-1-8-v;
@@ -211,6 +213,12 @@
 };
 
 &iomuxc {
+	pinctrl_eeprom: eepromgrp {
+		fsl,pins = <
+			MX93_PAD_ENET2_TXC__GPIO4_IO21			0x31e
+		>;
+	};
+
 	pinctrl_fec: fecgrp {
 		fsl,pins = <
 			MX93_PAD_ENET2_MDC__ENET1_MDC			0x50e
@@ -226,6 +234,7 @@
 			MX93_PAD_ENET2_TX_CTL__ENET1_RGMII_TX_CTL	0x50e
 			MX93_PAD_ENET2_TD2__ENET1_TX_CLK		0x4000050e
 			MX93_PAD_ENET2_RXC__GPIO4_IO23			0x902
+			MX93_PAD_ENET1_MDC__GPIO4_IO00			0x51e // reset defaults
 		>;
 	};
 
@@ -245,6 +254,7 @@
 	pinctrl_pmic: pmicgrp {
 		fsl,pins = <
 			MX93_PAD_ENET2_RD3__GPIO4_IO27			0x31e
+			MX93_PAD_WDOG_ANY__WDOG1_WDOG_ANY		0x31e // reset defaults
 		>;
 	};
 
@@ -296,6 +306,12 @@
 			MX93_PAD_SD1_DATA6__USDHC1_DATA6	0x400013be
 			MX93_PAD_SD1_DATA7__USDHC1_DATA7	0x400013be
 			MX93_PAD_SD1_STROBE__USDHC1_STROBE	0x179e
+		>;
+	};
+
+	pinctrl_usdhc1_reset: usdhc1resetgrp {
+		fsl,pins = <
+			MX93_PAD_SD3_CLK__GPIO3_IO20		0x51e // reset defaults
 		>;
 	};
 };
