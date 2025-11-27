@@ -182,7 +182,7 @@
 	};
 };
 
-/* RTC (available since V0R5) */
+/* RTC */
 &lpi2c1 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default", "gpio";
