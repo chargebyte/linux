@@ -63,8 +63,10 @@
 };
 
 &gpio1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_gpio1>;
 	// 16 pins (0..15)
-	gpio-line-names = "", "", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
+	gpio-line-names = "", "", "", "X_nRST_LAN", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
 			  "", "SPI_TPM_nCS0", "", "", "", "";
 };
 
@@ -372,6 +374,12 @@
 		fsl,pins = <
 			MX93_PAD_GPIO_IO15__LPUART3_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
 			MX93_PAD_GPIO_IO14__LPUART3_TX 		0x30e // drive strength: X3, slew rate: slightly fast, pull up
+		>;
+	};
+
+	pinctrl_gpio1: gpio1grp {
+		fsl,pins = <
+			MX93_PAD_I2C2_SDA__GPIO1_IO03		0x31e // X_nRST_LAN
 		>;
 	};
 
