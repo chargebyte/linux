@@ -89,7 +89,7 @@
 	// 30 pins (0..29)
 	gpio-line-names = "", "", "X_RTC_nINT", "", "", "", "", "", "", "", \
 			  "", "", "SAFETY_BOOTMODE_SET", "ENET1_nRST", "", "", "", "", "", "", \
-			  "", "SOM_EEPROM_WP", "", "SOM_RESET_PHY", "", "", "", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
+			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 };
 
 /* Console */
