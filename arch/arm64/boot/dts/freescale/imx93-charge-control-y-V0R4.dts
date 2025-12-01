@@ -9,7 +9,7 @@
 #include "imx93-phycore-som.dtsi"
 
 / {
-	model = "chargebyte Charge Control Y";
+	model = "chargebyte Charge Control Y V0R4";
 	compatible = "chargebyte,imx93-charge-control-y", "phytec,imx93-phycore-som", "fsl,imx93";
 
 	aliases {
@@ -37,7 +37,7 @@
 		led-user-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_SD;
-			gpios = <&gpio3 22 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio2 11 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "mmc1";
 		};
 	};
@@ -63,17 +63,15 @@
 };
 
 &gpio1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_gpio1>;
 	// 16 pins (0..15)
-	gpio-line-names = "", "", "", "X_nRST_LAN", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
+	gpio-line-names = "", "", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
 			  "", "SPI_TPM_nCS0", "", "", "", "";
 };
 
 &gpio2 {
 	// 30 pins (0..29)
 	gpio-line-names = "X_LAN_nCS", "", "", "", "", "", "", "X_LAN_nIRQ", "", "", \
-			  "", "", "", "", "", "", "", "", "", "", \
+			  "", "GREEN_LED", "", "", "", "", "", "", "", "", \
 			  "", "", "", "", "RED_LED", "", "", "", "", "";
 };
 
@@ -81,7 +79,7 @@
 	// 32 pins (0..31)
 	gpio-line-names = "SD2_nCD", "", "", "", "", "", "", "SD2_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "SOM_EMMC_nRESET", "", "GREEN_LED", "", "", "", "", "", "X_TDI", "X_TMS_SWDIO", \
+			  "SOM_EMMC_nRESET", "", "", "", "", "", "", "", "X_TDI", "X_TMS_SWDIO", \
 			  "", "X_TDO";
 };
 
@@ -102,9 +100,9 @@
 };
 
 /* Safety Controller */
-&lpuart3 {
+&lpuart2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart3>;
+	pinctrl-0 = <&pinctrl_uart2>;
 	status = "okay";
 };
 
@@ -127,11 +125,11 @@
 };
 
 /* MCS Ethernet SPI */
-&lpspi3 {
+&lpspi6 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_lpspi3>;
+	pinctrl-0 = <&pinctrl_lpspi6>;
 	num-cs = <1>;
-	cs-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;
+	cs-gpios = <&gpio2 00 GPIO_ACTIVE_LOW>;
 	status = "okay";
 
 	lan8651: ethernet@0 {
@@ -180,7 +178,7 @@
 	};
 };
 
-/* RTC */
+/* RTC (available since V0R5) */
 &lpi2c1 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default", "gpio";
@@ -260,7 +258,7 @@
 	pinctrl_user_leds: userledgrp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // USER_RED
-			MX93_PAD_SD3_DATA0__GPIO3_IO22		0x31e // USER_GREEN
+			MX93_PAD_GPIO_IO11__GPIO2_IO11		0x31e // USER_GREEN
 		>;
 	};
 
@@ -320,14 +318,14 @@
 	};
 	
 	/* PinCtrl MCS LAN SPI */
-	pinctrl_lpspi3: lpspi3grp {
+	pinctrl_lpspi6: lpspi6grp {
 		/* drive strength: X2, slew rate: fast, no pull */
 		fsl,pins = <
 			MX93_PAD_GPIO_IO07__GPIO2_IO07		0x186 // X_LAN_nINT0
-			MX93_PAD_GPIO_IO08__GPIO2_IO08		0x186 // X_LAN_nCS0
-			MX93_PAD_GPIO_IO09__LPSPI3_SIN		0x186 // X_LAN_MISO
-			MX93_PAD_GPIO_IO10__LPSPI3_SOUT		0x186 // X_LAN_MOSI
-			MX93_PAD_GPIO_IO11__LPSPI3_SCK		0x186 // X_LAN_SCK
+			MX93_PAD_GPIO_IO00__GPIO2_IO00		0x186 // X_LAN_nCS0
+			MX93_PAD_GPIO_IO01__LPSPI6_SIN		0x186 // X_LAN_MISO
+			MX93_PAD_GPIO_IO02__LPSPI6_SOUT		0x186 // X_LAN_MOSI
+			MX93_PAD_GPIO_IO03__LPSPI6_SCK		0x186 // X_LAN_SCK
 		>;
 	};
 
@@ -368,17 +366,10 @@
 	};
 
 	/* Pinctrl Safety Controller */
-	pinctrl_uart3: uart3grp {
+	pinctrl_uart2: uart2grp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO15__LPUART3_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
-			MX93_PAD_GPIO_IO14__LPUART3_TX 		0x30e // drive strength: X3, slew rate: slightly fast, pull up
-		>;
-	};
-
-	pinctrl_gpio1: gpio1grp {
-		fsl,pins = <
-			MX93_PAD_I2C2_SDA__GPIO1_IO03		0x31e // X_nRST_LAN
-			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x3fe // CHSTOP_IN
+			MX93_PAD_UART2_RXD__LPUART2_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
+			MX93_PAD_UART2_TXD__LPUART2_TX		0x30e // drive strength: X3, slew rate: slightly fast, pull up
 		>;
 	};
 
@@ -387,7 +378,6 @@
 			MX93_PAD_ENET1_TXC__GPIO4_IO07		0x3fe // X_ENET1_INT
 			MX93_PAD_ENET1_RD2__GPIO4_IO12		0x3fe // SC_BOOTMODE
 			MX93_PAD_CCM_CLKO3__GPIO4_IO28		0x3fe // SC_nRST_INT
-			MX93_PAD_ENET1_RD3__GPIO4_IO13		0x31e // ENET1_nRST
 		>;
 	};
 
