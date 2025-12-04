@@ -198,7 +198,7 @@
 
 &gpio3 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_hog3>, <&pinctrl_x11>;
+	pinctrl-0 = <&pinctrl_hog3>;
 	// 32 pins (0..31)
 	gpio-line-names = "SD2_nCD", "", "", "", "", "", "", "SD2_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
@@ -395,13 +395,6 @@
 	pinctrl_ws2812b: ws2812b {
 		fsl,pins = <
 			MX93_PAD_ENET1_RD1__GPIO4_IO11		0x31e // WS2812B
-		>;
-	};
-
-	pinctrl_x11: x11grp {
-		fsl,pins = <
-			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x31e // X11_GPIO3_26
-			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x31e // X11_GPIO3_27
 		>;
 	};
 
