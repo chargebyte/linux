@@ -90,7 +90,7 @@
 	pinctrl-0 = <&pinctrl_gpio4>;
 	// 30 pins (0..29)
 	gpio-line-names = "", "", "X_RTC_nINT", "", "", "", "", "", "", "", \
-			  "", "", "SAFETY_BOOTMODE_SET", "ENET1_nRST", "", "", "", "", "", "", \
+			  "", "", "SAFETY_BOOTMODE_SET", "ENET1_RST", "", "", "", "", "", "", \
 			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 };
 
@@ -175,7 +175,7 @@
 	ethphy2: ethernet-phy@2 {
 		reg = <2>;
 		compatible = "ethernet-phy-id2000.a140", "ethernet-phy-ieee802.3-c22";
-		reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
+		reset-gpios = <&gpio4 13 GPIO_ACTIVE_HIGH>;
 		reset-assert-us = <30>;
 	};
 };
