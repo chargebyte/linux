@@ -461,6 +461,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-9x9-qsb.dtb \
 dtb-$(CONFIG_ARCH_MXC) += imx93-tqma9352-mba93xxla.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-nash.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-segin.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-2c.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb-V0R1.dtb
@@ -488,7 +489,8 @@ imx93-phycore-no-emmc-dtbs += imx93-phyboard-nash.dtb \
 imx93-phycore-no-eth-dtbs += imx93-phyboard-nash.dtb \
 			  imx93-phyboard-segin.dtb \
 			  imx93-phycore-no-eth.dtbo
-imx93-phycore-rpmsg-dtbs += imx93-charge-som-dc-evb.dtb \
+imx93-phycore-rpmsg-dtbs += imx93-charge-som.dtb \
+			  imx93-charge-som-dc-evb.dtb \
 			  imx93-charge-som-dc-evb-V0R1.dtb \
 			  imx93-phyboard-nash.dtb \
 			  imx93-phyboard-segin.dtb \
