@@ -99,9 +99,6 @@
 			linux,default-trigger = "timer";
 		};
 	};
-
-	// Avoid conflict with Heartbeat LED on phyCore
-	/delete-node/ leds;
 };
 
 /* S2 Power */
@@ -249,9 +246,6 @@
 };
 
 &iomuxc {
-
-	/delete-node/ pinctrl_leds;
-
 	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmcgrp {
 		fsl,pins = <
 			MX93_PAD_SD2_RESET_B__GPIO3_IO07	0x31e

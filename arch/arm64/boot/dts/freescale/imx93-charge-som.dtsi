@@ -14,6 +14,9 @@
 	chosen {
 		stdout-path = &lpuart1;
 	};
+
+	// Avoid conflict with Heartbeat LED on phyCore
+	/delete-node/ leds;
 };
 
 &lpi2c2 {
@@ -123,6 +126,8 @@
 };
 
 &iomuxc {
+
+	/delete-node/ pinctrl_leds;
 
 	pinctrl_lpspi1: lpspi1grp {
 		/* drive strength: X2, slew rate: fast, no pull */
