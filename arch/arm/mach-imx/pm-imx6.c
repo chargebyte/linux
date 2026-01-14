@@ -749,10 +749,12 @@ int imx6_set_lpm(enum mxc_cpu_pwr_mode mode)
 
 static int imx6q_suspend_finish(unsigned long val)
 {
+#ifdef CONFIG_ARM_PSCI
 	if (psci_ops.cpu_suspend) {
 		return psci_ops.cpu_suspend(MX6Q_SUSPEND_PARAM,
 					    __pa(cpu_resume));
 	}
+#endif
 
 	if (!imx6_suspend_in_ocram_fn) {
 		cpu_do_idle();
@@ -1077,8 +1079,10 @@ static int __init imx6q_suspend_init(const struct imx6_pm_socdata *socdata)
 		return -EINVAL;
 	}
 
+#ifdef CONFIG_ARM_PSCI
 	if (psci_ops.cpu_suspend)
 		return ret;
+#endif
 
 	/*
 	 * 16KB is allocated for IRAM TLB, but only up 8k is for kernel TLB,
