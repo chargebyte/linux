@@ -84,6 +84,7 @@ struct mse102x_net_spi {
 	struct spi_device	*spidev;
 	struct spi_message	spi_msg;
 	struct spi_transfer	spi_xfer;
+	struct gpio_desc	*spi_int;
 
 #ifdef CONFIG_DEBUG_FS
 	struct dentry		*device_root;
@@ -524,9 +525,13 @@ static int mse102x_net_open(struct net_device *ndev)
 {
 	struct mse102x_net *mse = netdev_priv(ndev);
 	struct mse102x_net_spi *mses = to_mse102x_spi(mse);
+	unsigned long flags = IRQF_ONESHOT;
 	int ret;
 
-	ret = request_threaded_irq(ndev->irq, NULL, mse102x_irq, IRQF_ONESHOT,
+	if (irqd_get_trigger_type(irq_get_irq_data(ndev->irq)) == IRQ_TYPE_NONE)
+		flags |= IRQ_TYPE_LEVEL_HIGH;
+
+	ret = request_threaded_irq(ndev->irq, NULL, mse102x_irq, flags,
 				   ndev->name, mse);
 	if (ret < 0) {
 		netdev_err(ndev, "Failed to get irq: %d\n", ret);
@@ -715,6 +720,21 @@ static int mse102x_probe_spi(struct spi_device *spi)
 
 	mse = netdev_priv(ndev);
 	mses = to_mse102x_spi(mse);
+
+	mses->spi_int = devm_gpiod_get_optional(&spi->dev, "int", GPIOD_IN);
+	if (IS_ERR(mses->spi_int))
+		return PTR_ERR(mses->spi_int);
+
+	if (mses->spi_int) {
+		spi->irq = gpiod_to_irq(mses->spi_int);
+
+		if (spi->irq < 0) {
+			dev_err(dev, "Unable to get SPI IRQ: %d\n", spi->irq);
+			return spi->irq;
+		}
+
+		dev_info(dev, "Use GPIO instead of interrupt\n");
+	}
 
 	mses->spidev = spi;
 	mutex_init(&mses->lock);
