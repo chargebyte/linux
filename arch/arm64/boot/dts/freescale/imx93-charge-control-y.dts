@@ -26,7 +26,7 @@
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_user_leds>;
-		
+
 		led-user-red {
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_BOOT;
@@ -242,13 +242,15 @@
 	status = "disabled";
 };
 
-
 /* SD */
 &usdhc2 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_usdhc2_default>, <&pinctrl_usdhc2_cd>;
 	cd-gpios = <&gpio3 00 GPIO_ACTIVE_LOW>;
 	bus-width = <4>;
+	disable-wp;
+	no-sdio;
+	no-mmc;
 	no-1-8-v;
 	status = "okay";
 };
@@ -318,7 +320,7 @@
 			MX93_PAD_SAI1_RXD0__LPSPI1_SOUT		0x186
 		>;
 	};
-	
+
 	/* PinCtrl MCS LAN SPI */
 	pinctrl_lpspi3: lpspi3grp {
 		/* drive strength: X2, slew rate: fast, no pull */
