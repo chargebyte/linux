@@ -1,0 +1,399 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (C) 2025 chargebyte GmbH
+ */
+
+/dts-v1/;
+
+#include <dt-bindings/input/input.h>
+#include <dt-bindings/leds/common.h>
+#include "imx93-phycore-som.dtsi"
+#include "imx93-charge-som.dtsi"
+
+/ {
+	model = "chargebyte Charge SOM DC 2C";
+	compatible = "chargebyte,imx93-charge-som-dc-2c", "chargebyte,imx93-charge-som",
+		     "phytec,imx93-phycore-som", "fsl,imx93";
+
+	aliases {
+		rtc0 = &rv3028;
+		rtc1 = &bbnsm_rtc;
+	};
+
+	reg_can1: regulator-can {
+		compatible = "regulator-fixed";
+		gpio = <&gpio_exp 38 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-max-microvolt = <3300000>;
+		regulator-min-microvolt = <3300000>;
+		regulator-name = "CAN1_EN";
+	};
+
+	reg_can2: regulator-can {
+		compatible = "regulator-fixed";
+		gpio = <&gpio_exp 39 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-max-microvolt = <3300000>;
+		regulator-min-microvolt = <3300000>;
+		regulator-name = "CAN2_EN";
+	};
+
+	reg_usb_otg1_vbus: regulator-usb-otg1-vbus {
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_usbotg1grp>;
+		compatible = "regulator-fixed";
+		regulator-name = "usb_otg1_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		gpio = <&gpio4 13 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
+	};
+
+	reg_vdd_3v3: regulator-vdd-3v3 {
+		compatible = "regulator-fixed";
+		regulator-max-microvolt = <3300000>;
+		regulator-min-microvolt = <3300000>;
+		regulator-name = "VDD_IO_3V3";
+	};
+
+	user_keys: gpio-keys {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_gpiokeys>;
+
+		switch-chstop1-in {
+			label = "CHSTOP1_IN";
+			gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_F1>;
+		};
+
+		switch-chstop2-in {
+			label = "CHSTOP2_IN";
+			gpios = <&gpio4 11 GPIO_ACTIVE_HIGH>;
+			linux,code = <KEY_F2>;
+		};
+	};
+
+	user_leds: user-leds {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_user_leds>;
+
+		led-orange {
+			color = <LED_COLOR_ID_ORANGE>;
+			function = LED_FUNCTION_BOOT;
+			gpios = <&gpio3 26 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "timer";
+		};
+
+		led-green {
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_BOOT;
+			gpios = <&gpio3 27 GPIO_ACTIVE_HIGH>;
+		};
+	};
+
+	// Avoid conflict with Heartbeat LED on phyCore
+	/delete-node/ leds;
+};
+
+&bbnsm_pwrkey {
+	status = "disabled";
+};
+
+&flexcan1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan1>;
+	xceiver-supply = <&reg_can1>;
+	status = "okay";
+};
+
+&flexcan2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_flexcan2>;
+	xceiver-supply = <&reg_can2>;
+	status = "okay";
+};
+
+&lpuart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart4>;
+	rs485-rts-active-high;
+	linux,rs485-enabled-at-boot-time;
+	status = "okay";
+};
+
+&lpuart5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart5>;
+	rs485-rts-active-high;
+	linux,rs485-enabled-at-boot-time;
+	status = "okay";
+};
+
+&lpi2c1 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_lpi2c1>;
+	pinctrl-1 = <&pinctrl_lpi2c1_gpio>;
+	scl-gpios = <&gpio1 00 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	sda-gpios = <&gpio1 01 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	gpio_exp: gpio@20 {
+		compatible = "nxp,pca9506";
+		reg = <0x20>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		interrupt-parent = <&gpio2>;
+		interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
+
+		// 5 x 8 pins (0..39)
+		gpio-line-names = "DOUT1_EN", "DOUT2_EN", "DOUT3_EN", "DOUT4_EN", "DOUT5_EN", "DOUT6_EN", "DOUT7_EN", "DOUT8_EN", \
+		                  "DOUT9_EN", "DOUT10_EN", "DOUT11_EN", "DOUT12_EN", "DOUT13_EN", "DOUT14_EN", "DOUT15_EN", "DOUT16_EN", \
+		                  "nDOUT1_ST", "nDOUT2_ST", "nDOUT3_ST", "nDOUT4_ST", "nDOUT5_ST", "nDOUT6_ST", "nDOUT7_ST", "nDOUT8_ST", \
+		                  "nDOUT9_ST", "nDOUT10_ST", "nDOUT11_ST", "nDOUT12_ST", "nDOUT13_ST", "nDOUT14_ST", "nDOUT15_ST", "nDOUT16_ST", \
+		                  "GPIO_EXP_1", "GPIO_EXP_2", "HW_REV1", "HW_REV2", "HW_REV3", "UART_MUX_IN", "CAN1_EN", "CAN2_EN";
+	};
+
+	eeprom@50 {
+		compatible = "microchip,24c256";
+		reg = <0x50>;
+		pagesize = <64>;
+	};
+
+	rv3028: rtc@52 {
+		compatible = "microcrystal,rv3028";
+		reg = <0x52>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_rtc>;
+		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&gpio4>;
+		wakeup-source;
+		trickle-resistor-ohms = <3000>;
+
+		nvmem-layout {
+			compatible = "fixed-layout";
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			plc2_host_mac_address: base-mac-address@12 {
+				compatible = "mac-base";
+				reg = <0x12 0x6>;
+				#nvmem-cell-cells = <1>;
+			};
+
+			plc2_fw_mac_address: base-mac-address@18 {
+				compatible = "mac-base";
+				reg = <0x18 0x6>;
+				#nvmem-cell-cells = <1>;
+			};
+
+			lan9500_mac_address: base-mac-address@1e {
+				compatible = "mac-base";
+				reg = <0x1e 0x6>;
+				#nvmem-cell-cells = <1>;
+			};
+		};
+	};
+};
+
+&lpspi3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lpspi3>;
+	num-cs = <1>;
+	cs-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;
+	status = "okay";
+
+	ethernet@0 {
+		compatible = "vertexcom,mse1021";
+		reg = <0>;
+		int-gpios = <&gpio4 6 GPIO_ACTIVE_HIGH>;
+		spi-cpha;
+		spi-cpol;
+		spi-max-frequency = <7142857>;
+
+		nvmem-cells = <&plc2_host_mac_address 0>;
+		nvmem-cell-names = "mac-address";
+	};
+};
+
+&lpuart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart2>;
+	status = "okay";
+};
+
+&usbotg1 {
+	vbus-supply = <&reg_usb_otg1_vbus>;
+	over-current-active-low;
+	status = "okay";
+};
+
+&usbotg2 {
+	disable-over-current;
+	dr_mode = "host";
+	status = "okay";
+
+	/* For MAC address later ...
+	lan9500: ethernet@1 {
+		compatible = "usb424,9500";
+		reg = <1>;
+
+		nvmem-cells = <&lan9500_mac_address 0>;
+		nvmem-cell-names = "mac-address";
+	};
+	*/
+};
+
+// FIXME
+&gpio1 {
+	// 16 pins (0..15)
+	gpio-line-names = "I2C1_SCL", "I2C1_SDA", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
+			  "CHSTOP_IN", "SPI_TPM_nCS0", "", "", "", "";
+};
+
+&gpio2 {
+	// 30 pins (0..29)
+	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_EXT_CS0", "SPI_EXT_MISO", \
+			  "SPI_EXT_MOSI", "SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "BACKLIGHT_PWM", "", \
+			  "", "", "I2C5_SDA", "I2C5_SCL", "GPIOEXP_nINT", "CAN2_TX", "TOUCH_nINT", "CAN2_RX", "", "";
+};
+
+&gpio3 {
+	// 32 pins (0..31)
+	gpio-line-names = "RESET_nGPIO", "IMX9_DIN3", "IMX9_DIN4", "IMX9_DIN5", "IMX9_DIN6", "IMX9_DIN7", "IMX9_DIN8", "TOUCH_nRESET", "", "", \
+			  "", "", "", "", "", "", "", "", "", "", \
+			  "SOM_EMMC_nRESET", "nPLC2_RESET_INT", "nSAFETY2_RESET_INT", "SAFETY2_BOOTMODE_SET", "IMX9_DIN1", "IMX9_DIN2", "USER_ORANGE", "USER_GREEN", "LPUART5_RX", "LPUART5_RTS_B", \
+			  "PLC2_DL_INTR_SPI", "LPUART5_TX";
+};
+
+&gpio4 {
+	// 30 pins (0..29)
+	gpio-line-names = "USB1_ID", "", "RTC_nINT", "ETH2_nINT", "USB1_OC", "", "SPI_PLC2_nINT0", "DL_REQ_INTR_SPI", "ETH2_nRESET", "nPLC_RESET_INT", \
+			  "", "CHSTOP2_IN", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "", "DISPLAY_EN", "", "", "", \
+			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "WS2812B", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
+
+	eth2-reset-hog {
+		gpio-hog;
+		gpios = <8 GPIO_ACTIVE_HIGH>;
+		output-high;
+	};
+};
+
+&tpm5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_backlight>;
+	status = "okay";
+};
+
+&iomuxc {
+
+	/delete-node/ pinctrl_leds;
+
+	pinctrl_lpi2c1: lpi2c1grp {
+		/* sion, drive strength: X2, slew rate: fast, pull up, open drain */
+		fsl,pins = <
+			MX93_PAD_I2C1_SCL__LPI2C1_SCL		0x40000b86
+			MX93_PAD_I2C1_SDA__LPI2C1_SDA		0x40000b86
+		>;
+	};
+
+	pinctrl_lpi2c1_gpio: lpi2c1gpiogrp {
+		fsl,pins = <
+			MX93_PAD_I2C1_SCL__GPIO1_IO00		0x40000b9e
+			MX93_PAD_I2C1_SDA__GPIO1_IO01		0x40000b9e
+		>;
+	};
+
+	pinctrl_lpspi3: lpspi3grp {
+		/* drive strength: X2, slew rate: fast, no pull */
+		fsl,pins = <
+			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x186 // SPI_PLC_nINT0
+			MX93_PAD_GPIO_IO08__GPIO2_IO08		0x186 // SPI_EXT_CS0
+			MX93_PAD_GPIO_IO09__LPSPI3_SIN		0x186
+			MX93_PAD_GPIO_IO10__LPSPI3_SOUT		0x186
+			MX93_PAD_GPIO_IO11__LPSPI3_SCK		0x186
+		>;
+	};
+
+	pinctrl_uart2: uart2grp {
+		fsl,pins = <
+			MX93_PAD_UART2_RXD__LPUART2_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
+			MX93_PAD_UART2_TXD__LPUART2_TX 		0x30e // drive strength: X3, slew rate: slightly fast, pull up
+		>;
+	};
+
+	pinctrl_gpiokeys: keygrp {
+		fsl,pins = <
+			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x31e // CHSTOP1_IN
+			MX93_PAD_ENET1_RD1__GPIO4_IO11		0x31e // CHSTOP2_IN
+		>;
+	};
+
+	pinctrl_usbotg1grp: usb1grp {
+		fsl,pins = <
+			MX93_PAD_ENET1_TD1__HSIOMIX_OTG_OC1	0x31e
+			MX93_PAD_ENET1_RD3__GPIO4_IO13		0x31e // USB1_PWREN_GPIO
+			// MX93_PAD_ENET1_MDIO__HSIOMIX_OTG_PWR1 not connected
+		>;
+	};
+
+	pinctrl_user_leds: userledgrp {
+		fsl,pins = <
+			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x31e // USER_ORANGE
+			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x31e // USER_GREEN
+		>;
+	};
+
+	pinctrl_rtc: rtcgrp {
+		fsl,pins = <
+			MX93_PAD_ENET1_TD3__GPIO4_IO02		0x31e // RTC_nINT
+		>;
+	};
+
+	pinctrl_flexcan1: flexcan1grp {
+		fsl,pins = <
+			MX93_PAD_PDM_BIT_STREAM0__CAN1_RX	0x139e
+			MX93_PAD_PDM_CLK__CAN1_TX		0x1382
+		>;
+	};
+
+	pinctrl_flexcan2: flexcan2grp {
+		fsl,pins = <
+			MX93_PAD_DAP_TDO_TRACESWO__CAN2_RX	0x139e
+			MX93_PAD_DAP_TDI__CAN2_TX		0x1382
+		>;
+	};
+
+	pinctrl_uart4: uart4grp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO15__LPUART4_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
+			MX93_PAD_GPIO_IO14__LPUART4_TX		0x30e // drive strength: X3, slew rate: slightly fast, pull up
+			MX93_PAD_GPIO_IO17__LPUART4_RTS_B	0x31e // drive strength: X4, slew rate: slightly fast, pull up
+		>;
+	};
+
+	pinctrl_uart5: uart5grp {
+		fsl,pins = <
+			MX93_PAD_DAP_TDI__LPUART5_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
+			MX93_PAD_DAP_TDO_TRACESWO__LPUART5_TX	0x30e // drive strength: X3, slew rate: slightly fast, pull up
+			MX93_PAD_DAP_TMS_SWDIO__LPUART5_RTS_B	0x31e // drive strength: X4, slew rate: slightly fast, pull up
+		>;
+	};
+
+	pinctrl_ws2812b: ws2812bgrp {
+		fsl,pins = <
+			MX93_PAD_ENET2_RD2__FLEXIO2_FLEXIO26	0x31e // WS2812B
+		>;
+	};
+
+	pinctrl_backlight: backlight_grp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO18__TPM5_CH2		0x31e // BACKLIGHT_PWM
+		>;
+	};
+};
