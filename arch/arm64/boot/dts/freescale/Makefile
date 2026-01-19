@@ -677,6 +677,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-segin.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-2c.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-testfixture.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y.dtb
 
 imx91-phyboard-segin-peb-av-02-dtbs += imx91-phyboard-segin.dtb imx91-phyboard-segin-peb-av-02.dtbo
 imx91-phyboard-segin-peb-eval-01-dtbs += imx91-phyboard-segin.dtb imx91-phyboard-segin-peb-eval-01.dtbo
