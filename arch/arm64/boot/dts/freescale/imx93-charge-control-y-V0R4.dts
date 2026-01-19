@@ -26,18 +26,18 @@
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_user_leds>;
-		
-		led-user-red {
-			color = <LED_COLOR_ID_RED>;
-			function = LED_FUNCTION_BOOT;
-			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "timer";
-		};
 
 		led-user-green {
 			color = <LED_COLOR_ID_GREEN>;
-			function = LED_FUNCTION_SD;
+			function = LED_FUNCTION_BOOT;
 			gpios = <&gpio2 11 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "timer";
+		};
+
+		led-user-red {
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_SD;
+			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "mmc1";
 		};
 	};
@@ -257,8 +257,8 @@
 
 	pinctrl_user_leds: userledgrp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // USER_RED
 			MX93_PAD_GPIO_IO11__GPIO2_IO11		0x31e // USER_GREEN
+			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // USER_RED
 		>;
 	};
 
@@ -316,7 +316,7 @@
 			MX93_PAD_SAI1_RXD0__LPSPI1_SOUT		0x186
 		>;
 	};
-	
+
 	/* PinCtrl MCS LAN SPI */
 	pinctrl_lpspi6: lpspi6grp {
 		/* drive strength: X2, slew rate: fast, no pull */

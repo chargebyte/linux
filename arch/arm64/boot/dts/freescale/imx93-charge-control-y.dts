@@ -27,17 +27,17 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_user_leds>;
 
-		led-user-red {
-			color = <LED_COLOR_ID_RED>;
+		led-user-green {
+			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_BOOT;
 			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "timer";
 		};
 
-		led-user-green {
-			color = <LED_COLOR_ID_GREEN>;
+		led-user-red {
+			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_SD;
-			gpios = <&gpio3 22 GPIO_ACTIVE_HIGH>;
+			gpios = <&gpio2 25 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "mmc1";
 		};
 	};
@@ -261,8 +261,8 @@
 
 	pinctrl_user_leds: userledgrp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // USER_RED
-			MX93_PAD_SD3_DATA0__GPIO3_IO22		0x31e // USER_GREEN
+			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // USER_GREEN
+			MX93_PAD_GPIO_IO25__GPIO2_IO25		0x31e // USER_RED
 		>;
 	};
 
