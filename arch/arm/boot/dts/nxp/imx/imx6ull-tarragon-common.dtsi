@@ -160,20 +160,52 @@
 			  "",
 			  "",
 			  "MOTOR_1_FAULT_N",
-			  "",				/* 20 */
-			  "",
+			  "I2C4_SCL",			/* 20 */
+			  "I2C4_SDA",
 			  "ROTARY_SWITCH_1_2_N",
 			  "ROTARY_SWITCH_1_4_N",
 			  "ROTARY_SWITCH_1_8_N",
-			  "MOTOR_2_FAULT_N";		/* 25 */
+			  "MOTOR_2_FAULT_N",		/* 25 */
+			  "FLEXCAN1_TX",
+			  "FLEXCAN1_RX",
+			  "",
+			  "ECSPI2_SCLK",
+			  "ECSPI2_SS0",
+			  "ECSPI2_MOSI",		/* 30 */
+			  "ECSPI2_MISO";
 };
 
-&gpio3 {
+&gpio2 {
 	gpio-line-names = "",				/* 0 */
 			  "",
 			  "",
 			  "",
 			  "",
+			  "",				/* 5 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "EXT_UART7_TX",		/* 10 */
+			  "EXT_UART7_RX",
+			  "",
+			  "",
+			  "",
+			  "",				/* 15 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "FLEXCAN2_TX",		/* 20 */
+			  "FLEXCAN2_RX";
+};
+
+&gpio3 {
+	gpio-line-names = "",				/* 0 */
+			  "",
+			  "ECSPI2_SS1",
+			  "WDOG_RST_N",
+			  "ECSPI2_SS3",
 			  "",				/* 5 */
 			  "EXT_GPIO",
 			  "MOTOR_1_DRIVER_IN1_N",
