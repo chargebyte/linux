@@ -16,6 +16,8 @@
 		ethernet0 = &fec;
 		ethernet1 = &lan8651;
 		ethernet2 = &eqos;
+		rtc0 = &rv3028;
+		rtc1 = &bbnsm_rtc;
 	};
 
 	chosen {
