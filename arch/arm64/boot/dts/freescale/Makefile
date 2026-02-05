@@ -461,10 +461,9 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-9x9-qsb.dtb \
 dtb-$(CONFIG_ARCH_MXC) += imx93-tqma9352-mba93xxla.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-nash.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-segin.dtb
-dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-2c.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb-V0R1.dtb
-dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-testfixture.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y-V0R4.dtb
 
@@ -488,7 +487,8 @@ imx93-phycore-no-emmc-dtbs += imx93-phyboard-nash.dtb \
 imx93-phycore-no-eth-dtbs += imx93-phyboard-nash.dtb \
 			  imx93-phyboard-segin.dtb \
 			  imx93-phycore-no-eth.dtbo
-imx93-phycore-rpmsg-dtbs += imx93-charge-som-dc-evb.dtb \
+imx93-phycore-rpmsg-dtbs += imx93-charge-som.dtb \
+			  imx93-charge-som-dc-evb.dtb \
 			  imx93-charge-som-dc-evb-V0R1.dtb \
 			  imx93-phyboard-nash.dtb \
 			  imx93-phyboard-segin.dtb \
@@ -501,6 +501,10 @@ imx93-charge-som-uart7-dtbs += imx93-charge-som-dc-evb.dtb \
 			    imx93-charge-som-uart7.dtbo
 imx93-charge-som-clko-gpio-dtbs += imx93-charge-som-dc-evb.dtb \
 				imx93-charge-som-clko-gpio.dtbo
+imx93-charge-som-testfixture-dtbs += imx93-charge-som.dtb \
+				imx93-charge-som-testfixture.dtbo
+imx93-charge-som-dc-2c-dtbs += imx93-charge-som.dtb \
+				imx93-charge-som-dc-2c.dtbo
 
 dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-nash-jtag.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-nash-peb-av-10.dtb
@@ -516,6 +520,8 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-lvds-dd0700mc01.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-V0R1-lvds-dd0700mc01.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-uart7.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-clko-gpio.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-testfixture.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-2c.dtb
 
 dtb-$(CONFIG_ARCH_MXC) += imx91-9x9-qsb.dtb \
 			  imx91-9x9-qsb-can1.dtb \

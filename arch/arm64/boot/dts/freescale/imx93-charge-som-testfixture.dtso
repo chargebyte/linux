@@ -4,12 +4,14 @@
  */
 
 /dts-v1/;
+/plugin/;
 
+#include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/input/input.h>
 #include <dt-bindings/leds/common.h>
-#include "imx93-charge-som.dtsi"
+#include "imx93-pinfunc.h"
 
-/ {
+&{/} {
 	model = "chargebyte Charge SOM test fixture";
 	compatible = "chargebyte,imx93-charge-som-testfixture", "chargebyte,imx93-charge-som",
 		     "phytec,imx93-phycore-som", "fsl,imx93";
@@ -55,9 +57,6 @@
 		regulator-min-microvolt = <3300000>;
 		regulator-name = "VDD_IO_3V3";
 	};
-
-	// Avoid conflict with Heartbeat LED on phyCore
-	/delete-node/ leds;
 };
 
 &lpi2c1 {
@@ -72,7 +71,7 @@
 	status = "okay";
 
 	eeprom@50 {
-		compatible = "microchip,24c256";
+		compatible = "atmel,24c256";
 		reg = <0x50>;
 		pagesize = <64>;
 	};
@@ -83,6 +82,8 @@
 	pinctrl-0 = <&pinctrl_lpspi3>;
 	num-cs = <1>;
 	cs-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
 
 	flash@0 {
@@ -108,14 +109,12 @@
 &usbotg1 {
 	vbus-supply = <&reg_usb_otg1_vbus>;
 	over-current-active-low;
-	dr_mode = "host";
 	status = "okay";
 };
 
 &usbotg2 {
 	vbus-supply = <&reg_usb_otg2_vbus>;
 	disable-over-current;
-	dr_mode = "host";
 	status = "okay";
 };
 
@@ -182,9 +181,6 @@
 };
 
 &iomuxc {
-
-	/delete-node/ pinctrl_leds;
-
 	pinctrl_reg_usdhc2_vmmc: regusdhc2vmmcgrp {
 		fsl,pins = <
 			MX93_PAD_SD2_RESET_B__GPIO3_IO07	0x31e
