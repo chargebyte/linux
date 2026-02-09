@@ -1,0 +1,8 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (C) 2025 chargebyte GmbH
+ */
+
+/dts-v1/;
+
+#include "imx93-charge-som.dtsi"
