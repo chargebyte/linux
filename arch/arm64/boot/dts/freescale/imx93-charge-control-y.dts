@@ -29,14 +29,14 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_user_leds>;
 
-		led-user-green {
+		led_user_green: led-user-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_BOOT;
 			gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "timer";
 		};
 
-		led-user-red {
+		led_user_red: led-user-red {
 			color = <LED_COLOR_ID_RED>;
 			function = LED_FUNCTION_SD;
 			gpios = <&gpio2 25 GPIO_ACTIVE_HIGH>;
