@@ -109,14 +109,12 @@
 &usbotg1 {
 	vbus-supply = <&reg_usb_otg1_vbus>;
 	over-current-active-low;
-	dr_mode = "host";
 	status = "okay";
 };
 
 &usbotg2 {
 	vbus-supply = <&reg_usb_otg2_vbus>;
 	disable-over-current;
-	dr_mode = "host";
 	status = "okay";
 };
 
