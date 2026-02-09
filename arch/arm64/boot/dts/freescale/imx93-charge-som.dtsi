@@ -8,6 +8,7 @@
 #include "imx93-phycore-som.dtsi"
 
 / {
+	model = "chargebyte Charge SOM";
 	compatible = "chargebyte,imx93-charge-som", "phytec,imx93-phycore-som", "fsl,imx93";
 
 	chosen {
