@@ -693,6 +693,7 @@ imx93-phyboard-segin-peb-eval-01-dtbs += imx93-phyboard-segin.dtb imx93-phyboard
 imx93-phyboard-segin-peb-wlbt-05-dtbs += imx93-phyboard-segin.dtb imx93-phyboard-segin-peb-wlbt-05.dtbo
 imx93-phycore-npu-dtbs += imx93-phyboard-nash.dtb imx93-phyboard-segin.dtb imx93-phycore-npu.dtbo
 imx93-phycore-rpmsg-dtbs += imx93-phyboard-nash.dtb imx93-phyboard-segin.dtb imx93-phycore-rpmsg.dtbo
+imx93-charge-som-uart7-dtbs += imx93-charge-som-dc-evb.dtb imx93-charge-som-uart7.dtbo
 dtb-$(CONFIG_ARCH_MXC) += imx91-phyboard-segin-peb-av-02.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx91-phyboard-segin-peb-eval-01.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx91-phyboard-segin-peb-wlbt-05.dtb
@@ -707,6 +708,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-segin-peb-eval-01.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-segin-peb-wlbt-05.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-phycore-npu.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-phycore-rpmsg.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-uart7.dtb
 
 dtb-$(CONFIG_ARCH_MXC) += imx943-evk.dtb
 imx943-evk-mqs-dtbs := imx943-evk.dtb imx943-evk-mqs.dtbo
