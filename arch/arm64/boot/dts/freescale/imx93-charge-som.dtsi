@@ -16,6 +16,20 @@
 	};
 };
 
+&gpio2 {
+	// 30 pins (0..29)
+	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "", "", \
+			  "", "", "", "", "", "", "", "", "", "", \
+			  "", "", "", "", "", "", "", "", "", "";
+};
+
+&gpio4 {
+	// 30 pins (0..29)
+	gpio-line-names = "", "", "", "", "", "", "", "DL_REQ_INTR_SPI", "", "nPLC_RESET_INT", \
+			  "", "", "SAFETY_BOOTMODE_SET", "", "", "", "", "", "", "", \
+			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "";
+};
+
 &lpi2c2 {
 	clock-frequency = <400000>;
 	pinctrl-names = "default", "gpio";
