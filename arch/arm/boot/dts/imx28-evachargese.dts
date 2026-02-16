@@ -260,6 +260,7 @@
 					reset-assert-us = <500>;
 					reset-deassert-us = <500>;
 					reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
+					smsc,disable-energy-detect; /* Make plugin detection reliable */
 				};
 			};
 		};
