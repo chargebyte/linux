@@ -246,9 +246,22 @@
 			phy-mode = "rmii";
 			pinctrl-names = "default";
 			pinctrl-0 = <&mac0_pins_a>, <&mac0_phy_reset_pin>;
-			phy-reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
-			phy-reset-duration = <25>;
+			phy-supply = <&reg_3p3v>;
 			status = "okay";
+
+			mdio {
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				ethphy: ethernet-phy@0 {
+					compatible = "ethernet-phy-ieee802.3-c22";
+					reg = <0>;
+					max-speed = <100>;
+					reset-assert-us = <500>;
+					reset-deassert-us = <500>;
+					reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
+				};
+			};
 		};
 	};
 
