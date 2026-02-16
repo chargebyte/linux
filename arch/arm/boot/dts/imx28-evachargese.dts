@@ -256,6 +256,7 @@
 				ethphy: ethernet-phy@0 {
 					compatible = "ethernet-phy-ieee802.3-c22";
 					reg = <0>;
+					clocks = <&clks 64>; /* enet_out */
 					max-speed = <100>;
 					reset-assert-us = <500>;
 					reset-deassert-us = <500>;
