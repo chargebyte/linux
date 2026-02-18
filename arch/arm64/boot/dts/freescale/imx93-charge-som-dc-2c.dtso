@@ -202,6 +202,18 @@
 	};
 };
 
+&lpi2c5 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_lpi2c5>;
+	pinctrl-1 = <&pinctrl_lpi2c5_gpio>;
+	scl-gpios = <&gpio2 23 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	sda-gpios = <&gpio2 22 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+};
+
 &lpspi3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lpspi3>;
@@ -307,6 +319,21 @@
 		fsl,pins = <
 			MX93_PAD_I2C1_SCL__GPIO1_IO00		0x40000b9e
 			MX93_PAD_I2C1_SDA__GPIO1_IO01		0x40000b9e
+		>;
+	};
+
+	pinctrl_lpi2c5: lpi2c5grp {
+		/* sion, drive strength: X2, slew rate: fast, pull up, open drain */
+		fsl,pins = <
+			MX93_PAD_GPIO_IO23__LPI2C5_SCL		0x40000b86
+			MX93_PAD_GPIO_IO22__LPI2C5_SDA		0x40000b86
+		>;
+	};
+
+	pinctrl_lpi2c5_gpio: lpi2c5gpiogrp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO22__GPIO2_IO22		0x40000b9e
+			MX93_PAD_GPIO_IO23__GPIO2_IO23		0x40000b9e
 		>;
 	};
 
