@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: (GPL-2.0+ OR MIT)
 /*
- * Copyright (C) 2025 chargebyte GmbH
+ * Copyright (C) 2026 chargebyte GmbH
  */
 
 /dts-v1/;
@@ -13,8 +13,8 @@
 #include "imx93-pinfunc.h"
 
 &{/} {
-	model = "chargebyte Charge SOM DC 2C";
-	compatible = "chargebyte,imx93-charge-som-dc-2c", "chargebyte,imx93-charge-som",
+	model = "chargebyte Charge Control V";
+	compatible = "chargebyte,imx93-charge-control-v", "chargebyte,imx93-charge-som",
 		     "phytec,imx93-phycore-som", "fsl,imx93";
 
 	/* FIXME
