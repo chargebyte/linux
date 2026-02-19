@@ -83,15 +83,15 @@
 
 		led-orange {
 			color = <LED_COLOR_ID_ORANGE>;
-			function = LED_FUNCTION_BOOT;
+			function = LED_FUNCTION_ACTIVITY;
 			gpios = <&gpio3 26 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "timer";
 		};
 
 		led-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_BOOT;
 			gpios = <&gpio3 27 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "timer";
 		};
 	};
 };
