@@ -17,12 +17,9 @@
 	compatible = "chargebyte,imx93-charge-control-v", "chargebyte,imx93-charge-som",
 		     "phytec,imx93-phycore-som", "fsl,imx93";
 
-	/* FIXME
 	aliases {
 		rtc0 = &rv3028;
-		rtc1 = &bbnsm_rtc;
 	};
-	*/
 
 	reg_can1: regulator-can1 {
 		compatible = "regulator-fixed";
@@ -86,17 +83,22 @@
 
 		led-orange {
 			color = <LED_COLOR_ID_ORANGE>;
-			function = LED_FUNCTION_BOOT;
+			function = LED_FUNCTION_ACTIVITY;
 			gpios = <&gpio3 26 GPIO_ACTIVE_HIGH>;
-			linux,default-trigger = "timer";
 		};
 
 		led-green {
 			color = <LED_COLOR_ID_GREEN>;
 			function = LED_FUNCTION_BOOT;
 			gpios = <&gpio3 27 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "timer";
 		};
 	};
+};
+
+/* Ethernet */
+&ethphy1 {
+	ti,leds-polarity = <1>;
 };
 
 &bbnsm_pwrkey {
@@ -147,10 +149,14 @@
 	gpio_exp: gpio@20 {
 		compatible = "nxp,pca9506";
 		reg = <0x20>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_gpio_exp>;
 		gpio-controller;
 		#gpio-cells = <2>;
 		interrupt-parent = <&gpio2>;
 		interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
 
 		// 5 x 8 pins (0..39)
 		gpio-line-names = "DOUT1_EN", "DOUT2_EN", "DOUT3_EN", "DOUT4_EN", "DOUT5_EN", "DOUT6_EN", "DOUT7_EN", "DOUT8_EN", \
@@ -377,6 +383,12 @@
 		>;
 	};
 
+	pinctrl_gpio_exp: gpioexpgrp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // GPIOEXP_nINT
+		>;
+	};
+
 	pinctrl_rtc: rtcgrp {
 		fsl,pins = <
 			MX93_PAD_ENET1_TD3__GPIO4_IO02		0x31e // RTC_nINT
@@ -392,8 +404,8 @@
 
 	pinctrl_flexcan2: flexcan2grp {
 		fsl,pins = <
-			MX93_PAD_DAP_TDO_TRACESWO__CAN2_RX	0x139e
-			MX93_PAD_DAP_TDI__CAN2_TX		0x1382
+			MX93_PAD_GPIO_IO27__CAN2_RX		0x139e
+			MX93_PAD_GPIO_IO25__CAN2_TX		0x1382
 		>;
 	};
 
