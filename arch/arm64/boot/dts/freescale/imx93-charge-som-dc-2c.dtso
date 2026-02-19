@@ -149,10 +149,14 @@
 	gpio_exp: gpio@20 {
 		compatible = "nxp,pca9506";
 		reg = <0x20>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_gpio_exp>;
 		gpio-controller;
 		#gpio-cells = <2>;
 		interrupt-parent = <&gpio2>;
 		interrupts = <24 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-controller;
+		#interrupt-cells = <2>;
 
 		// 5 x 8 pins (0..39)
 		gpio-line-names = "DOUT1_EN", "DOUT2_EN", "DOUT3_EN", "DOUT4_EN", "DOUT5_EN", "DOUT6_EN", "DOUT7_EN", "DOUT8_EN", \
@@ -376,6 +380,12 @@
 		fsl,pins = <
 			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x31e // USER_ORANGE
 			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x31e // USER_GREEN
+		>;
+	};
+
+	pinctrl_gpio_exp: gpioexpgrp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // GPIOEXP_nINT
 		>;
 	};
 
