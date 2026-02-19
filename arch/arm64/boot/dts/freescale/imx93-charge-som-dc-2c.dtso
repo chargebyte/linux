@@ -96,6 +96,11 @@
 	};
 };
 
+/* Ethernet */
+&ethphy1 {
+	ti,leds-polarity = <1>;
+};
+
 &bbnsm_pwrkey {
 	status = "disabled";
 };
