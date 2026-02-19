@@ -17,12 +17,9 @@
 	compatible = "chargebyte,imx93-charge-control-v", "chargebyte,imx93-charge-som",
 		     "phytec,imx93-phycore-som", "fsl,imx93";
 
-	/* FIXME
 	aliases {
 		rtc0 = &rv3028;
-		rtc1 = &bbnsm_rtc;
 	};
-	*/
 
 	reg_can1: regulator-can1 {
 		compatible = "regulator-fixed";
