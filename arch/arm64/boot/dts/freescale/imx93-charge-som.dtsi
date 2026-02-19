@@ -17,6 +17,11 @@
 
 	// Avoid conflict with Heartbeat LED on phyCore
 	/delete-node/ leds;
+
+	// allow carrier boards to prefer custom RTC as rtc0
+	aliases {
+		rtc1 = &bbnsm_rtc;
+	};
 };
 
 &gpio2 {
