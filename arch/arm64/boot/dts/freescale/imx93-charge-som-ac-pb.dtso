@@ -22,7 +22,7 @@
 	
 	pwm-beeper {
 		compatible = "pwm-beeper";
-		pwms = <&tpm5 0 5000>;
+		pwms = <&tpm5 0 5000 0>;
 		volume-levels = <0 8 20 40 500>;
 		default-volume-level = <4>;
 	};
@@ -141,7 +141,6 @@
 	pinctrl_lpspi3: lpspi3grp {
 		/* drive strength: X2, slew rate: fast, no pull */
 		fsl,pins = <
-			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x186 // SPI_PLC_nINT0
 			MX93_PAD_GPIO_IO08__GPIO2_IO08		0x186 // SPI_EXT_CS0
 			MX93_PAD_GPIO_IO09__LPSPI3_SIN		0x186
 			MX93_PAD_GPIO_IO10__LPSPI3_SOUT		0x186
@@ -280,9 +279,9 @@
 		trickle-resistor-ohms = <3000>;
 	};
 	
-	pca9632: led-controller@e0 {
+	pca9632: led-controller@60 {
 		compatible = "nxp,pca9632";
-		reg = <0xe0>;
+		reg = <0x60>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 
@@ -309,7 +308,7 @@
 			color = <LED_COLOR_ID_WHITE>;
 			function = LED_FUNCTION_STATUS;
 		};
-        };
+	};
 };
 
 /* Internal powermeter */
