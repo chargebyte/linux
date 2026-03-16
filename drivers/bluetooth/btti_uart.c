@@ -536,8 +536,6 @@ static irqreturn_t host_wake_irq(int irq, void *data)
 	struct btti_uart_dev *bdev = data;
 	struct serdev_device *serdev = bdev->serdev;
 
-	dev_info(&serdev->dev, "CC33xx wake IRQ");
-
 	pm_wakeup_event(&serdev->dev, 0);
 	pm_system_wakeup();
 
