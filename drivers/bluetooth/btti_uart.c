@@ -107,6 +107,8 @@ struct btti_uart_dev {
 	struct pinctrl *pinctrl;
 	struct pinctrl_state *pins_runtime;
 	struct pinctrl_state *pins_sleep;
+
+	u32 max_speed;
 };
 
 struct event_node {
@@ -118,7 +120,6 @@ static int serial_open(struct btti_uart_dev *bdev)
 {
 	struct serdev_device *serdev = bdev->serdev;
 	bool disable_flow_control = false;
-	u32 max_speed = 3000000;
 	int ret = 0;
 
 	ret = serdev_device_open(serdev);
@@ -127,10 +128,9 @@ static int serial_open(struct btti_uart_dev *bdev)
 		return ret;
 	}
 
-	of_property_read_u32(serdev->dev.of_node, "max-speed", &max_speed);
 	disable_flow_control = of_property_read_bool(serdev->dev.of_node, "disable-flow-control");
 
-	serdev_device_set_baudrate(serdev, max_speed);
+	serdev_device_set_baudrate(serdev, bdev->max_speed);
 	if (disable_flow_control)
 		serdev_device_set_flow_control(serdev, false);
 
@@ -609,6 +609,10 @@ static int btti_uart_probe(struct serdev_device *serdev)
 
 	bdev->serdev = serdev;
 	serdev_device_set_drvdata(serdev, bdev);
+
+	of_property_read_u32(serdev->dev.of_node, "max-speed", &bdev->max_speed);
+	if (!bdev->max_speed || (bdev->max_speed > 3000000))
+		bdev->max_speed = 3000000;
 
 	bdev->pinctrl = devm_pinctrl_get(&serdev->dev);
 	if (!IS_ERR(bdev->pinctrl)) {
