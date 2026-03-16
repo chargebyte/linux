@@ -747,5 +747,5 @@ static struct serdev_device_driver btti_uart_driver = {
 module_serdev_device_driver(btti_uart_driver);
 
 MODULE_DESCRIPTION("TI Bluetooth UART driver ver " VERSION);
-MODULE_VERSION(VERSION);
+MODULE_AUTHOR("Sabeeh Khan <sabeeh-khan@ti.com>");
 MODULE_LICENSE("GPL");
