@@ -43,7 +43,7 @@
 		compatible = "regulator-fixed";
 		regulator-max-microvolt = <1800000>;
 		regulator-min-microvolt = <1800000>;
-		regulator-name = "VDD_IO";
+		regulator-name = "VCC_1V8";
 	};
 };
 
@@ -352,7 +352,7 @@
 
 	bluetooth {
 		compatible = "ti,cc33xx-bt";
-		// cc33xx-supply = <&wlan_en>;
+		cc33xx-supply = <&reg_wifi>;
 		max-speed = <115200>;
  	};
 };
@@ -376,7 +376,7 @@
 	status = "okay";
 
 	cc3301: wifi@0 {
-		compatible = "ti,cc3301";
+		compatible = "ti,cc3301", "ti,cc3300";
 		reg = <0>;
 		interrupts = <0 IRQ_TYPE_EDGE_RISING>;
 		interrupt-parent = <&gpio3>;
