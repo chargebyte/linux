@@ -557,24 +557,33 @@ static void btti_uart_host_wake_init(struct serdev_device *serdev)
 		bdev->pins_sleep = NULL;
 
 	bdev->host_wakeup = devm_gpiod_get_optional(&serdev->dev, "host-wakeup", GPIOD_IN);
-	if (IS_ERR(bdev->host_wakeup))
+	if (IS_ERR(bdev->host_wakeup)) {
+		dev_err_probe(&serdev->dev, PTR_ERR(bdev->host_wakeup),
+			      "can't get host-wakeup gpio\n");
 		goto out_err;
+	}
 
-	if (device_init_wakeup(&serdev->dev, true) != 0)
+	if (device_init_wakeup(&serdev->dev, true))
 		goto out_err;
 
 	ret = devm_request_irq(&serdev->dev, gpiod_to_irq(bdev->host_wakeup),
 		host_wake_irq, IRQF_TRIGGER_RISING, "btti_host_wake", bdev);
-	if (ret)
+	if (ret) {
+		dev_err_probe(&serdev->dev, ret,
+			      "failed to request irq btti_host_wake\n");
 		goto out_err;
+	}
 
 	ret = enable_irq_wake(gpiod_to_irq(bdev->host_wakeup));
-	if (ret < 0)
+	if (ret < 0) {
+		dev_err_probe(&serdev->dev, ret,
+			      "failed to enable irq btti_host_wake\n");
 		goto out_err_disable_wake;
+	}
 
 	disable_irq(gpiod_to_irq(bdev->host_wakeup));
 
-	dev_info(&serdev->dev, "Host wakeup enabled");
+	dev_info(&serdev->dev, "Host wakeup enabled\n");
 	return;
 
 
@@ -583,7 +592,7 @@ out_err_disable_wake:
 out_err:
 	bdev->host_wakeup = NULL;
 	bdev->pins_sleep = NULL;
-	dev_info(&serdev->dev, "Host wakeup NOT enabled");
+	dev_info(&serdev->dev, "Host wakeup NOT enabled\n");
 	return;
 }
 
