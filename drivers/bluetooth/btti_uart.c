@@ -7,7 +7,6 @@
  *  This file is based on btuart.c, which was written by Marcel Holtmann.
  */
 
-#define DEBUG
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/skbuff.h>
