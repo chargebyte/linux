@@ -23,8 +23,7 @@
 	pwm-beeper {
 		compatible = "pwm-beeper";
 		pwms = <&tpm5 0 5000 0>;
-		volume-levels = <0 8 20 40 500>;
-		default-volume-level = <4>;
+		// beeper-hz = <1000>;
 	};
 
 	reg_usb_otg1_vbus: regulator-usb-otg1-vbus {
@@ -56,20 +55,21 @@
 	ti,leds-polarity = <1>;
 };
 
-// FIXME
 &gpio1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_current>;
 	// 16 pins (0..15)
-	gpio-line-names = "I2C1_SCL", "I2C1_SDA", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
-			  "CHSTOP_IN", "SPI_TPM_nCS0", "", "", "", "";
+	gpio-line-names = "I2C1_SCL", "I2C1_SDA", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CURRENT_SETTING_2", "CURRENT_SETTING_1", \
+			  "", "SPI_TPM_nCS0", "", "", "", "";
 };
 
 &gpio2 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_rfid>;
+	pinctrl-0 = <&pinctrl_rfid>, <&pinctrl_input>, <&pinctrl_output>;
 	// 30 pins (0..29)
 	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_EXT_CS0", "SPI_EXT_MISO", \
-			  "SPI_EXT_MOSI", "SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "BACKLIGHT_PWM", "", \
-			  "", "", "I2C5_SDA", "I2C5_SCL", "GPIOEXP_nINT", "CAN2_TX", "TOUCH_nINT", "CAN2_RX", "", "";
+			  "SPI_EXT_MOSI", "SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "OUTPUT_3", "", \
+			  "", "", "INPUT_1", "GPIO_IO23", "nRESET_RFID", "nIRQ_BLE", "BUZZER", "OUTPUT_nFAIL", "", "";
 
 	rfid-reset-hog {
 		gpio-hog;
@@ -82,10 +82,10 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_wifi_rst>;
 	// 32 pins (0..31)
-	gpio-line-names = "RESET_nGPIO", "IMX9_DIN3", "IMX9_DIN4", "IMX9_DIN5", "IMX9_DIN6", "IMX9_DIN7", "IMX9_DIN8", "TOUCH_nRESET", "", "", \
+	gpio-line-names = "nIRQ_WL", "", "", "", "", "", "", "nRESET_WL", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "SOM_EMMC_nRESET", "nPLC2_RESET_INT", "nSAFETY2_RESET_INT", "SAFETY2_BOOTMODE_SET", "IMX9_DIN1", "IMX9_DIN2", "USER_ORANGE", "USER_GREEN", "LPUART5_RX", "LPUART5_RTS_B", \
-			  "PLC2_DL_INTR_SPI", "LPUART5_TX";
+			  "SOM_EMMC_nRESET", "INPUT_2", "INPUT_3", "INPUT_4", "OUTPUT_1", "OUTPUT_2", "CURRENT_SETTING_3", "CURRENT_SETTING_4", "LPUART5_RX", "LPUART5_RTS_B", \
+			  "LPUART5_CTS", "LPUART5_TX";
 
 	wifi-reset-hog {
 		gpio-hog;
@@ -98,9 +98,9 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_m90e36_rst>, <&pinctrl_factory_rst>;
 	// 30 pins (0..29)
-	gpio-line-names = "USB1_ID", "", "RTC_nINT", "ETH2_nINT", "USB1_OC", "", "SPI_PLC2_nINT0", "DL_REQ_INTR_SPI", "ETH2_nRESET", "nPLC_RESET_INT", \
-			  "", "CHSTOP2_IN", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "", "DISPLAY_EN", "", "", "", \
-			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "WS2812B", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
+	gpio-line-names = "USB1_ID", "", "RTC_nINT", "FACTORY_RESET", "USB1_OC", "", "nRESET_ATM90E36", "DL_REQ_INTR_SPI", "ATM90E36_IRQ", "nPLC_RESET_INT", \
+			  "", "WS2812B", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "", "OUTPUT_4", "", "", "", \
+			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "RESIDUAL_CURRENT", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 
 	m90e36-reset-hog {
 		gpio-hog;
@@ -174,18 +174,18 @@
 
 	pinctrl_input: inputgrp {
 		fsl,pins = <
-			MX93_PAD_SD3_CLK__GPIO3_IO20		0x31e // INPUT_1
+			MX93_PAD_GPIO_IO22__GPIO2_IO22		0x31e // INPUT_1
 			MX93_PAD_SD3_CMD__GPIO3_IO21		0x31e // INPUT_2
-			MX93_PAD_GPIO_IO24__USDHC3_DATA0	0x31e // INPUT_3
-			MX93_PAD_GPIO_IO25__USDHC3_DATA1	0x31e // INPUT_4
+			MX93_PAD_SD3_DATA0__GPIO3_IO22		0x31e // INPUT_3
+			MX93_PAD_SD3_DATA1__GPIO3_IO23		0x31e // INPUT_4
 		>;
 	};
 	
 	pinctrl_output: outputgrp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO27__GPIO2_IO27		0x31e // OUTPUT_nFAIL
-			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // OUTPUT_1
-			MX93_PAD_GPIO_IO25__GPIO2_IO25		0x31e // OUTPUT_2
+			MX93_PAD_SD3_DATA2__GPIO3_IO24		0x31e // OUTPUT_1
+			MX93_PAD_SD3_DATA3__GPIO3_IO25		0x31e // OUTPUT_2
 			MX93_PAD_GPIO_IO18__GPIO2_IO18		0x31e // OUTPUT_3
 			MX93_PAD_ENET2_TD3__GPIO4_IO16		0x31e // OUTPUT_4
 		>;
@@ -222,31 +222,31 @@
 
 	pinctrl_rfid: rfidgrp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO24__TPM3_CH3		0x31e // RFID reset
+			MX93_PAD_GPIO_IO24__TPM3_CH3		0x31e // nRESET_RFID
 		>;
 	};
 
 	pinctrl_buzzer: buzzergrp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO26__TPM5_CH3		0x31e // Buzzer
+			MX93_PAD_GPIO_IO26__TPM5_CH3		0x31e // BUZZER
 		>;
 	};
 	
 	pinctrl_wifi_rst: wifirstgrp {
 		fsl,pins = <
-			MX93_PAD_SD2_RESET_B__GPIO3_IO07	0x31e // Wifi reset
+			MX93_PAD_SD2_RESET_B__GPIO3_IO07	0x31e // nRESET_WL
 		>;
 	};
 
 	pinctrl_m90e36_rst: m90e36rstgrp {
 		fsl,pins = <
-			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x31e // M90E36 reset
+			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x31e // nRESET_ATM90E36
 		>;
 	};
 
 	pinctrl_factory_rst: factoryrstgrp {
 		fsl,pins = <
-			MX93_PAD_ENET1_TD2__GPIO4_IO03		0x31e // factory reset
+			MX93_PAD_ENET1_TD2__GPIO4_IO03		0x31e // FACTORY_RESET
 		>;
 	};
 };
