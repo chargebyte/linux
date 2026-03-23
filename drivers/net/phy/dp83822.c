@@ -4,6 +4,7 @@
  * Copyright (C) 2017 Texas Instruments Inc.
  */
 
+#include <linux/clk.h>
 #include <linux/ethtool.h>
 #include <linux/etherdevice.h>
 #include <linux/kernel.h>
@@ -142,6 +143,7 @@ struct dp83822_private {
 	u8 cfg_dac_plus;
 	int leds_polarity;
 	struct ethtool_wolinfo wol;
+	struct clk *clk;
 };
 
 static int dp83822_config_wol(struct phy_device *phydev,
@@ -756,12 +758,18 @@ static int dp8382x_phy_fixup(struct phy_device *phydev)
 
 static int dp8382x_probe(struct phy_device *phydev)
 {
+	struct device *dev = &phydev->mdio.dev;
 	struct dp83822_private *dp83822;
 
-	dp83822 = devm_kzalloc(&phydev->mdio.dev, sizeof(*dp83822),
+	dp83822 = devm_kzalloc(dev, sizeof(*dp83822),
 			       GFP_KERNEL);
 	if (!dp83822)
 		return -ENOMEM;
+
+	dp83822->clk = devm_clk_get_optional_enabled(dev, NULL);
+	if (IS_ERR(dp83822->clk))
+		return dev_err_probe(dev, PTR_ERR(dp83822->clk),
+				     "Failed to request clock\n");
 
 	phydev->priv = dp83822;
 
