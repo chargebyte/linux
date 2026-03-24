@@ -156,6 +156,11 @@
 	pinctrl-0 = <&pinctrl_fec &pinctrl_eqos &pinctrl_eqos_strap>;
 };
 
+/* Ethernet 1 PHY */
+&ethphy1 {
+	ti,leds-polarity = <1>; // active-high
+};
+
 /* Ethernet 2 */
 &eqos {
 	phy-mode = "rmii";
