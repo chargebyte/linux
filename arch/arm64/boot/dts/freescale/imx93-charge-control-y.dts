@@ -76,14 +76,14 @@
 	// 30 pins (0..29)
 	gpio-line-names = "X_LAN_nCS", "", "", "", "", "", "", "X_LAN_nIRQ", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "", "", "", "", "RED_LED", "", "", "", "", "";
+			  "", "", "", "", "GREEN_LED", "RED_LED", "", "", "", "";
 };
 
 &gpio3 {
 	// 32 pins (0..31)
 	gpio-line-names = "SD2_nCD", "", "", "", "", "", "", "SD2_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "SOM_EMMC_nRESET", "", "GREEN_LED", "", "", "", "", "", "X_TDI", "X_TMS_SWDIO", \
+			  "SOM_EMMC_nRESET", "", "", "", "", "", "", "", "X_TDI", "X_TMS_SWDIO", \
 			  "", "X_TDO";
 };
 
@@ -397,7 +397,7 @@
 			MX93_PAD_ENET1_TXC__GPIO4_IO07		0x3fe // X_ENET1_INT
 			MX93_PAD_ENET1_RD2__GPIO4_IO12		0x3fe // SC_BOOTMODE
 			MX93_PAD_CCM_CLKO3__GPIO4_IO28		0x3fe // SC_nRST_INT
-			MX93_PAD_ENET1_RD3__GPIO4_IO13		0x31e // ENET1_nRST
+			MX93_PAD_ENET1_RD3__GPIO4_IO13		0x31e // ENET1_RST
 		>;
 	};
 
