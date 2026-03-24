@@ -2167,8 +2167,15 @@ EXPORT_SYMBOL(phy_loopback);
  */
 int phy_reset_after_clk_enable(struct phy_device *phydev)
 {
-	if (!phydev || !phydev->drv)
+	if (!phydev) {
+		pr_warn("phy_reset_after_clk_enable: !phydev\n");
 		return -ENODEV;
+	}
+
+	if (!phydev->drv) {
+		pr_warn("phy_reset_after_clk_enable: !phydev->drv\n");
+		return -ENODEV;
+	}
 
 	if (phydev->drv->flags & PHY_RST_AFTER_CLK_EN) {
 		phy_device_reset(phydev, 1);

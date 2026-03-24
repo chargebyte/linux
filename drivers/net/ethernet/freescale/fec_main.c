@@ -2185,6 +2185,7 @@ static int fec_enet_mdio_read_c22(struct mii_bus *bus, int mii_id, int regnum)
 	struct fec_enet_private *fep = bus->priv;
 	struct device *dev = &fep->pdev->dev;
 	int ret = 0, frame_start, frame_addr, frame_op;
+	static int logged = 0;
 
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret < 0)
@@ -2209,6 +2210,10 @@ static int fec_enet_mdio_read_c22(struct mii_bus *bus, int mii_id, int regnum)
 
 	ret = FEC_MMFR_DATA(readl(fep->hwp + FEC_MII_DATA));
 
+	if ((logged & 1 << mii_id) == 0) {
+		dev_info(dev, "MDIO read %d = 0x%04x\n", mii_id, ret);
+		logged |= 1 << mii_id;
+	}
 out:
 	pm_runtime_mark_last_busy(dev);
 	pm_runtime_put_autosuspend(dev);
@@ -2345,9 +2350,11 @@ static void fec_enet_phy_reset_after_clk_enable(struct net_device *ndev)
 {
 	struct fec_enet_private *fep = netdev_priv(ndev);
 	struct phy_device *phy_dev = ndev->phydev;
+	int ret;
 
 	if (phy_dev) {
-		phy_reset_after_clk_enable(phy_dev);
+		ret = phy_reset_after_clk_enable(phy_dev);
+		netdev_info(ndev, "Reset PHY: phy_dev: %d\n", ret);
 	} else if (fep->phy_node) {
 		/*
 		 * If the PHY still is not bound to the MAC, but there is
@@ -2357,7 +2364,8 @@ static void fec_enet_phy_reset_after_clk_enable(struct net_device *ndev)
 		 * the PHY reset.
 		 */
 		phy_dev = of_phy_find_device(fep->phy_node);
-		phy_reset_after_clk_enable(phy_dev);
+		ret = phy_reset_after_clk_enable(phy_dev);
+		netdev_info(ndev, "Reset PHY: phy_node: %d\n", ret);
 		if (phy_dev)
 			put_device(&phy_dev->mdio.dev);
 	}

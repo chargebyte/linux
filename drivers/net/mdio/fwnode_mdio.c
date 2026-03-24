@@ -115,8 +115,8 @@ int fwnode_mdiobus_phy_device_register(struct mii_bus *mdio,
 		return rc;
 	}
 
-	dev_dbg(&mdio->dev, "registered phy fwnode %pfw at address %i\n",
-		child, addr);
+	dev_info(&mdio->dev, "registered phy fwnode %pfw at address %i\n",
+		 child, addr);
 	return 0;
 }
 EXPORT_SYMBOL(fwnode_mdiobus_phy_device_register);

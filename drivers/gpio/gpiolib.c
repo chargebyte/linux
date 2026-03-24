@@ -3385,6 +3385,8 @@ static void gpiod_set_raw_value_commit(struct gpio_desc *desc, bool value)
 		return;
 
 	trace_gpio_value(desc_to_gpio(desc), 0, value);
+	if (desc->name && strcmp(desc->name, "ENET1_RST") == 0)
+		pr_info("ENET1_RST = %d\n", value);
 	guard.gc->set(guard.gc, gpio_chip_hwgpio(desc), value);
 }
 

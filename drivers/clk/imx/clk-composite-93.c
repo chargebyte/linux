@@ -49,6 +49,10 @@ static void imx93_clk_composite_gate_endisable(struct clk_hw *hw, int enable)
 	unsigned long flags;
 	u32 reg;
 
+	if ((strcmp(clk_hw_get_name(hw), "enet_ref_root") == 0) ||
+	    (strcmp(clk_hw_get_name(hw), "enet_ref_phy_root") == 0))
+		pr_info("Clock %s %s\n", clk_hw_get_name(hw), enable ? "enable" : "disable");
+
 	if (gate->lock)
 		spin_lock_irqsave(gate->lock, flags);
 
@@ -148,6 +152,10 @@ static int imx93_clk_composite_divider_set_rate(struct clk_hw *hw, unsigned long
 	value = divider_get_val(rate, parent_rate, divider->table, divider->width, divider->flags);
 	if (value < 0)
 		return value;
+
+	if ((strcmp(clk_hw_get_name(hw), "enet_ref_root") == 0) ||
+	    (strcmp(clk_hw_get_name(hw), "enet_ref_phy_root") == 0))
+		pr_info("Clock %s %lu Hz\n", clk_hw_get_name(hw), rate);
 
 	if (divider->lock)
 		spin_lock_irqsave(divider->lock, flags);

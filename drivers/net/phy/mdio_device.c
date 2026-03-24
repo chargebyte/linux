@@ -126,8 +126,10 @@ void mdio_device_reset(struct mdio_device *mdiodev, int value)
 	if (mdiodev->reset_state == value)
 		return;
 
-	if (mdiodev->reset_gpio)
+	if (mdiodev->reset_gpio) {
 		gpiod_set_value_cansleep(mdiodev->reset_gpio, value);
+		pr_info("MDIO %d %s reset\n", mdiodev->addr, value ? "assert" : "deassert");
+	}
 
 	if (mdiodev->reset_ctrl) {
 		if (value)
