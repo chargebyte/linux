@@ -35,6 +35,7 @@
 #define MII_DP83822_RESET_CTRL	0x1f
 #define MII_DP83822_GENCFG	0x465
 #define MII_DP83822_SOR1	0x467
+#define MII_DP83822_SOR2	0x468
 
 /* DP83826 specific registers */
 #define MII_DP83826_VOD_CFG1	0x30b
@@ -693,6 +694,21 @@ static void dp83826_of_init(struct phy_device *phydev)
 }
 #endif /* CONFIG_OF_MDIO */
 
+static int dp8382x_read_straps(struct phy_device *phydev)
+{
+	int sor1, sor2;
+
+	sor1 = phy_read_mmd(phydev, DP83822_DEVADDR, MII_DP83822_SOR1);
+	if (sor1 < 0)
+		return sor1;
+
+	sor2 = phy_read_mmd(phydev, DP83822_DEVADDR, MII_DP83822_SOR2);
+
+	phydev_info(phydev, "SOR1: 0x%04x, SOR2: 0x%04x\n", sor1, sor2);
+
+	return 0;
+}
+
 static int dp83822_read_straps(struct phy_device *phydev)
 {
 	struct dp83822_private *dp83822 = phydev->priv;
@@ -760,6 +776,7 @@ static int dp8382x_probe(struct phy_device *phydev)
 {
 	struct device *dev = &phydev->mdio.dev;
 	struct dp83822_private *dp83822;
+	int ret;
 
 	dp83822 = devm_kzalloc(dev, sizeof(*dp83822),
 			       GFP_KERNEL);
@@ -779,6 +796,11 @@ static int dp8382x_probe(struct phy_device *phydev)
 	    of_machine_is_compatible("phytec,imx93-phycore-som"))
 		phy_register_fixup_for_uid(DP83822_PHY_ID, 0xffff0000,
 					   dp8382x_phy_fixup);
+
+	ret = dp8382x_read_straps(phydev);
+	if (ret)
+		return ret;
+
 	return 0;
 }
 
