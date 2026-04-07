@@ -77,8 +77,8 @@
 	pinctrl-0 = <&pinctrl_rfid>, <&pinctrl_input>, <&pinctrl_output>;
 	// 30 pins (0..29)
 	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_EXT_CS0", "SPI_EXT_MISO", \
-			  "SPI_EXT_MOSI", "SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "OUTPUT_3", "", \
-			  "", "", "INPUT_1", "GPIO_IO23", "nRESET_RFID", "nIRQ_BLE", "BUZZER", "OUTPUT_nFAIL", "", "";
+			  "SPI_EXT_MOSI", "SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "DIGITAL_OUTPUT_3", "", \
+			  "", "", "DIGITAL_INPUT_1", "GPIO_IO23", "nRESET_RFID", "nIRQ_BLE", "BUZZER", "OUTPUT_nFAIL", "", "";
 
 	rfid-reset-hog {
 		gpio-hog;
@@ -93,7 +93,7 @@
 	// 32 pins (0..31)
 	gpio-line-names = "nIRQ_WL", "", "", "", "", "", "", "nRESET_WL", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "SOM_EMMC_nRESET", "INPUT_2", "INPUT_3", "INPUT_4", "OUTPUT_1", "OUTPUT_2", "CURRENT_SETTING_3", "CURRENT_SETTING_4", "LPUART5_RX", "LPUART5_RTS_B", \
+			  "SOM_EMMC_nRESET", "DIGITAL_INPUT_2", "DIGITAL_INPUT_3", "DIGITAL_INPUT_4", "DIGITAL_OUTPUT_1", "DIGITAL_OUTPUT_2", "CURRENT_SETTING_3", "CURRENT_SETTING_4", "LPUART5_RX", "LPUART5_RTS_B", \
 			  "LPUART5_CTS", "LPUART5_TX";
 };
 
@@ -102,7 +102,7 @@
 	pinctrl-0 = <&pinctrl_m90e36_rst>, <&pinctrl_factory_rst>;
 	// 30 pins (0..29)
 	gpio-line-names = "USB1_ID", "", "RTC_nINT", "FACTORY_RESET", "USB1_OC", "", "nRESET_ATM90E36", "DL_REQ_INTR_SPI", "ATM90E36_IRQ", "nPLC_RESET_INT", \
-			  "", "WS2812B", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "", "OUTPUT_4", "", "", "", \
+			  "", "WS2812B", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "", "DIGITAL_OUTPUT_4", "", "", "", \
 			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "RESIDUAL_CURRENT", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
 
 	m90e36-reset-hog {
