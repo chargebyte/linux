@@ -159,8 +159,8 @@
 		#interrupt-cells = <2>;
 
 		// 5 x 8 pins (0..39)
-		gpio-line-names = "DOUT1_EN", "DOUT2_EN", "DOUT3_EN", "DOUT4_EN", "DOUT5_EN", "DOUT6_EN", "DOUT7_EN", "DOUT8_EN", \
-		                  "DOUT9_EN", "DOUT10_EN", "DOUT11_EN", "DOUT12_EN", "DOUT13_EN", "DOUT14_EN", "DOUT15_EN", "DOUT16_EN", \
+		gpio-line-names = "DIGITAL_OUT_1", "DIGITAL_OUT_2", "DIGITAL_OUT_3", "DIGITAL_OUT_4", "DIGITAL_OUT_5", "DIGITAL_OUT_6", "DIGITAL_OUT_7", "DIGITAL_OUT_8", \
+		                  "DIGITAL_OUT_9", "DIGITAL_OUT_10", "DIGITAL_OUT_11", "DIGITAL_OUT_12", "DIGITAL_OUT_13", "DIGITAL_OUT_14", "DIGITAL_OUT_15", "DIGITAL_OUT_16", \
 		                  "nDOUT1_ST", "nDOUT2_ST", "nDOUT3_ST", "nDOUT4_ST", "nDOUT5_ST", "nDOUT6_ST", "nDOUT7_ST", "nDOUT8_ST", \
 		                  "nDOUT9_ST", "nDOUT10_ST", "nDOUT11_ST", "nDOUT12_ST", "nDOUT13_ST", "nDOUT14_ST", "nDOUT15_ST", "nDOUT16_ST", \
 		                  "GPIO_EXP_1", "GPIO_EXP_2", "HW_REV1", "HW_REV2", "HW_REV3", "UART_MUX_IN", "CAN1_EN", "CAN2_EN";
@@ -270,7 +270,6 @@
 	*/
 };
 
-// FIXME
 &gpio1 {
 	// 16 pins (0..15)
 	gpio-line-names = "I2C1_SCL", "I2C1_SDA", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CAN1_TX", "CAN1_RX", \
@@ -285,10 +284,13 @@
 };
 
 &gpio3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_di>;
+
 	// 32 pins (0..31)
-	gpio-line-names = "RESET_nGPIO", "IMX9_DIN3", "IMX9_DIN4", "IMX9_DIN5", "IMX9_DIN6", "IMX9_DIN7", "IMX9_DIN8", "TOUCH_nRESET", "", "", \
+	gpio-line-names = "RESET_nGPIO", "DIGITAL_IN_3", "DIGITAL_IN_4", "DIGITAL_IN_5", "DIGITAL_IN_6", "DIGITAL_IN_7", "DIGITAL_IN_8", "TOUCH_nRESET", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "SOM_EMMC_nRESET", "nPLC2_RESET_INT", "nSAFETY2_RESET_INT", "SAFETY2_BOOTMODE_SET", "IMX9_DIN1", "IMX9_DIN2", "USER_ORANGE", "USER_GREEN", "LPUART5_RX", "LPUART5_RTS_B", \
+			  "SOM_EMMC_nRESET", "nPLC2_RESET_INT", "nSAFETY2_RESET_INT", "SAFETY2_BOOTMODE_SET", "DIGITAL_IN_1", "DIGITAL_IN_2", "USER_ORANGE", "USER_GREEN", "LPUART5_RX", "LPUART5_RTS_B", \
 			  "PLC2_DL_INTR_SPI", "LPUART5_TX";
 };
 
@@ -386,6 +388,20 @@
 	pinctrl_gpio_exp: gpioexpgrp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // GPIOEXP_nINT
+		>;
+	};
+
+	pinctrl_di: digrp {
+		fsl,pins = <
+			// IMX9_DIN1 .. IMX9_DIN8
+			MX93_PAD_SD3_DATA2__GPIO3_IO24		0x31e
+			MX93_PAD_SD3_DATA3__GPIO3_IO25		0x31e
+			MX93_PAD_SD2_CLK__GPIO3_IO01		0x31e
+			MX93_PAD_SD2_CMD__GPIO3_IO02		0x31e
+			MX93_PAD_SD2_DATA0__GPIO3_IO03		0x31e
+			MX93_PAD_SD2_DATA1__GPIO3_IO04		0x31e
+			MX93_PAD_SD2_DATA2__GPIO3_IO05		0x31e
+			MX93_PAD_SD2_DATA3__GPIO3_IO06		0x31e
 		>;
 	};
 
