@@ -1,0 +1,81 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2025 chargebyte GmbH
+ * Author: Stefan Wahren <stefan.wahren@chargebyte.com>
+ */
+
+#include <dt-bindings/gpio/gpio.h>
+#include "imx93-pinfunc.h"
+
+/dts-v1/;
+/plugin/;
+
+&{/} {
+	model = "chargebyte Charge SOM Evaluation Kit IPEM PiHat";
+};
+
+&lpi2c5 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lpi2c5>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	pca9671: gpio@20 {
+		compatible = "nxp,pca9671";
+		reg = <0x20>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		reset-gpios = <&gpio3 26 GPIO_ACTIVE_HIGH>;
+		gpio-line-names = "ATM_WO", "ATM_IRQ0", "ATM_IRQ1", "ATM_PM0", "ATM_PM1", "USR_P1", "USR_P2", "USR_BTN", \
+				  "ATM_RST", "ATM_CS", "ATM_DMA", "LED_BLU", "LED_RED", "LED_GRN", "RLY1", "RLY2";
+
+		usr-p1-hog {
+			gpio-hog;
+			gpios = <&pca9671 5 GPIO_ACTIVE_HIGH>;
+			input;
+		};
+	
+		usr-p2-hog {
+			gpio-hog;
+			gpios = <&pca9671 6 GPIO_ACTIVE_HIGH>;
+			input;
+		};
+	};
+};
+
+&lpspi3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lpspi3>;
+	num-cs = <1>;
+	cs-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	m90e36a@0 {
+		compatible = "lwn,bk4";
+		reg = <0>;
+	};
+};
+
+&iomuxc {
+	pinctrl_lpi2c5: lpi2c5grp {
+		/* sion, drive strength: X2, slew rate: fast, pull up, open drain */
+		fsl,pins = <
+			MX93_PAD_GPIO_IO23__LPI2C5_SCL		0x40000b86
+			MX93_PAD_GPIO_IO22__LPI2C5_SDA		0x40000b86
+		>;
+	};
+
+	pinctrl_lpspi3: lpspi3grp {
+		/* drive strength: X2, slew rate: fast, no pull */
+		fsl,pins = <
+			MX93_PAD_GPIO_IO08__GPIO2_IO08		0x186
+			MX93_PAD_GPIO_IO09__LPSPI3_SIN		0x186
+			MX93_PAD_GPIO_IO10__LPSPI3_SOUT		0x186
+			MX93_PAD_GPIO_IO11__LPSPI3_SCK		0x186
+		>;
+	};
+};
