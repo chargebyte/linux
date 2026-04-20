@@ -1018,10 +1018,10 @@ static int rv3028_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	nvmem_cfg.priv = rv3028->regmap;
-	devm_rtc_nvmem_register(rv3028->rtc, &nvmem_cfg);
 	eeprom_cfg.priv = rv3028;
 	devm_rtc_nvmem_register(rv3028->rtc, &eeprom_cfg);
+	nvmem_cfg.priv = rv3028->regmap;
+	devm_rtc_nvmem_register(rv3028->rtc, &nvmem_cfg);
 
 #ifdef CONFIG_COMMON_CLK
 	rv3028_clkout_register_clk(rv3028, client);
