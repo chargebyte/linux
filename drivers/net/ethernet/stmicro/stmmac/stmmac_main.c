@@ -7758,6 +7758,7 @@ static int __stmmac_dvr_probe(struct device *device,
 	struct stmmac_priv *priv;
 	u32 rxq;
 	int i, ret = 0;
+	int eth_id;
 
 	ndev = devm_alloc_etherdev_mqs(device, sizeof(struct stmmac_priv),
 				       MTL_MAX_TX_QUEUES, MTL_MAX_RX_QUEUES);
@@ -8013,6 +8014,10 @@ static int __stmmac_dvr_probe(struct device *device,
 	ret = stmmac_register_devlink(priv);
 	if (ret)
 		goto error_devlink_setup;
+
+	eth_id = of_alias_get_id(priv->device->of_node, "ethernet");
+	if (eth_id >= 0)
+		sprintf(ndev->name, "eth%d", eth_id);
 
 	ret = register_netdev(ndev);
 	if (ret) {
