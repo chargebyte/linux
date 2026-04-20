@@ -7797,6 +7797,7 @@ static int __stmmac_dvr_probe(struct device *device,
 	struct net_device *ndev = NULL;
 	struct stmmac_priv *priv;
 	int i, ret = 0;
+	int eth_id;
 	u8 rxq;
 
 	if (!plat_dat->dma_cfg || !plat_dat->dma_cfg->pbl) {
@@ -8052,6 +8053,10 @@ static int __stmmac_dvr_probe(struct device *device,
 	ret = stmmac_register_devlink(priv);
 	if (ret)
 		goto error_devlink_setup;
+
+	eth_id = of_alias_get_id(priv->device->of_node, "ethernet");
+	if (eth_id >= 0)
+		sprintf(ndev->name, "eth%d", eth_id);
 
 	ret = register_netdev(ndev);
 	if (ret) {
