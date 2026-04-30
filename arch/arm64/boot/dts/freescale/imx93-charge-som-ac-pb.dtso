@@ -19,7 +19,7 @@
 	aliases {
 		rtc0 = &rv3028;
 	};
-	
+
 	pwm-beeper {
 		compatible = "pwm-beeper";
 		pwms = <&tpm5 0 5000 0>;
@@ -44,7 +44,7 @@
 		enable-active-high;
 		regulator-boot-on;
 	};
-	
+
 	reg_wifi: regulator-wifi {
 		compatible = "regulator-fixed";
 		regulator-max-microvolt = <3300000>;
@@ -68,7 +68,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_current>;
 	// 16 pins (0..15)
-	gpio-line-names = "I2C1_SCL", "I2C1_SDA", "", "", "", "", "LPUART2_RX", "LPUART2_TX", "CURRENT_SETTING_2", "CURRENT_SETTING_1", \
+	gpio-line-names = "I2C1_SCL", "I2C1_SDA", "", "", "", "", "X15_6", "X15_7", "CURRENT_SETTING_2", "CURRENT_SETTING_1", \
 			  "", "SPI_TPM_nCS0", "", "", "", "";
 };
 
@@ -150,13 +150,6 @@
 		>;
 	};
 
-	pinctrl_uart2: uart2grp {
-		fsl,pins = <
-			MX93_PAD_UART2_RXD__LPUART2_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
-			MX93_PAD_UART2_TXD__LPUART2_TX 		0x30e // drive strength: X3, slew rate: slightly fast, pull up
-		>;
-	};
-
 	pinctrl_usbotg1grp: usb1grp {
 		fsl,pins = <
 			MX93_PAD_ENET1_TD1__HSIOMIX_OTG_OC1	0x31e
@@ -182,7 +175,7 @@
 			MX93_PAD_SD3_DATA1__GPIO3_IO23		0x31e // INPUT_4
 		>;
 	};
-	
+
 	pinctrl_output: outputgrp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO27__GPIO2_IO27		0x31e // OUTPUT_nFAIL
@@ -209,8 +202,8 @@
 
 	pinctrl_uart5: uart5grp {
 		fsl,pins = <
-			MX93_PAD_DAP_TDI__LPUART5_RX		0x31e 
-			MX93_PAD_DAP_TDO_TRACESWO__LPUART5_TX	0x30e 
+			MX93_PAD_DAP_TDI__LPUART5_RX		0x31e
+			MX93_PAD_DAP_TDO_TRACESWO__LPUART5_TX	0x30e
 			MX93_PAD_DAP_TMS_SWDIO__LPUART5_RTS_B	0x31e
 			MX93_PAD_DAP_TCLK_SWCLK__LPUART5_CTS_B	0x30e
 		>;
@@ -233,7 +226,7 @@
 			MX93_PAD_GPIO_IO26__TPM5_CH3		0x31e // BUZZER
 		>;
 	};
-	
+
 	pinctrl_wifi_rst: wifirstgrp {
 		fsl,pins = <
 			MX93_PAD_SD2_RESET_B__GPIO3_IO07	0x31e // nRESET_WL
@@ -280,7 +273,7 @@
 		wakeup-source;
 		trickle-resistor-ohms = <3000>;
 	};
-	
+
 	pca9632: led-controller@60 {
 		compatible = "nxp,pca9632";
 		reg = <0x60>;
@@ -327,13 +320,6 @@
 		compatible = "atmel,m90e36";
 		reg = <0>;
 	};
-};
-
-/* RFID UART */
-&lpuart2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_uart2>;
-	status = "okay";
 };
 
 /* RS485 */
