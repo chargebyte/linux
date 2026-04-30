@@ -699,6 +699,7 @@ imx93-charge-som-lvds-dd0700mc01-dtbs += imx93-charge-som.dtb imx93-charge-som-l
 imx93-charge-som-testfixture-dtbs += imx93-charge-som.dtb imx93-charge-som-testfixture.dtbo
 imx93-charge-control-v-dtbs += imx93-charge-som.dtb imx93-charge-control-v.dtbo
 imx93-charge-som-ac-pb-dtbs += imx93-charge-som.dtb imx93-charge-som-ac-pb.dtbo
+imx93-charge-som-ac-pb-pn7160-dtbs += imx93-charge-som.dtb imx93-charge-som-ac-pb.dtbo imx93-charge-som-ac-pb-pn7160.dtbo
 dtb-$(CONFIG_ARCH_MXC) += imx91-phyboard-segin-peb-av-02.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx91-phyboard-segin-peb-eval-01.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx91-phyboard-segin-peb-wlbt-05.dtb
@@ -718,7 +719,9 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-clko-gpio.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-lvds-dd0700mc01.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-testfixture.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-v.dtb
+DTC_FLAGS_imx93-charge-som-ac-pb := -@
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-ac-pb.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-ac-pb-pn7160.dtb
 
 dtb-$(CONFIG_ARCH_MXC) += imx943-evk.dtb
 imx943-evk-mqs-dtbs := imx943-evk.dtb imx943-evk-mqs.dtbo
