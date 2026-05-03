@@ -258,7 +258,7 @@ static void sys_freq_scaling(enum mode_type new_mode)
 
 		/* Scaling up the DDR frequency */
 		scaling_dram_freq(0x0);
-		pr_info("System switching to OD mode...\n");
+		pr_debug("System switching to OD mode...\n");
 	} else if (new_mode == ND_MODE) {
 		/*
 		 * if switch from LD mode to ND mode, voltage should be increase firstly.
@@ -278,7 +278,7 @@ static void sys_freq_scaling(enum mode_type new_mode)
 			regulator_set_voltage_tol(soc_reg, VDD_SOC_ND_VOLTAGE, 0);
 		}
 
-		pr_info("System switching to ND mode...\n");
+		pr_debug("System switching to ND mode...\n");
 	} else if (new_mode == LD_MODE || new_mode == SWFFC_MODE) {
 		/*
 		 * NIC AXI frequency should be changed after all other clock
@@ -299,7 +299,7 @@ static void sys_freq_scaling(enum mode_type new_mode)
 		if (!no_od_mode)
 			imx_se_voltage_change_req(se_data, false);
 
-		pr_info("System switching to LD/SWFFC mode...\n");
+		pr_debug("System switching to LD/SWFFC mode...\n");
 	}
 
 	system_run_mode.current_mode = new_mode;
