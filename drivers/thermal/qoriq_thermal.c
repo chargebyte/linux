@@ -96,15 +96,10 @@ static struct qoriq_tmu_data *qoriq_sensor_to_data(struct qoriq_sensor *s)
 	return container_of(s, struct qoriq_tmu_data, sensor[s->id]);
 }
 
-#define ABOVE_104	BIT(2)
-#define ABOVE_100	BIT(1)
-
 static int tmu_get_temp(struct thermal_zone_device *tz, int *temp)
 {
 	struct qoriq_sensor *qsensor = thermal_zone_device_priv(tz);
 	struct qoriq_tmu_data *qdata = qoriq_sensor_to_data(qsensor);
-	struct device *dev = thermal_zone_device(tz);
-	static unsigned int logged = 0;
 	u32 val, tidr;
 	/*
 	 * REGS_TRITSR(id) has the following layout:
@@ -164,18 +159,6 @@ static int tmu_get_temp(struct thermal_zone_device *tz, int *temp)
 							     MILLIDEGREE_PER_DEGREE + 500);
 		else
 			*temp = kelvin_to_millicelsius(val & GENMASK(8, 0));
-	}
-
-	if (*temp >= 104000) {
-		if ((logged & ABOVE_104) == 0) {
-			dev_warn(dev, "Temperature >= 104 C\n");
-			logged |= ABOVE_104;
-		}
-	} else if (*temp >= 100000) {
-		if ((logged & (ABOVE_100 | ABOVE_104)) == 0) {
-			dev_warn(dev, "Temperature >= 100 C\n");
-			logged |= ABOVE_100;
-		}
 	}
 
 	return 0;
