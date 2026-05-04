@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2026 chargebyte GmbH
+ * Author: Michael Heimpold <michael.heimpold@chargebyte.com>
+ */
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include "imx93-pinfunc.h"
+
+/dts-v1/;
+/plugin/;
+
+/ {
+	compatible = "chargebyte,imx93-ac-power-board";
+};
+
+&iomuxc {
+	pinctrl_rfid_gpio: rfidgpiogrp {
+		fsl,pins = <
+			MX93_PAD_UART2_RXD__GPIO1_IO06		0x31e // X15_6
+			MX93_PAD_UART2_TXD__GPIO1_IO07 		0x31e // X15_7
+		>;
+	};
+};
+
+&lpi2c5 {
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	nfc@28 {
+		compatible = "nxp,nxp-nci-i2c";
+		reg = <0x28>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_rfid_gpio>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <6 IRQ_TYPE_LEVEL_HIGH>;
+		enable-gpios = <&gpio2 24 GPIO_ACTIVE_HIGH>;
+		firmware-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
+	};
+};
