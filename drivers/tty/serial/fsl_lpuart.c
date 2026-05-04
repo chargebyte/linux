@@ -291,6 +291,11 @@ struct lpuart_port {
 	bool			is_cs7; /* Set to true when character size is 7 */
 					/* and the parity is enabled		*/
 	bool			dma_idle_int;
+	u32			max_rxcount_reg;
+	unsigned int 		max_rxcount_real;
+#ifdef CONFIG_DEBUG_FS
+	struct dentry		*device_root;
+#endif
 };
 
 struct lpuart_soc_data {
@@ -956,7 +961,7 @@ static void lpuart32_txint(struct lpuart_port *sport)
 
 static void lpuart32_rxint(struct lpuart_port *sport)
 {
-	unsigned int flg, ignored = 0;
+	unsigned int flg, ignored = 0, count = 0;
 	struct tty_port *port = &sport->port.state->port;
 	u32 rx, sr;
 	bool is_break;
@@ -966,6 +971,7 @@ static void lpuart32_rxint(struct lpuart_port *sport)
 	while (!(lpuart32_read(&sport->port, UARTFIFO) & UARTFIFO_RXEMPT)) {
 		flg = TTY_NORMAL;
 		sport->port.icount.rx++;
+		count++;
 		/*
 		 * to clear the FE, OR, NF, FE, PE flags,
 		 * read STAT then read DATA reg
@@ -1028,6 +1034,9 @@ static void lpuart32_rxint(struct lpuart_port *sport)
 	}
 
 out:
+	if (count > sport->max_rxcount_real)
+		sport->max_rxcount_real = count;
+
 	uart_unlock_and_check_sysrq(&sport->port);
 
 	tty_flip_buffer_push(port);
@@ -1281,6 +1290,8 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
 	sts = lpuart32_read(&sport->port, UARTSTAT);
 	rxcount = lpuart32_read(&sport->port, UARTWATER);
 	rxcount = rxcount >> UARTWATER_RXCNT_OFF;
+	if (rxcount > sport->max_rxcount_reg)
+		sport->max_rxcount_reg = rxcount;
 
 	if ((sts & UARTSTAT_RDRF || rxcount > 0) && !sport->lpuart_dma_rx_use)
 		lpuart32_rxint(sport);
@@ -2857,6 +2868,63 @@ static int lpuart_global_reset(struct lpuart_port *sport)
 	return 0;
 }
 
+/*
+ * Debug fs
+ */
+#ifdef CONFIG_DEBUG_FS
+#include <linux/debugfs.h>
+#include <linux/uaccess.h>
+#include <linux/seq_file.h>
+
+static int state_show(struct seq_file *s, void *p)
+{
+	struct lpuart_port *sport = s->private;
+
+	seq_printf(s, "TX FIFO size: %u\n", sport->txfifo_size);
+	seq_printf(s, "RX FIFO size: %u\n", sport->rxfifo_size);
+	seq_printf(s, "RX watermark: %u\n", sport->rx_watermark);
+	seq_printf(s, "Max RX count register: %u\n", sport->max_rxcount_reg);
+	seq_printf(s, "Max RX count real: %u\n", sport->max_rxcount_real);
+
+	return 0;
+}
+
+static int regs_show(struct seq_file *s, void *p)
+{
+	struct lpuart_port *sport = s->private;
+
+	pm_runtime_get_sync(sport->port.dev);
+
+	seq_printf(s, "BAUD     : 0x%08x\n", lpuart32_read(&sport->port, UARTBAUD));
+	seq_printf(s, "STAT     : 0x%08x\n", lpuart32_read(&sport->port, UARTSTAT));
+	seq_printf(s, "CTRL     : 0x%08x\n", lpuart32_read(&sport->port, UARTCTRL));
+	seq_printf(s, "MATCH    : 0x%08x\n", lpuart32_read(&sport->port, UARTMATCH));
+	seq_printf(s, "UARTMODIR: 0x%08x\n", lpuart32_read(&sport->port, UARTMODIR));
+	seq_printf(s, "FIFO     : 0x%08x\n", lpuart32_read(&sport->port, UARTFIFO));
+	seq_printf(s, "WATER    : 0x%08x\n", lpuart32_read(&sport->port, UARTWATER));
+
+	pm_runtime_mark_last_busy(sport->port.dev);
+	pm_runtime_put_autosuspend(sport->port.dev);
+
+	return 0;
+}
+
+DEFINE_SHOW_ATTRIBUTE(state);
+DEFINE_SHOW_ATTRIBUTE(regs);
+
+static void lpuart_init_debugfs(struct lpuart_port *sport)
+{
+	sport->device_root = debugfs_create_dir(dev_name(sport->port.dev),
+					       NULL);
+
+	debugfs_create_file("state", 0400, sport->device_root, sport, &state_fops);
+	debugfs_create_file("regs", 0400, sport->device_root, sport, &regs_fops);
+}
+
+#else
+static inline void lpuart_init_debugfs(struct lpuart_port *sport) {}
+#endif
+
 static int lpuart_probe(struct platform_device *pdev)
 {
 	const struct lpuart_soc_data *sdata = of_device_get_match_data(&pdev->dev);
@@ -2965,6 +3033,8 @@ static int lpuart_probe(struct platform_device *pdev)
 			       dev_name(&pdev->dev), sport);
 	if (ret)
 		goto failed_irq_request;
+
+	lpuart_init_debugfs(sport);
 
 	return 0;
 
