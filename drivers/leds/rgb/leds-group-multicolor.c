@@ -17,6 +17,7 @@
 #include <linux/math.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
+#include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/property.h>
 
@@ -106,11 +107,27 @@ static int leds_gmc_probe(struct platform_device *pdev)
 
 	for (i = 0; i < count; i++) {
 		struct led_classdev *led_cdev = priv->monochromatics[i];
+		u32 intensity;
 
 		subled[i].color_index = led_cdev->color;
 
-		/* Configure the LED intensity to its maximum */
-		subled[i].intensity = max_brightness;
+		ret = of_property_read_u32_index(pdev->dev.of_node, "default-intensity",
+						 i, &intensity);
+		if (ret) {
+			if (ret != -EINVAL) {
+				dev_warn(dev, "Unable to get default-intensity[%d]:  %d\n",
+					 i, ret);
+			}
+			subled[i].intensity = max_brightness;
+		} else if (intensity > max_brightness) {
+			dev_warn(dev, "default-intensity[%d] is invalid\n", i);
+			subled[i].intensity = max_brightness;
+		} else {
+			subled[i].intensity = intensity;
+		}
+
+		dev_dbg(dev, "subled[%d]: color_index: %u, intensity: %u\n",
+			i, subled[i].color_index, subled[i].intensity);
 	}
 
 	/* Initialise the multicolor's LED class device */
