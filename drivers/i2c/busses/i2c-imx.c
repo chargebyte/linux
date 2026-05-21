@@ -701,10 +701,6 @@ static int i2c_imx_start(struct imx_i2c_struct *i2c_imx, bool atomic)
 	unsigned int temp = 0;
 	int result;
 
-	result = i2c_imx_set_clk(i2c_imx, clk_get_rate(i2c_imx->clk));
-	if (result)
-		return result;
-
 	imx_i2c_write_reg(i2c_imx->ifdr, i2c_imx, IMX_I2C_IFDR);
 	/* Enable I2C controller */
 	imx_i2c_write_reg(i2c_imx->hwdata->i2sr_clr_opcode, i2c_imx, IMX_I2C_I2SR);
@@ -1783,7 +1779,7 @@ static int i2c_imx_runtime_suspend(struct device *dev)
 {
 	struct imx_i2c_struct *i2c_imx = dev_get_drvdata(dev);
 
-	clk_disable_unprepare(i2c_imx->clk);
+	clk_disable(i2c_imx->clk);
 	pinctrl_pm_select_sleep_state(dev);
 
 	return 0;
@@ -1795,7 +1791,7 @@ static int i2c_imx_runtime_resume(struct device *dev)
 	int ret;
 
 	pinctrl_pm_select_default_state(dev);
-	ret = clk_prepare_enable(i2c_imx->clk);
+	ret = clk_enable(i2c_imx->clk);
 	if (ret)
 		dev_err(dev, "can't enable I2C clock, ret=%d\n", ret);
 
