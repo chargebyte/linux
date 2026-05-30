@@ -185,6 +185,7 @@
 		clocks = <&clk IMX93_CLK_ENET_REF_PHY>;
 		reset-gpios = <&gpio4 13 GPIO_ACTIVE_HIGH>;
 		reset-assert-us = <30>;
+		reset-deassert-us = <50000>;
 		ti,leds-polarity = <1>; // active-high
 	};
 };
