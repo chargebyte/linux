@@ -114,7 +114,7 @@ static int leds_gmc_probe(struct platform_device *pdev)
 		ret = of_property_read_u32_index(pdev->dev.of_node, "default-intensity",
 						 i, &intensity);
 		if (ret) {
-			if (ret != -EINVAL) {
+			if (ret != -EINVAL && ret != -ENOSYS) {
 				dev_warn(dev, "Unable to get default-intensity[%d]:  %d\n",
 					 i, ret);
 			}
