@@ -115,13 +115,13 @@ static int leds_gmc_probe(struct platform_device *pdev)
 						 i, &intensity);
 		if (ret) {
 			if (ret != -EINVAL && ret != -ENOSYS) {
-				dev_warn(dev, "Unable to get default-intensity[%d]:  %d\n",
-					 i, ret);
+				return dev_err_probe(dev, ret, "Unable to get default-intensity[%d]\n",
+				       i);
 			}
 			subled[i].intensity = max_brightness;
 		} else if (intensity > max_brightness) {
-			dev_warn(dev, "default-intensity[%d] is invalid\n", i);
-			subled[i].intensity = max_brightness;
+			return dev_err_probe(dev, -EINVAL, "default-intensity[%d] is invalid\n",
+					     i);
 		} else {
 			subled[i].intensity = intensity;
 		}
