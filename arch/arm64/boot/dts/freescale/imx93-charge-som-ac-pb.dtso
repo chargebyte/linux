@@ -25,13 +25,6 @@
 		pwms = <&tpm5 0 5000 0>;
 	};
 
-	pwrseq_wifi: pwrseq-wifi {
-		compatible = "mmc-pwrseq-simple";
-		reset-gpios = <&gpio3 7 GPIO_ACTIVE_LOW>;
-		post-power-on-delay-ms = <10>;
-		power-off-delay-us = <80>;
-	};
-
 	reg_usb_otg1_vbus: regulator-usb-otg1-vbus {
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_usbotg1grp>;
@@ -46,11 +39,11 @@
 
 	reg_wifi: regulator-wifi {
 		compatible = "regulator-fixed";
-		regulator-max-microvolt = <3300000>;
-		regulator-min-microvolt = <3300000>;
-		regulator-name = "VCC_3V3";
+		regulator-max-microvolt = <1800000>;
+		regulator-min-microvolt = <1800000>;
+		regulator-name = "VCC_1V8";
+		gpio = <&gpio3 7 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
-		regulator-always-on;
 	};
 
 	multi-led {
@@ -242,6 +235,12 @@
 		>;
 	};
 
+	pinctrl_bt: btgrp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO25__GPIO2_IO25		0x31e // nIRQ_BLE
+		>;
+	};
+
 	pinctrl_m90e36_rst: m90e36rstgrp {
 		fsl,pins = <
 			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x31e // nRESET_ATM90E36
@@ -355,6 +354,8 @@
 
 	bluetooth {
 		compatible = "ti,cc33xx-bt";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_bt>;
 		cc33xx-supply = <&reg_wifi>;
 		max-speed = <115200>;
  	};
@@ -383,7 +384,6 @@
 	keep-power-in-suspend;
 	cap-power-off-card;
 	non-removable;
-	mmc-pwrseq = <&pwrseq_wifi>;
 	vmmc-supply = <&reg_wifi>;
 	// max-frequency = <10000000>;
 	#address-cells = <1>;
@@ -393,7 +393,7 @@
 	cc3301: wifi@2 {
 		compatible = "ti,cc3301", "ti,cc3300";
 		reg = <2>;
-		interrupts = <0 IRQ_TYPE_EDGE_RISING>;
+		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
 		interrupt-parent = <&gpio3>;
 	};
 };
