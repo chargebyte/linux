@@ -79,7 +79,7 @@
 	// 30 pins (0..29)
 	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_EXT_CS0", "SPI_EXT_MISO", \
 			  "SPI_EXT_MOSI", "SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "DIGITAL_OUTPUT_3", "", \
-			  "", "", "DIGITAL_INPUT_1", "GPIO_IO23", "nRESET_RFID", "nIRQ_BLE", "BUZZER", "OUTPUT_nFAIL", "", "";
+			  "", "", "DIGITAL_INPUT_1", "GPIO_IO23", "nRESET_RFID", "nIRQ_WL", "BUZZER", "OUTPUT_nFAIL", "", "";
 
 	rfid-reset-hog {
 		gpio-hog;
@@ -92,7 +92,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_wifi_rst>;
 	// 32 pins (0..31)
-	gpio-line-names = "nIRQ_WL", "", "", "", "", "", "", "nRESET_WL", "", "", \
+	gpio-line-names = "nIRQ_BLE", "", "", "", "", "", "", "nRESET_WL", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
 			  "SOM_EMMC_nRESET", "DIGITAL_INPUT_2", "DIGITAL_INPUT_3", "DIGITAL_INPUT_4", "DIGITAL_OUTPUT_1", "DIGITAL_OUTPUT_2", "CURRENT_SETTING_3", "CURRENT_SETTING_4", "LPUART5_RX", "LPUART5_RTS_B", \
 			  "LPUART5_CTS", "LPUART5_TX";
@@ -123,7 +123,7 @@
 			MX93_PAD_SD2_DATA1__USDHC2_DATA1	0x4000138e
 			MX93_PAD_SD2_DATA2__USDHC2_DATA2	0x4000138e
 			MX93_PAD_SD2_DATA3__USDHC2_DATA3	0x4000139e
-			MX93_PAD_SD2_CD_B__GPIO3_IO00		0x31e // nIRQ_WL
+			MX93_PAD_GPIO_IO25__GPIO2_IO25		0x31e // nIRQ_WL
 		>;
 	};
 
@@ -237,7 +237,7 @@
 
 	pinctrl_bt: btgrp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO25__GPIO2_IO25		0x31e // nIRQ_BLE
+			MX93_PAD_SD2_CD_B__GPIO3_IO00		0x31e // nIRQ_BLE
 		>;
 	};
 
@@ -393,7 +393,7 @@
 	cc3301: wifi@2 {
 		compatible = "ti,cc3301", "ti,cc3300";
 		reg = <2>;
-		interrupts = <0 IRQ_TYPE_LEVEL_LOW>;
-		interrupt-parent = <&gpio3>;
+		interrupts = <25 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&gpio2>;
 	};
 };
