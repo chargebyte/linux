@@ -23,7 +23,6 @@
 	pwm-beeper {
 		compatible = "pwm-beeper";
 		pwms = <&tpm5 0 5000 0>;
-		// beeper-hz = <1000>;
 	};
 
 	pwrseq_wifi: pwrseq-wifi {
@@ -108,7 +107,7 @@
 
 &gpio4 {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_m90e36_rst>, <&pinctrl_factory_rst>;
+	pinctrl-0 = <&pinctrl_m90e36_rst>, <&pinctrl_factory_rst>, <&pinctrl_residual_cur>;
 	// 30 pins (0..29)
 	gpio-line-names = "USB1_ID", "", "RTC_nINT", "FACTORY_RESET", "USB1_OC", "", "nRESET_ATM90E36", "DL_REQ_INTR_SPI", "ATM90E36_IRQ", "nPLC_RESET_INT", \
 			  "", "WS2812B", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "", "DIGITAL_OUTPUT_4", "", "", "", \
@@ -131,6 +130,7 @@
 			MX93_PAD_SD2_DATA1__USDHC2_DATA1	0x4000138e
 			MX93_PAD_SD2_DATA2__USDHC2_DATA2	0x4000138e
 			MX93_PAD_SD2_DATA3__USDHC2_DATA3	0x4000139e
+			MX93_PAD_SD2_CD_B__GPIO3_IO00		0x31e // nIRQ_WL
 		>;
 	};
 
@@ -251,6 +251,12 @@
 	pinctrl_factory_rst: factoryrstgrp {
 		fsl,pins = <
 			MX93_PAD_ENET1_TD2__GPIO4_IO03		0x31e // FACTORY_RESET
+		>;
+	};
+
+	pinctrl_residual_cur: residualcurgrp {
+		fsl,pins = <
+			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x31e // RESIDUAL_CURRENT
 		>;
 	};
 };
