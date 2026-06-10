@@ -162,10 +162,10 @@
 
 	pinctrl_current: currentgrp {
 		fsl,pins = <
-			MX93_PAD_PDM_BIT_STREAM0__GPIO1_IO09	0x31e // Current Setting 1
-			MX93_PAD_PDM_CLK__GPIO1_IO08		0x31e // Current Setting 2
-			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x31e // Current Setting 3
-			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x31e // Current Setting 4
+			MX93_PAD_PDM_BIT_STREAM0__GPIO1_IO09	0x51e // Current Setting 1
+			MX93_PAD_PDM_CLK__GPIO1_IO08		0x51e // Current Setting 2
+			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x51e // Current Setting 3
+			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x51e // Current Setting 4
 		>;
 	};
 
@@ -181,10 +181,10 @@
 	pinctrl_output: outputgrp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO27__GPIO2_IO27		0x31e // OUTPUT_nFAIL
-			MX93_PAD_SD3_DATA2__GPIO3_IO24		0x31e // OUTPUT_1
-			MX93_PAD_SD3_DATA3__GPIO3_IO25		0x31e // OUTPUT_2
-			MX93_PAD_GPIO_IO18__GPIO2_IO18		0x31e // OUTPUT_3
-			MX93_PAD_ENET2_TD3__GPIO4_IO16		0x31e // OUTPUT_4
+			MX93_PAD_SD3_DATA2__GPIO3_IO24		0x51e // OUTPUT_1
+			MX93_PAD_SD3_DATA3__GPIO3_IO25		0x51e // OUTPUT_2
+			MX93_PAD_GPIO_IO18__GPIO2_IO18		0x51e // OUTPUT_3
+			MX93_PAD_ENET2_TD3__GPIO4_IO16		0x51e // OUTPUT_4
 		>;
 	};
 
@@ -213,7 +213,7 @@
 
 	pinctrl_ws2812b: ws2812bgrp {
 		fsl,pins = <
-			MX93_PAD_ENET1_RD1__FLEXIO2_FLEXIO11	0x31e // WS2812B
+			MX93_PAD_ENET1_RD1__FLEXIO2_FLEXIO11	0x11e // WS2812B
 		>;
 	};
 
@@ -225,7 +225,7 @@
 
 	pinctrl_buzzer: buzzergrp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO26__TPM5_CH3		0x31e // BUZZER
+			MX93_PAD_GPIO_IO26__TPM5_CH3		0x11e // BUZZER
 		>;
 	};
 
@@ -257,7 +257,7 @@
 
 	pinctrl_residual_cur: residualcurgrp {
 		fsl,pins = <
-			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x31e // RESIDUAL_CURRENT
+			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x51e // RESIDUAL_CURRENT
 		>;
 	};
 };
