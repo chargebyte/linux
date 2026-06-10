@@ -288,9 +288,9 @@
 		trickle-resistor-ohms = <3000>;
 	};
 
-	pca9632: led-controller@60 {
+	pca9632: led-controller@62 {
 		compatible = "nxp,pca9632";
-		reg = <0x60>;
+		reg = <0x62>;
 		#address-cells = <1>;
 		#size-cells = <0>;
 
