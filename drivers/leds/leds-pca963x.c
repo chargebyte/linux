@@ -338,8 +338,10 @@ static int pca963x_register_leds(struct i2c_client *client,
 	hw_blink = device_property_read_bool(dev, "nxp,hw-blink");
 
 	mode2 = pca963x_read_byte_data(client, PCA963X_MODE2);
-	if (mode2 < 0)
+	if (mode2 < 0) {
+		dev_err(dev, "Failed to read PCA963X_MODE2: %d\n", mode2);
 		return mode2;
+	}
 
 	/* default to open-drain unless totem pole (push-pull) is specified */
 	if (device_property_read_bool(dev, "nxp,totem-pole"))
@@ -354,8 +356,10 @@ static int pca963x_register_leds(struct i2c_client *client,
 		mode2 &= ~PCA963X_MODE2_INVRT;
 
 	ret = pca963x_write_byte_data(client, PCA963X_MODE2, mode2);
-	if (ret < 0)
+	if (ret < 0) {
+		dev_err(dev, "Failed to write PCA963X_MODE2: %d\n", ret);
 		return ret;
+	}
 
 	device_for_each_child_node(dev, child) {
 		struct led_init_data init_data = {};
