@@ -249,7 +249,9 @@
 
 	pinctrl_factory_rst: factoryrstgrp {
 		fsl,pins = <
-			MX93_PAD_ENET1_TD2__GPIO4_IO03		0x31e // FACTORY_RESET
+			// HACK: some boards do not have the R129,
+			//       so fix this here with a pulldown
+			MX93_PAD_ENET1_TD2__GPIO4_IO03		0x51e // FACTORY_RESET
 		>;
 	};
 
