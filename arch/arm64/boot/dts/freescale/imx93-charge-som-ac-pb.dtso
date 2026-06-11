@@ -22,7 +22,7 @@
 
 	pwm-beeper {
 		compatible = "pwm-beeper";
-		pwms = <&tpm5 0 5000 0>;
+		pwms = <&tpm5 3 5000 0>;
 	};
 
 	reg_usb_otg1_vbus: regulator-usb-otg1-vbus {
