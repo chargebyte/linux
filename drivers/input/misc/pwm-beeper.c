@@ -30,6 +30,7 @@ struct pwm_beeper {
 
 static int pwm_beeper_on(struct pwm_beeper *beeper, unsigned long period)
 {
+	struct device *dev = &beeper->input->dev;
 	struct pwm_state state;
 	int error;
 
@@ -37,15 +38,22 @@ static int pwm_beeper_on(struct pwm_beeper *beeper, unsigned long period)
 
 	state.enabled = true;
 	state.period = period;
-	pwm_set_relative_duty_cycle(&state, 50, 100);
+	error = pwm_set_relative_duty_cycle(&state, 50, 100);
+	if (error) {
+		dev_err(dev, "Failed to set duty cycle: %d", error);
+		return error;
+	}
 
 	error = pwm_apply_might_sleep(beeper->pwm, &state);
-	if (error)
+	if (error) {
+		dev_err(dev, "Failed to enable PWM: %d", error);
 		return error;
+	}
 
 	if (!beeper->amplifier_on) {
 		error = regulator_enable(beeper->amplifier);
 		if (error) {
+			dev_err(dev, "Failed to enable regulator: %d", error);
 			pwm_disable(beeper->pwm);
 			return error;
 		}
