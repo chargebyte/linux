@@ -295,6 +295,7 @@
 		reg = <0x62>;
 		#address-cells = <1>;
 		#size-cells = <0>;
+		nxp,totem-pole;
 
 		led0: led@0 {
 			reg = <0>;
