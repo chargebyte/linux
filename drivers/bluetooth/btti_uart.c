@@ -621,10 +621,20 @@ static int btti_uart_probe(struct serdev_device *serdev)
 			return dev_err_probe(&serdev->dev, PTR_ERR(bdev->pins_runtime),
 					     "can't lookup default pin state\n");
 		}
+
+		pinctrl_select_state(bdev->pinctrl, bdev->pins_runtime);
 	} else {
 		bdev->pinctrl = NULL;
 		bdev->pins_runtime = NULL;
 	}
+
+	serdev_device_set_client_ops(serdev, &btti_uart_client_ops);
+
+	INIT_WORK(&bdev->tx_work, btti_uart_tx_work);
+	skb_queue_head_init(&bdev->txq);
+
+	INIT_WORK(&bdev->btti_uart_sm_work, btti_uart_sm_work);
+	init_llist_head(&bdev->sm_event_list);
 
 	bdev->reg = devm_regulator_get_optional(&serdev->dev, "cc33xx");
 	if (IS_ERR(bdev->reg)) {
@@ -644,17 +654,6 @@ static int btti_uart_probe(struct serdev_device *serdev)
 	}
 
 	btti_uart_host_wake_init(serdev);
-
-	if (bdev->pins_runtime)
-		pinctrl_select_state(bdev->pinctrl, bdev->pins_runtime);
-
-	serdev_device_set_client_ops(serdev, &btti_uart_client_ops);
-
-	INIT_WORK(&bdev->tx_work, btti_uart_tx_work);
-	skb_queue_head_init(&bdev->txq);
-
-	INIT_WORK(&bdev->btti_uart_sm_work, btti_uart_sm_work);
-	init_llist_head(&bdev->sm_event_list);
 
 	btti_uart_sm_post_event(bdev, EVENT_PROBE_DONE);
 
