@@ -109,7 +109,7 @@
 	m90e36-reset-hog {
 		gpio-hog;
 		gpios = <6 GPIO_ACTIVE_LOW>;
-		output-high;
+		output-low;
 	};
 };
 
