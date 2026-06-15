@@ -80,12 +80,6 @@
 	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_EXT_CS0", "SPI_EXT_MISO", \
 			  "SPI_EXT_MOSI", "SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "DIGITAL_OUTPUT_3", "", \
 			  "", "", "DIGITAL_INPUT_1", "GPIO_IO23", "nRESET_RFID", "nIRQ_WL", "BUZZER", "OUTPUT_nFAIL", "", "";
-
-	rfid-reset-hog {
-		gpio-hog;
-		gpios = <24 GPIO_ACTIVE_LOW>;
-		output-high;
-	};
 };
 
 &gpio3 {
@@ -219,7 +213,7 @@
 
 	pinctrl_rfid: rfidgrp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO24__TPM3_CH3		0x31e // nRESET_RFID
+			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // nRESET_RFID
 		>;
 	};
 
