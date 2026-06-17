@@ -245,6 +245,11 @@ static inline bool pca953x_is_pcal_type(const struct pca953x_chip *chip)
 	return chip_type == PCAL953X_TYPE || chip_type == PCAL653X_TYPE;
 }
 
+static inline bool pca953x_has_interrupt(const struct pca953x_chip *chip)
+{
+	return chip->driver_data & PCA_INT;
+}
+
 #define PCA953x_BANK_INPUT	BIT(0)
 #define PCA953x_BANK_OUTPUT	BIT(1)
 #define PCA953x_BANK_POLARITY	BIT(2)
@@ -966,7 +971,7 @@ static int pca953x_irq_setup(struct pca953x_chip *chip, int irq_base)
 	if (irq_base == -1)
 		return 0;
 
-	if (!(chip->driver_data & PCA_INT))
+	if (!pca953x_has_interrupt(chip))
 		return 0;
 
 	ret = pca953x_read_regs(chip, chip->regs->input, irq_stat);
@@ -1008,7 +1013,7 @@ static int pca953x_irq_setup(struct pca953x_chip *chip, int irq_base)
 	struct i2c_client *client = chip->client;
 	struct device *dev = &client->dev;
 
-	if (client->irq && irq_base != -1 && (chip->driver_data & PCA_INT))
+	if (client->irq && irq_base != -1 && pca953x_has_interrupt(chip))
 		dev_warn(dev, "interrupt support not compiled in\n");
 
 	return 0;
