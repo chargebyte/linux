@@ -73,9 +73,9 @@
 #define PCA_INT			BIT(8)
 #define PCA_PCAL		BIT(9)
 #define PCA_LATCH_INT		(PCA_PCAL | PCA_INT)
-#define PCA953X_TYPE		BIT(12)
-#define PCA957X_TYPE		BIT(13)
-#define PCAL653X_TYPE		BIT(14)
+#define PCA953X_TYPE		(0x00 << 12)
+#define PCAL653X_TYPE		(0x02 << 12)
+#define PCA957X_TYPE		(0x03 << 12)
 #define PCA_TYPE_MASK		GENMASK(15, 12)
 
 #define PCA_CHIP_TYPE(x)	((x) & PCA_TYPE_MASK)
@@ -361,13 +361,17 @@ static bool pca953x_readable_register(struct device *dev, unsigned int reg)
 	struct pca953x_chip *chip = dev_get_drvdata(dev);
 	u32 bank;
 
-	if (PCA_CHIP_TYPE(chip->driver_data) == PCA957X_TYPE) {
+	switch (PCA_CHIP_TYPE(chip->driver_data)) {
+	case PCA953X_TYPE:
+	case PCAL653X_TYPE:
+		bank = PCA953x_BANK_INPUT | PCA953x_BANK_OUTPUT |
+		       PCA953x_BANK_POLARITY | PCA953x_BANK_CONFIG;
+		break;
+	case PCA957X_TYPE:
 		bank = PCA957x_BANK_INPUT | PCA957x_BANK_OUTPUT |
 		       PCA957x_BANK_POLARITY | PCA957x_BANK_CONFIG |
 		       PCA957x_BANK_BUSHOLD;
-	} else {
-		bank = PCA953x_BANK_INPUT | PCA953x_BANK_OUTPUT |
-		       PCA953x_BANK_POLARITY | PCA953x_BANK_CONFIG;
+		break;
 	}
 
 	if (chip->driver_data & PCA_PCAL) {
@@ -384,12 +388,16 @@ static bool pca953x_writeable_register(struct device *dev, unsigned int reg)
 	struct pca953x_chip *chip = dev_get_drvdata(dev);
 	u32 bank;
 
-	if (PCA_CHIP_TYPE(chip->driver_data) == PCA957X_TYPE) {
-		bank = PCA957x_BANK_OUTPUT | PCA957x_BANK_POLARITY |
-			PCA957x_BANK_CONFIG | PCA957x_BANK_BUSHOLD;
-	} else {
+	switch (PCA_CHIP_TYPE(chip->driver_data)) {
+	case PCA953X_TYPE:
+	case PCAL653X_TYPE:
 		bank = PCA953x_BANK_OUTPUT | PCA953x_BANK_POLARITY |
-			PCA953x_BANK_CONFIG;
+		       PCA953x_BANK_CONFIG;
+		break;
+	case PCA957X_TYPE:
+		bank = PCA957x_BANK_OUTPUT | PCA957x_BANK_POLARITY |
+		       PCA957x_BANK_CONFIG | PCA957x_BANK_BUSHOLD;
+		break;
 	}
 
 	if (chip->driver_data & PCA_PCAL)
@@ -404,10 +412,15 @@ static bool pca953x_volatile_register(struct device *dev, unsigned int reg)
 	struct pca953x_chip *chip = dev_get_drvdata(dev);
 	u32 bank;
 
-	if (PCA_CHIP_TYPE(chip->driver_data) == PCA957X_TYPE)
-		bank = PCA957x_BANK_INPUT;
-	else
+	switch (PCA_CHIP_TYPE(chip->driver_data)) {
+	case PCA953X_TYPE:
+	case PCAL653X_TYPE:
 		bank = PCA953x_BANK_INPUT;
+		break;
+	case PCA957X_TYPE:
+		bank = PCA957x_BANK_INPUT;
+		break;
+	}
 
 	if (chip->driver_data & PCA_PCAL)
 		bank |= PCAL9xxx_BANK_IRQ_STAT;
