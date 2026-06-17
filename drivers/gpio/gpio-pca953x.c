@@ -37,6 +37,7 @@
 #define PCA953X_OUTPUT		0x01
 #define PCA953X_INVERT		0x02
 #define PCA953X_DIRECTION	0x03
+#define PCA953X_INT_MASK	0x04
 
 #define REG_ADDR_MASK		GENMASK(5, 0)
 #define REG_ADDR_EXT		BIT(6)
@@ -84,8 +85,8 @@
 static const struct i2c_device_id pca953x_id[] = {
 	{ "pca6408", 8  | PCA953X_TYPE | PCA_INT, },
 	{ "pca6416", 16 | PCA953X_TYPE | PCA_INT, },
-	{ "pca9505", 40 | PCA953X_TYPE | PCA_INT, },
-	{ "pca9506", 40 | PCA953X_TYPE | PCA_INT, },
+	{ "pca9505", 40 | PCA953X_TYPE | PCA_MASKED_INT, },
+	{ "pca9506", 40 | PCA953X_TYPE | PCA_MASKED_INT, },
 	{ "pca9534", 8  | PCA953X_TYPE | PCA_INT, },
 	{ "pca9535", 16 | PCA953X_TYPE | PCA_INT, },
 	{ "pca9536", 4  | PCA953X_TYPE, },
@@ -98,7 +99,7 @@ static const struct i2c_device_id pca953x_id[] = {
 	{ "pca9557", 8  | PCA953X_TYPE, },
 	{ "pca9574", 8  | PCA957X_TYPE | PCA_INT, },
 	{ "pca9575", 16 | PCA957X_TYPE | PCA_INT, },
-	{ "pca9698", 40 | PCA953X_TYPE, },
+	{ "pca9698", 40 | PCA953X_TYPE | PCA_MASKED_INT, },
 
 	{ "pcal6408", 8 | PCAL953X_TYPE | PCA_MASKED_INT, },
 	{ "pcal6416", 16 | PCAL953X_TYPE | PCA_MASKED_INT, },
@@ -200,6 +201,7 @@ static const struct pca953x_reg_config pca953x_regs = {
 	.output = PCA953X_OUTPUT,
 	.input = PCA953X_INPUT,
 	.invert = PCA953X_INVERT,
+	.int_mask = PCA953X_INT_MASK,
 };
 
 static const struct pca953x_reg_config pcal953x_regs = {
@@ -270,6 +272,7 @@ static inline bool pca953x_has_int_mask_reg(const struct pca953x_chip *chip)
 #define PCA953x_BANK_OUTPUT	BIT(1)
 #define PCA953x_BANK_POLARITY	BIT(2)
 #define PCA953x_BANK_CONFIG	BIT(3)
+#define PCA953x_BANK_INT_MASK	BIT(4)
 
 #define PCA957x_BANK_INPUT	BIT(0)
 #define PCA957x_BANK_POLARITY	BIT(1)
@@ -291,6 +294,8 @@ static inline bool pca953x_has_int_mask_reg(const struct pca953x_chip *chip)
  *     Output port			0x00 + 1 * bank_size	RW
  *     Polarity Inversion port		0x00 + 2 * bank_size	RW
  *     Configuration port		0x00 + 3 * bank_size	RW
+ *   - Some chips have the standard layout with additional interrupt mask:
+ *     Interrupt Mask port		0x00 + 4 * bank_size	RW
  *   - PCA957x with mixed up registers
  *     Input port			0x00 + 0 * bank_size	R
  *     Polarity Inversion port		0x00 + 1 * bank_size	RW
@@ -391,6 +396,10 @@ static bool pca953x_readable_register(struct device *dev, unsigned int reg)
 	case PCA953X_TYPE:
 		bank = PCA953x_BANK_INPUT | PCA953x_BANK_OUTPUT |
 		       PCA953x_BANK_POLARITY | PCA953x_BANK_CONFIG;
+
+		if (pca953x_has_int_mask_reg(chip))
+			bank |= PCA953x_BANK_INT_MASK;
+
 		break;
 	case PCAL953X_TYPE:
 	case PCAL653X_TYPE:
@@ -419,6 +428,10 @@ static bool pca953x_writeable_register(struct device *dev, unsigned int reg)
 	case PCA953X_TYPE:
 		bank = PCA953x_BANK_OUTPUT | PCA953x_BANK_POLARITY |
 		       PCA953x_BANK_CONFIG;
+
+		if (pca953x_has_int_mask_reg(chip))
+			bank |= PCA953x_BANK_INT_MASK;
+
 		break;
 	case PCAL953X_TYPE:
 	case PCAL653X_TYPE:
@@ -1366,8 +1379,8 @@ static DEFINE_SIMPLE_DEV_PM_OPS(pca953x_pm_ops, pca953x_suspend, pca953x_resume)
 static const struct of_device_id pca953x_dt_ids[] = {
 	{ .compatible = "nxp,pca6408", .data = OF_953X(8, PCA_INT), },
 	{ .compatible = "nxp,pca6416", .data = OF_953X(16, PCA_INT), },
-	{ .compatible = "nxp,pca9505", .data = OF_953X(40, PCA_INT), },
-	{ .compatible = "nxp,pca9506", .data = OF_953X(40, PCA_INT), },
+	{ .compatible = "nxp,pca9505", .data = OF_953X(40, PCA_MASKED_INT), },
+	{ .compatible = "nxp,pca9506", .data = OF_953X(40, PCA_MASKED_INT), },
 	{ .compatible = "nxp,pca9534", .data = OF_953X( 8, PCA_INT), },
 	{ .compatible = "nxp,pca9535", .data = OF_953X(16, PCA_INT), },
 	{ .compatible = "nxp,pca9536", .data = OF_953X( 4, 0), },
@@ -1380,7 +1393,7 @@ static const struct of_device_id pca953x_dt_ids[] = {
 	{ .compatible = "nxp,pca9557", .data = OF_953X( 8, 0), },
 	{ .compatible = "nxp,pca9574", .data = OF_957X( 8, PCA_INT), },
 	{ .compatible = "nxp,pca9575", .data = OF_957X(16, PCA_INT), },
-	{ .compatible = "nxp,pca9698", .data = OF_953X(40, 0), },
+	{ .compatible = "nxp,pca9698", .data = OF_953X(40, PCA_MASKED_INT), },
 
 	{ .compatible = "nxp,pcal6408", .data = OF_L953X( 8, PCA_MASKED_INT), },
 	{ .compatible = "nxp,pcal6416", .data = OF_L953X(16, PCA_MASKED_INT), },
