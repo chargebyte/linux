@@ -354,7 +354,6 @@ static int imx7ulp_wdt_probe(struct platform_device *pdev)
 	wdog->info = &imx7ulp_wdt_info;
 	wdog->ops = &imx7ulp_wdt_ops;
 	wdog->min_timeout = 1;
-	wdog->max_timeout = MAX_TIMEOUT;
 	wdog->parent = dev;
 	wdog->timeout = DEFAULT_TIMEOUT;
 	wdog->max_hw_heartbeat_ms = TOVAL_MAX * 1000 / clock_rate;
