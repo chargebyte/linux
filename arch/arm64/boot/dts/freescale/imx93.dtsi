@@ -1461,7 +1461,7 @@
 		};
 
 		usbmisc1: usbmisc@4c100200 {
-			compatible = "fsl,imx8mm-usbmisc", "fsl,imx7d-usbmisc",
+			compatible = "fsl,imx93-usbmisc", "fsl,imx7d-usbmisc",
 				     "fsl,imx6q-usbmisc";
 			reg = <0x4c100200 0x200>;
 			#index-cells = <1>;
@@ -1483,7 +1483,7 @@
 		};
 
 		usbmisc2: usbmisc@4c200200 {
-			compatible = "fsl,imx8mm-usbmisc", "fsl,imx7d-usbmisc",
+			compatible = "fsl,imx93-usbmisc", "fsl,imx7d-usbmisc",
 				     "fsl,imx6q-usbmisc";
 			reg = <0x4c200200 0x200>;
 			#index-cells = <1>;
