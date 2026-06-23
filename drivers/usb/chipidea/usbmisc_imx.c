@@ -1093,7 +1093,7 @@ static int usbmisc_imx95_set_wakeup(struct imx_usbmisc_data *data, bool enabled)
 	return 0;
 }
 
-static int usbmisc_imx95_init(struct imx_usbmisc_data *data)
+static int usbmisc_imx9x_init(struct imx_usbmisc_data *data)
 {
 	struct imx_usbmisc *usbmisc = dev_get_drvdata(data->dev);
 	unsigned long flags;
@@ -1123,6 +1123,16 @@ static int usbmisc_imx95_init(struct imx_usbmisc_data *data)
 		reg |= MX6_BM_PWR_POLARITY;
 	writel(reg, usbmisc->base);
 	spin_unlock_irqrestore(&usbmisc->lock, flags);
+
+	return 0;
+}
+
+static int usbmisc_imx95_init(struct imx_usbmisc_data *data)
+{
+	int ret = usbmisc_imx9x_init(data);
+
+	if (ret)
+		return ret;
 
 	/* Will use HSIO blkctl wakeup as source, so disable usbmisc wakeup */
 	usbmisc_imx7d_set_wakeup(data, false);
@@ -1181,6 +1191,15 @@ static const struct usbmisc_ops imx7ulp_usbmisc_ops = {
 	.hsic_set_connect = usbmisc_imx6_hsic_set_connect,
 	.hsic_set_clk = usbmisc_imx6_hsic_set_clk,
 	.power_lost_check = usbmisc_imx7d_power_lost_check,
+};
+
+static const struct usbmisc_ops imx93_usbmisc_ops = {
+	.init = usbmisc_imx9x_init,
+	.set_wakeup = usbmisc_imx7d_set_wakeup,
+	.charger_detection = imx7d_charger_detection,
+	.power_lost_check = usbmisc_imx7d_power_lost_check,
+	.pullup = usbmisc_imx7d_pullup,
+	.vbus_comparator_on = usbmisc_imx7d_vbus_comparator_on,
 };
 
 static const struct usbmisc_ops imx95_usbmisc_ops = {
@@ -1427,6 +1446,10 @@ static const struct of_device_id usbmisc_imx_dt_ids[] = {
 	{
 		.compatible = "fsl,imx8ulp-usbmisc",
 		.data = &imx7ulp_usbmisc_ops,
+	},
+	{
+		.compatible = "fsl,imx93-usbmisc",
+		.data = &imx93_usbmisc_ops,
 	},
 	{
 		.compatible = "fsl,imx95-usbmisc",
