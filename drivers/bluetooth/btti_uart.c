@@ -313,6 +313,9 @@ static void sm_process(struct btti_uart_dev *bdev, enum sm_event event)
 	switch (bdev->sm_state) {
 	case STATE_PROBING:
 		switch (event) {
+		case EVENT_REGULATOR_ENABLE:
+			break;
+
 		case EVENT_PROBE_DONE:
 			if (bdev->reg && regulator_is_enabled(bdev->reg))
 				btti_uart_sm_post_event(bdev, EVENT_REGULATOR_ENABLE);
