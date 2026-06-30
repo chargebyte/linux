@@ -557,9 +557,11 @@ static void btti_uart_host_wake_init(struct serdev_device *serdev)
 		bdev->pins_sleep = NULL;
 
 	bdev->host_wakeup = devm_gpiod_get_optional(&serdev->dev, "host-wakeup", GPIOD_IN);
-	if (IS_ERR(bdev->host_wakeup)) {
-		dev_err_probe(&serdev->dev, PTR_ERR(bdev->host_wakeup),
-			      "can't get host-wakeup gpio\n");
+	if (IS_ERR_OR_NULL(bdev->host_wakeup)) {
+		if (IS_ERR(bdev->host_wakeup)) {
+			dev_err_probe(&serdev->dev, PTR_ERR(bdev->host_wakeup),
+				      "can't get host-wakeup gpio\n");
+		}
 		goto out_err;
 	}
 
