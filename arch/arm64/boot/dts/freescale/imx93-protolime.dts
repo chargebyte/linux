@@ -60,6 +60,7 @@
 		port1_status_led: multi-led {
 			color = <LED_COLOR_ID_RGB>;
 			function = LED_FUNCTION_STATUS;
+			function-enumerator = <1>;
 			max-brightness = <255>;
 
 			led-red {
@@ -86,6 +87,7 @@
 		port2_status_led: multi-led {
 			color = <LED_COLOR_ID_RGB>;
 			function = LED_FUNCTION_STATUS;
+			function-enumerator = <2>;
 			max-brightness = <255>;
 
 			led-red {
@@ -144,13 +146,13 @@
 	pinctrl-0 = <&pinctrl_gpio4>;
 
 	// 30 pins (0..29)
-	gpio-line-names = "", "", "", "", "", "", "", "", "", "", \
-			  "", "", "SAFETY_BOOTMODE_SET1", "SAFETY_BOOTMODE_SET2", "", "", "", "", "", "", \
-			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "";
+	gpio-line-names = "", "", "", "nSAFETY2_RESET_INT", "", "", "nSAFETY_RESET_INT", "", "", "", \
+			  "", "", "SAFETY_BOOTMODE_SET", "SAFETY2_BOOTMODE_SET", "", "", "", "", "", "", \
+			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "LED_DRIVER_EN", "PMIC_IRQ_B", "BUZZER_PWM", "SPI_TPM_nINT0";
 
 	pca9685-en-hog {
 		gpio-hog;
-		gpios = <26 GPIO_ACTIVE_HIGH>;
+		gpios = <26 GPIO_ACTIVE_LOW>;
 		output-high;
 	};
 };
@@ -260,9 +262,9 @@
 		reg = <0x18>;
 	};
 
-	fanctl: fan-controller@2f {
+	fanctl: fan-controller@2e {
 		compatible = "microchip,emc2302", "microchip,emc2305";
-		reg = <0x2f>;
+		reg = <0x2e>;
 
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -370,7 +372,7 @@
 		compatible = "microchip,ksz8895";
 		reg = <0>;
 
-		spi-max-frequency = <44000000>;
+		spi-max-frequency = <1000000>;
 
 		ethernet-ports {
 			#address-cells = <1>;
@@ -399,12 +401,7 @@
 			port@4 {
 				reg = <4>;
 				ethernet = <&fec>;
-				phy-mode = "mii";
-
-				fixed-link {
-					speed = <100>;
-					full-duplex;
-				};
+				phy-mode = "internal";
 			};
 		};
 	};
@@ -601,12 +598,6 @@
 		>;
 	};
 
-	pinctrl_heater: heatergrp {
-		fsl,pins = <
-			MX93_PAD_WDOG_ANY__GPIO1_IO15		0x31e // FIXME This pin is already in use by imx93-phycore-som.dtsi
-		>;
-	};
-
 	pinctrl_gpio1: gpio1grp {
 		fsl,pins = <
 			MX93_PAD_I2C2_SCL__GPIO1_IO02		0x31e // TTL_PORT1_RCD_TEST
@@ -633,11 +624,13 @@
 
 	pinctrl_gpio4: gpio4grp {
 		fsl,pins = <
+			MX93_PAD_ENET1_TD2__GPIO4_IO03		0x31e // nSAFETY2_RESET_INT
+			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x31e // nSAFETY_RESET_INT
 			MX93_PAD_ENET1_TXC__GPIO4_IO07		0x31e // EN_PORT1_GP_OUT2
 			MX93_PAD_ENET1_RXC__GPIO4_IO09		0x31e // TTL_PORT2_GP_IN_1
 			MX93_PAD_ENET1_RD1__GPIO4_IO11		0x31e // TTL_PORT1_GP_IN_2
-			MX93_PAD_ENET1_RD2__GPIO4_IO12 		0x39e // SAFETY_BOOTMODE_SET1
-			MX93_PAD_ENET1_RD3__GPIO4_IO13		0x39e // SAFETY_BOOTMODE_SET2
+			MX93_PAD_ENET1_RD2__GPIO4_IO12 		0x31e // SAFETY_BOOTMODE_SET
+			MX93_PAD_ENET1_RD3__GPIO4_IO13		0x31e // SAFETY2_BOOTMODE_SET
 			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x31e // LED_DRIVER_EN
 		>;
 	};
