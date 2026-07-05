@@ -109,7 +109,7 @@
 &mac0 {
 	phy-mode = "rmii";
 	pinctrl-names = "default";
-	pinctrl-0 = <&mac0_pins_a>, <&mac0_phy_reset_pin>;
+	pinctrl-0 = <&mac0_pins_a &mac0_phy_reset_pin>;
 	phy-supply = <&reg_3p3v>;
 	status = "okay";
 
@@ -193,8 +193,7 @@
 &ssp0 {
 	compatible = "fsl,imx28-mmc";
 	pinctrl-names = "default";
-	pinctrl-0 = <&mmc0_8bit_pins_a
-		&mmc0_cd_cfg &mmc0_sck_cfg>;
+	pinctrl-0 = <&mmc0_8bit_pins_a &mmc0_cd_cfg &mmc0_sck_cfg>;
 	bus-width = <8>;
 	non-removable;
 	no-sdio;
