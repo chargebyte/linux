@@ -39,7 +39,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&led_pins>;
 
-		led-0 {			/* Heartbeat */
+		led-0 {
 			label = "evse:red:led0";
 			gpios = <&gpio3 5 GPIO_ACTIVE_HIGH>;
 			linux,default-trigger = "heartbeat";
@@ -134,7 +134,7 @@
 	mac0_phy_reset_pin: mac0-phy-reset@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
-			MX28_PAD_ENET0_RX_CLK__GPIO_4_13  /* PHY Reset */
+			MX28_PAD_ENET0_RX_CLK__GPIO_4_13
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
@@ -144,7 +144,7 @@
 	mac0_phy_int_pin: mac0-phy-int@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
-			MX28_PAD_ENET0_TX_CLK__GPIO_4_5   /* PHY Interrupt */
+			MX28_PAD_ENET0_TX_CLK__GPIO_4_5
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
@@ -182,8 +182,7 @@
 	emmc_reset_pin: emmc-reset@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
-			/* pullup */
-			MX28_PAD_SSP2_SS1__GPIO_2_20 /* EMMC_RESET */
+			MX28_PAD_SSP2_SS1__GPIO_2_20
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
