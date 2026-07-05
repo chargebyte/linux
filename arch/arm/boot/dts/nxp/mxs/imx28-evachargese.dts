@@ -9,16 +9,16 @@
 #include "imx28.dtsi"
 
 / {
-	model = "I2SE EVAcharge SE";
 	compatible = "i2se,imx28-ievachargese", "fsl,imx28";
+	model = "I2SE EVAcharge SE";
 
 	aliases {
 		ethernet1 = &qca7000;
 	};
 
 	memory@40000000 {
-		device_type = "memory";
 		reg = <0x40000000 0x08000000>;
+		device_type = "memory";
 	};
 
 	emmc_pwrseq: emmc-pwrseq {
@@ -281,16 +281,16 @@
 };
 
 &ssp2 {
-	#address-cells = <1>;
-	#size-cells = <0>;
 	compatible = "fsl,imx28-spi";
 	pinctrl-names = "default";
 	pinctrl-0 = <&spi2_pins_a>;
+	#address-cells = <1>;
+	#size-cells = <0>;
 	status = "okay";
 
 	qca7000: ethernet@0 {
-		reg = <0x0>;
 		compatible = "qca,qca7000";
+		reg = <0x0>;
 		interrupt-parent = <&gpio3>;
 		interrupts = <25 IRQ_TYPE_EDGE_RISING>;
 		spi-cpha;
@@ -300,8 +300,8 @@
 };
 
 &usb0 {
-	status = "okay";
 	dr_mode = "host";
+	status = "okay";
 };
 
 &usb1 {
