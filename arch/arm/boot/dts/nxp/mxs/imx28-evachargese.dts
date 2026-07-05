@@ -131,30 +131,6 @@
 };
 
 &pinctrl {
-	pinctrl-names = "default";
-	pinctrl-0 = <&hog_pins_a>;
-
-	hog_pins_a: hog@0 {
-		reg = <0>;
-		fsl,pinmux-ids = <
-			/* unused ssp3 to shift register */
-			MX28_PAD_SSP3_SCK__GPIO_2_24
-			MX28_PAD_SSP3_MOSI__GPIO_2_25
-			MX28_PAD_SSP3_MISO__GPIO_2_26
-			MX28_PAD_SSP3_SS0__GPIO_2_27
-			/* unused external header pins */
-			MX28_PAD_AUART3_RX__GPIO_3_12
-			MX28_PAD_AUART3_TX__GPIO_3_13
-			MX28_PAD_SSP1_SCK__GPIO_2_12
-			MX28_PAD_SSP1_CMD__GPIO_2_13
-			MX28_PAD_SSP1_DATA0__GPIO_2_14
-			MX28_PAD_SSP1_DATA3__GPIO_2_15
-		>;
-		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
-		fsl,pull-up = <MXS_PULL_DISABLE>;
-	};
-
 	mac0_phy_reset_pin: mac0-phy-reset@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
@@ -184,58 +160,6 @@
 			MX28_PAD_LCD_D15__GPIO_1_15  /* GPIO_1 */
 			MX28_PAD_LCD_D18__GPIO_1_18  /* GPIO_2 */
 			MX28_PAD_LCD_D21__GPIO_1_21  /* GPIO_3 */
-		>;
-		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
-		fsl,pull-up = <MXS_PULL_DISABLE>;
-	};
-
-	motor: motor@0 {
-		reg = <0>;
-		fsl,pinmux-ids = <
-			MX28_PAD_SAIF0_LRCLK__GPIO_3_21 /* MOTOR1_PHASE */
-			MX28_PAD_SAIF0_BITCLK__GPIO_3_22 /* MOTOR1_ENABLE */
-			MX28_PAD_SAIF0_SDATA0__GPIO_3_23 /* MOTOR2_PHASE */
-			MX28_PAD_SAIF1_SDATA0__GPIO_3_26 /* MOTOR2_ENABLE */
-			MX28_PAD_SPDIF__GPIO_3_27 /* MOTOR_FAULT */
-		>;
-		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
-		fsl,pull-up = <MXS_PULL_DISABLE>;
-	};
-
-	daughter: daughter@0 {
-		reg = <0>;
-		fsl,pinmux-ids = <
-			MX28_PAD_LCD_D07__GPIO_1_7 /* DAUGHTER_GPIO_0 */
-			MX28_PAD_LCD_D10__GPIO_1_10 /* DAUGHTER_GPIO_1 */
-			MX28_PAD_LCD_WR_RWN__GPIO_1_25 /* DAUGHTER_GPIO_2 */
-			MX28_PAD_LCD_VSYNC__GPIO_1_28 /* DAUGHTER_GPIO_3 */
-			MX28_PAD_LCD_HSYNC__GPIO_1_29 /* DAUGHTER_GPIO_4 */
-			MX28_PAD_LCD_DOTCLK__GPIO_1_30 /* DAUGHTER_GPIO_5 */
-		>;
-		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
-		fsl,pull-up = <MXS_PULL_DISABLE>;
-	};
-
-	control_pilot: control-pilot@0 {
-		reg = <0>;
-		fsl,pinmux-ids = <
-			MX28_PAD_AUART1_CTS__GPIO_3_6 /* CP_EDGE */
-			MX28_PAD_AUART1_RTS__GPIO_3_7 /* CP_EDGE */
-			MX28_PAD_PWM2__GPIO_3_18 /* CP_HIGH */
-			MX28_PAD_PWM3__GPIO_3_28 /* CP_LOW */
-		>;
-		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
-		fsl,pull-up = <MXS_PULL_DISABLE>;
-	};
-
-	proximity_pilot: proximity-pilot@0 {
-		reg = <0>;
-		fsl,pinmux-ids = <
-			MX28_PAD_LCD_D12__GPIO_1_12 /* PP_PULLUP */
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
