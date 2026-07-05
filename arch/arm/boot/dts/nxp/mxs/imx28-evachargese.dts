@@ -23,7 +23,7 @@
 
 	emmc_pwrseq: emmc-pwrseq {
 		compatible = "mmc-pwrseq-emmc";
-		pinctrl-0 = <&emmc_reset>;
+		pinctrl-0 = <&emmc_reset_pin>;
 		pinctrl-names = "default";
 		reset-gpios = <&gpio2 20 GPIO_ACTIVE_LOW>;
 	};
@@ -151,7 +151,7 @@
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
 
-	qca7k: ethernet@0 {
+	qca7k_pins: qca7k-pins@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
 			MX28_PAD_I2C0_SDA__GPIO_3_25 /* SPI_INT */
@@ -179,7 +179,7 @@
 		fsl,pull-up = <MXS_PULL_DISABLE>;
 	};
 
-	emmc_reset: emmc-reset@0 {
+	emmc_reset_pin: emmc-reset@0 {
 		reg = <0>;
 		fsl,pinmux-ids = <
 			/* pullup */
