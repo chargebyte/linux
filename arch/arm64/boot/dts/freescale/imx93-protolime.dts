@@ -124,6 +124,10 @@
 &gpio1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpio1>;
+
+	// 16 pins (0..15)
+	gpio-line-names = "", "", "TTL_PORT1_RCD_TEST", "TTL_PORT2_RCD_TEST", "", "", "", "", "", "", \
+			  "SPI_PLC_nINT1", "", "", "", "", "";
 };
 
 &gpio2 {
@@ -131,14 +135,20 @@
 	pinctrl-0 = <&pinctrl_gpio2>;
 
 	// 30 pins (0..29)
-	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "", "", \
-			  "", "", "", "", "", "", "", "", "", "", \
-			  "", "", "", "", "", "", "", "", "", "";
+	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_TPM_nCS0", "", \
+			  "", "", "", "", "", "", "", "EN_PORT1_GP_OUT1", "", "", \
+			  "", "", "", "", "USER_RED", "", "TTL_PORT1_GP_IN_1", "", "", "";
 };
 
 &gpio3 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_gpio3>;
+
+	// 32 pins (0..31)
+	gpio-line-names = "SD_nCD", "", "", "", "", "", "", "", "", "", \
+			  "", "", "", "", "", "", "", "", "", "", \
+			  "", "SPI_PLC_nCS1", "", "", "TTL_PORT2_SHUTTER_1", "TTL_PORT2_SHUTTER_2", "TTL_PORT1_SHUTTER_1", "TTL_PORT1_SHUTTER_2", "", "", \
+			  "TTL_PORT2_GP_IN_2", "", "";
 };
 
 &gpio4 {
@@ -146,8 +156,8 @@
 	pinctrl-0 = <&pinctrl_gpio4>;
 
 	// 30 pins (0..29)
-	gpio-line-names = "", "", "", "nSAFETY2_RESET_INT", "", "", "nSAFETY_RESET_INT", "", "", "", \
-			  "", "", "SAFETY_BOOTMODE_SET", "SAFETY2_BOOTMODE_SET", "", "", "", "", "", "", \
+	gpio-line-names = "", "", "", "nSAFETY2_RESET_INT", "", "", "nSAFETY_RESET_INT", "EN_PORT1_GP_OUT2", "", "TTL_PORT2_GP_IN_1", \
+			  "", "TTL_PORT1_GP_IN_2", "SAFETY_BOOTMODE_SET", "SAFETY2_BOOTMODE_SET", "", "", "", "", "", "", \
 			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "LED_DRIVER_EN", "PMIC_IRQ_B", "BUZZER_PWM", "SPI_TPM_nINT0";
 
 	pca9685-en-hog {
@@ -613,12 +623,13 @@
 
 	pinctrl_gpio3: gpio3grp {
 		fsl,pins = <
+			MX93_PAD_GPIO_IO26__GPIO2_IO26		0x31e // TTL_PORT1_GP_IN_1
 			MX93_PAD_SD3_DATA2__GPIO3_IO24		0x31e // TTL_PORT2_SHUTTER_1
 			MX93_PAD_SD3_DATA3__GPIO3_IO25		0x31e // TTL_PORT2_SHUTTER_2
 			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x31e // TTL_PORT1_SHUTTER_1
 			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x31e // TTL_PORT1_SHUTTER_2
 			MX93_PAD_DAP_TCLK_SWCLK__GPIO3_IO30	0x31e // TTL_PORT2_GP_IN_2
-			MX93_PAD_SD3_DATA2__GPIO3_IO24		0x31e // TTL_PORT1_GP_IN_1
+
 		>;
 	};
 
