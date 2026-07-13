@@ -96,6 +96,71 @@
 	status = "okay";
 };
 
+&gpio1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&daughter>;
+	gpio-line-names = "",				/* 0 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "",				/* 5 */
+			  "",
+			  "DAUGHTER_GPIO_0",
+			  "LED_3",
+			  "",
+			  "DAUGHTER_GPIO_1",		/* 10 */
+			  "",
+			  "",
+			  "QCA7K_RESET",
+			  "QCA7K_GPIO_0",
+			  "QCA7K_GPIO_1",		/* 15 */
+			  "LED_2",
+			  "",
+			  "QCA7K_GPIO_2",
+			  "",
+			  "",				/* 20 */
+			  "QCA7K_GPIO_3",
+			  "",
+			  "",
+			  "",
+			  "DAUGHTER_GPIO_2",		/* 25 */
+			  "",
+			  "",
+			  "DAUGHTER_GPIO_3",
+			  "DAUGHTER_GPIO_4",
+			  "DAUGHTER_GPIO_5";		/* 30 */
+};
+
+&gpio3 {
+	gpio-line-names = "",				/* 0 */
+			  "",
+			  "",
+			  "",
+			  "LED_1",
+			  "LED_0",			/* 5 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "",				/* 10 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "",				/* 15 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "",				/* 20 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "QCA7K_INT";			/* 25 */
+};
+
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins_b>;
@@ -145,6 +210,21 @@
 		reg = <0>;
 		fsl,pinmux-ids = <
 			MX28_PAD_ENET0_TX_CLK__GPIO_4_5
+		>;
+		fsl,drive-strength = <MXS_DRIVE_4mA>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
+		fsl,pull-up = <MXS_PULL_DISABLE>;
+	};
+
+	daughter: daughter-pins@0 {
+		reg = <0>;
+		fsl,pinmux-ids = <
+			MX28_PAD_LCD_D07__GPIO_1_7     /* DAUGHTER_GPIO_0 */
+			MX28_PAD_LCD_D10__GPIO_1_10    /* DAUGHTER_GPIO_1 */
+			MX28_PAD_LCD_WR_RWN__GPIO_1_25 /* DAUGHTER_GPIO_2 */
+			MX28_PAD_LCD_VSYNC__GPIO_1_28  /* DAUGHTER_GPIO_3 */
+			MX28_PAD_LCD_HSYNC__GPIO_1_29  /* DAUGHTER_GPIO_4 */
+			MX28_PAD_LCD_DOTCLK__GPIO_1_30 /* DAUGHTER_GPIO_5 */
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
 		fsl,voltage = <MXS_VOLTAGE_HIGH>;
