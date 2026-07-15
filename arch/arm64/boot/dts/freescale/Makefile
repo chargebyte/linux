@@ -680,6 +680,7 @@ DTC_FLAGS_imx93-charge-som-dc-evb := -@
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y-V0R4.dtb
+DTC_FLAGS_imx93-protolime := -@
 dtb-$(CONFIG_ARCH_MXC) += imx93-protolime.dtb
 
 imx91-phyboard-segin-peb-av-02-dtbs += imx91-phyboard-segin.dtb imx91-phyboard-segin-peb-av-02.dtbo
