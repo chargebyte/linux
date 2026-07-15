@@ -136,7 +136,7 @@
 
 	// 30 pins (0..29)
 	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_TPM_nCS0", "", \
-			  "", "", "", "", "", "", "", "EN_PORT1_GP_OUT1", "", "", \
+			  "", "", "", "", "", "", "", "EN_PORT1_GP_OUT1", "BACKLIGHT_PWM", "", \
 			  "", "", "", "", "USER_RED", "", "TTL_PORT1_GP_IN_1", "", "", "";
 };
 
@@ -157,7 +157,7 @@
 
 	// 30 pins (0..29)
 	gpio-line-names = "", "", "", "nSAFETY2_RESET_INT", "", "", "nSAFETY_RESET_INT", "EN_PORT1_GP_OUT2", "", "TTL_PORT2_GP_IN_1", \
-			  "", "TTL_PORT1_GP_IN_2", "SAFETY_BOOTMODE_SET", "SAFETY2_BOOTMODE_SET", "", "", "", "", "", "", \
+			  "", "TTL_PORT1_GP_IN_2", "SAFETY_BOOTMODE_SET", "SAFETY2_BOOTMODE_SET", "", "", "DISPLAY_EN", "", "", "", \
 			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "LED_DRIVER_EN", "PMIC_IRQ_B", "BUZZER_PWM", "SPI_TPM_nINT0";
 
 	pca9685-en-hog {
