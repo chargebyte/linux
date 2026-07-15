@@ -167,6 +167,10 @@
 	};
 };
 
+&adc1 {
+	status = "okay";
+};
+
 &bbnsm_pwrkey {
 	status = "disabled";
 };
