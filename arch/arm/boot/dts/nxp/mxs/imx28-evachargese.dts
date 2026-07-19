@@ -1,0 +1,319 @@
+// SPDX-License-Identifier: GPL-2.0-or-later
+//
+// Copyright (C) 2017 I2SE GmbH
+// Copyright (C) 2025 chargebyte GmbH
+
+/dts-v1/;
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include "imx28.dtsi"
+
+/ {
+	compatible = "i2se,imx28-ievachargese", "fsl,imx28";
+	model = "I2SE EVAcharge SE";
+
+	aliases {
+		ethernet1 = &qca7000;
+	};
+
+	memory@40000000 {
+		reg = <0x40000000 0x08000000>;
+		device_type = "memory";
+	};
+
+	emmc_pwrseq: emmc-pwrseq {
+		compatible = "mmc-pwrseq-emmc";
+		pinctrl-0 = <&emmc_reset_pin>;
+		pinctrl-names = "default";
+		reset-gpios = <&gpio2 20 GPIO_ACTIVE_LOW>;
+	};
+
+	flexcan1_tc: can-phy0 {
+		compatible = "microchip,mcp2562";
+		#phy-cells = <0>;
+		max-bitrate = <1000000>;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+		pinctrl-0 = <&led_pins>;
+
+		led-0 {
+			label = "evse:red:led0";
+			gpios = <&gpio3 5 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "heartbeat";
+		};
+
+		led-1 {
+			label = "evse:yellow:led1";
+			gpios = <&gpio3 4 GPIO_ACTIVE_HIGH>;
+		};
+
+		led-2 {
+			label = "evse:yellow:led2";
+			gpios = <&gpio1 16 GPIO_ACTIVE_HIGH>;
+		};
+
+		led-3 {			/* Boot process */
+			label = "evse:green:led3";
+			gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
+			linux,default-trigger = "timer";
+		};
+	};
+
+	reg_3p3v: regulator-3p3v {
+		compatible = "regulator-fixed";
+		regulator-name = "3P3V";
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-always-on;
+	};
+};
+
+&auart0 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&auart0_2pins_a>;
+	status = "okay";
+};
+
+&auart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&auart2_2pins_b>;
+	status = "okay";
+};
+
+&can1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&can1_pins_b>;
+	phys = <&flexcan1_tc>;
+	status = "okay";
+};
+
+&duart {
+	pinctrl-names = "default";
+	pinctrl-0 = <&duart_pins_a>;
+	status = "okay";
+};
+
+&gpio1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&daughter>;
+	gpio-line-names = "",				/* 0 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "",				/* 5 */
+			  "",
+			  "DAUGHTER_GPIO_0",
+			  "LED_3",
+			  "",
+			  "DAUGHTER_GPIO_1",		/* 10 */
+			  "",
+			  "",
+			  "QCA7K_RESET",
+			  "QCA7K_GPIO_0",
+			  "QCA7K_GPIO_1",		/* 15 */
+			  "LED_2",
+			  "",
+			  "QCA7K_GPIO_2",
+			  "",
+			  "",				/* 20 */
+			  "QCA7K_GPIO_3",
+			  "",
+			  "",
+			  "",
+			  "DAUGHTER_GPIO_2",		/* 25 */
+			  "",
+			  "",
+			  "DAUGHTER_GPIO_3",
+			  "DAUGHTER_GPIO_4",
+			  "DAUGHTER_GPIO_5";		/* 30 */
+};
+
+&gpio3 {
+	gpio-line-names = "",				/* 0 */
+			  "",
+			  "",
+			  "",
+			  "LED_1",
+			  "LED_0",			/* 5 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "",				/* 10 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "",				/* 15 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "",				/* 20 */
+			  "",
+			  "",
+			  "",
+			  "",
+			  "QCA7K_INT";			/* 25 */
+};
+
+&i2c1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c1_pins_b>;
+	status = "okay";
+};
+
+&lradc {
+	status = "okay";
+};
+
+&mac0 {
+	phy-mode = "rmii";
+	pinctrl-names = "default";
+	pinctrl-0 = <&mac0_pins_a &mac0_phy_reset_pin>;
+	phy-supply = <&reg_3p3v>;
+	status = "okay";
+
+	mdio {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		ethphy: ethernet-phy@0 {
+			compatible = "ethernet-phy-ieee802.3-c22";
+			reg = <0>;
+			clocks = <&clks 64>; /* enet_out */
+			max-speed = <100>;
+			reset-assert-us = <500>;
+			reset-deassert-us = <500>;
+			reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
+			smsc,disable-energy-detect;
+		};
+	};
+};
+
+&pinctrl {
+	mac0_phy_reset_pin: mac0-phy-reset@0 {
+		reg = <0>;
+		fsl,pinmux-ids = <
+			MX28_PAD_ENET0_RX_CLK__GPIO_4_13
+		>;
+		fsl,drive-strength = <MXS_DRIVE_4mA>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
+		fsl,pull-up = <MXS_PULL_DISABLE>;
+	};
+
+	mac0_phy_int_pin: mac0-phy-int@0 {
+		reg = <0>;
+		fsl,pinmux-ids = <
+			MX28_PAD_ENET0_TX_CLK__GPIO_4_5
+		>;
+		fsl,drive-strength = <MXS_DRIVE_4mA>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
+		fsl,pull-up = <MXS_PULL_DISABLE>;
+	};
+
+	daughter: daughter-pins@0 {
+		reg = <0>;
+		fsl,pinmux-ids = <
+			MX28_PAD_LCD_D07__GPIO_1_7     /* DAUGHTER_GPIO_0 */
+			MX28_PAD_LCD_D10__GPIO_1_10    /* DAUGHTER_GPIO_1 */
+			MX28_PAD_LCD_WR_RWN__GPIO_1_25 /* DAUGHTER_GPIO_2 */
+			MX28_PAD_LCD_VSYNC__GPIO_1_28  /* DAUGHTER_GPIO_3 */
+			MX28_PAD_LCD_HSYNC__GPIO_1_29  /* DAUGHTER_GPIO_4 */
+			MX28_PAD_LCD_DOTCLK__GPIO_1_30 /* DAUGHTER_GPIO_5 */
+		>;
+		fsl,drive-strength = <MXS_DRIVE_4mA>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
+		fsl,pull-up = <MXS_PULL_DISABLE>;
+	};
+
+	qca7k_pins: qca7k-pins@0 {
+		reg = <0>;
+		fsl,pinmux-ids = <
+			MX28_PAD_I2C0_SDA__GPIO_3_25 /* SPI_INT */
+			MX28_PAD_LCD_D13__GPIO_1_13  /* QCA7K_RESET */
+			MX28_PAD_LCD_D14__GPIO_1_14  /* GPIO_0 */
+			MX28_PAD_LCD_D15__GPIO_1_15  /* GPIO_1 */
+			MX28_PAD_LCD_D18__GPIO_1_18  /* GPIO_2 */
+			MX28_PAD_LCD_D21__GPIO_1_21  /* GPIO_3 */
+		>;
+		fsl,drive-strength = <MXS_DRIVE_4mA>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
+		fsl,pull-up = <MXS_PULL_DISABLE>;
+	};
+
+	led_pins: led-pins@0 {
+		reg = <0>;
+		fsl,pinmux-ids = <
+			MX28_PAD_LCD_D16__GPIO_1_16  /* LED_2 */
+			MX28_PAD_LCD_D08__GPIO_1_8   /* LED_3 */
+			MX28_PAD_AUART1_RX__GPIO_3_4 /* LED_1 */
+			MX28_PAD_AUART1_TX__GPIO_3_5 /* LED_0 */
+		>;
+		fsl,drive-strength = <MXS_DRIVE_4mA>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
+		fsl,pull-up = <MXS_PULL_DISABLE>;
+	};
+
+	emmc_reset_pin: emmc-reset@0 {
+		reg = <0>;
+		fsl,pinmux-ids = <
+			MX28_PAD_SSP2_SS1__GPIO_2_20
+		>;
+		fsl,drive-strength = <MXS_DRIVE_4mA>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
+		fsl,pull-up = <MXS_PULL_DISABLE>;
+	};
+};
+
+&ssp0 {
+	compatible = "fsl,imx28-mmc";
+	pinctrl-names = "default";
+	pinctrl-0 = <&mmc0_8bit_pins_a &mmc0_cd_cfg &mmc0_sck_cfg>;
+	bus-width = <8>;
+	non-removable;
+	no-sdio;
+	vmmc-supply = <&reg_3p3v>;
+	mmc-pwrseq = <&emmc_pwrseq>;
+	status = "okay";
+};
+
+&ssp2 {
+	compatible = "fsl,imx28-spi";
+	pinctrl-names = "default";
+	pinctrl-0 = <&spi2_pins_a &qca7k_pins>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	qca7000: ethernet@0 {
+		compatible = "qca,qca7000";
+		reg = <0x0>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <25 IRQ_TYPE_EDGE_RISING>;
+		spi-cpha;
+		spi-cpol;
+		spi-max-frequency = <12000000>;
+	};
+};
+
+&usb0 {
+	dr_mode = "host";
+	status = "okay";
+};
+
+&usb1 {
+	status = "okay";
+};
+
+&usbphy0 {
+	status = "okay";
+};
+
+&usbphy1 {
+	status = "okay";
+};
