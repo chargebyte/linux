@@ -24,7 +24,7 @@
 	};
 };
 
-&lpi2c5 {
+&lpi2c1 {
 	#address-cells = <1>;
 	#size-cells = <0>;
 
