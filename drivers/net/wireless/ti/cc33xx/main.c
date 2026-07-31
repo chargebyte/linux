@@ -548,7 +548,7 @@ static int cc33xx_set_authorized(struct cc33xx *cc, struct cc33xx_vif *wlvif)
 	if (ret < 0)
 		return ret;
 
-	cc33xx_info("Association complete.");
+	cc33xx_debug(DEBUG_MAC80211, "Association complete.");
 	return 0;
 }
 
@@ -5506,21 +5506,21 @@ static int read_version_info(struct cc33xx *cc)
 		return ret;
 	}
 
-	cc33xx_debug(DEBUG_BOOT, "Wireless firmware version %u.%u.%u.%u",
-		     cc->fw_ver->major_version,
-		     cc->fw_ver->minor_version,
-		     cc->fw_ver->api_version,
-		     cc->fw_ver->build_version);
+	cc33xx_info("Wireless firmware version %u.%u.%u.%u",
+		    cc->fw_ver->major_version,
+		    cc->fw_ver->minor_version,
+		    cc->fw_ver->api_version,
+		    cc->fw_ver->build_version);
 
-	cc33xx_debug(DEBUG_BOOT, "Wireless PHY version %u.%u.%u.%u.%u.%u.%u.%u",
-		     cc->fw_ver->phy_version[7],
-		     cc->fw_ver->phy_version[6],
-		     cc->fw_ver->phy_version[5],
-		     cc->fw_ver->phy_version[4],
-		     cc->fw_ver->phy_version[3],
-		     cc->fw_ver->phy_version[2],
-		     cc->fw_ver->phy_version[1],
-		     cc->fw_ver->phy_version[0]);
+	cc33xx_info("Wireless PHY version %u.%u.%u.%u.%u.%u.%u.%u",
+		    cc->fw_ver->phy_version[7],
+		    cc->fw_ver->phy_version[6],
+		    cc->fw_ver->phy_version[5],
+		    cc->fw_ver->phy_version[4],
+		    cc->fw_ver->phy_version[3],
+		    cc->fw_ver->phy_version[2],
+		    cc->fw_ver->phy_version[1],
+		    cc->fw_ver->phy_version[0]);
 
 	return 0;
 }
