@@ -126,18 +126,21 @@
 	pinctrl-0 = <&pinctrl_gpio1>;
 
 	// 16 pins (0..15)
-	gpio-line-names = "", "", "TTL_PORT1_RCD_TEST", "TTL_PORT2_RCD_TEST", "", "", "", "", "", "", \
-			  "SPI_PLC_nINT1", "", "", "", "", "";
+	gpio-line-names = "", "", "SC16IS762_CS", "SC16IS762_IRQ", "", "", "", "", "", "", \
+			  "CP2108_RESET_L", "", "", "", "", "";
+
+	cp2108-rst-hog {
+		gpio-hog;
+		gpios = <10 GPIO_ACTIVE_LOW>;
+		output-low;
+	};
 };
 
 &gpio2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_gpio2>;
-
 	// 30 pins (0..29)
 	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_TPM_nCS0", "", \
-			  "", "", "", "", "", "", "", "EN_PORT1_GP_OUT1", "BACKLIGHT_PWM", "", \
-			  "", "", "", "", "USER_RED", "", "TTL_PORT1_GP_IN_1", "", "", "";
+			  "", "", "", "", "", "", "", "PLC1_PWR_EN_L", "BACKLIGHT_PWM", "", \
+			  "", "", "", "", "USER_RED", "", "KSZ8895_RESET_L", "", "", "";
 };
 
 &gpio3 {
@@ -147,8 +150,8 @@
 	// 32 pins (0..31)
 	gpio-line-names = "SD_nCD", "", "", "", "", "", "", "", "", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
-			  "", "SPI_PLC_nCS1", "", "", "TTL_PORT2_SHUTTER_1", "TTL_PORT2_SHUTTER_2", "TTL_PORT1_SHUTTER_1", "TTL_PORT1_SHUTTER_2", "", "", \
-			  "TTL_PORT2_GP_IN_2", "", "";
+			  "", "SPI_PLC_nCS1", "", "SC16IS762_RESET_N", "PORT2_SHUTTER_1", "PORT2_SHUTTER_2", "PORT1_SHUTTER_1", "PORT1_SHUTTER_2", "", "SPI_PLC_nINT1", \
+			  "PCAL9535_INT", "", "";
 };
 
 &gpio4 {
@@ -156,8 +159,8 @@
 	pinctrl-0 = <&pinctrl_gpio4>;
 
 	// 30 pins (0..29)
-	gpio-line-names = "", "", "", "nSAFETY2_RESET_INT", "", "", "nSAFETY_RESET_INT", "EN_PORT1_GP_OUT2", "", "TTL_PORT2_GP_IN_1", \
-			  "", "TTL_PORT1_GP_IN_2", "SAFETY_BOOTMODE_SET", "SAFETY2_BOOTMODE_SET", "", "", "DISPLAY_EN", "", "", "", \
+	gpio-line-names = "", "", "", "nSAFETY2_RESET_INT", "", "", "nSAFETY_RESET_INT", "PLC1_RESET_L", "", "PLC2_RESET_L", \
+			  "", "PLC2_PWR_EN_L", "SAFETY_BOOTMODE_SET", "SAFETY2_BOOTMODE_SET", "", "", "DISPLAY_EN", "", "", "", \
 			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "LED_DRIVER_EN", "PMIC_IRQ_B", "BUZZER_PWM", "SPI_TPM_nINT0";
 
 	pca9685-en-hog {
@@ -308,13 +311,28 @@
 		reg = <0x44>;
 	};
 
+	pcal9535: gpio@48 {
+		compatible = "nxp,pcal9535";
+		reg = <0x48>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pcal9535>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <30 IRQ_TYPE_LEVEL_LOW>;
+
+		// 16 pins (0..15)
+		gpio-line-names = "", "", "", "", "", "", "", "HEATER_RELAY", "PORT1_DIGITAL_IN_2", "PORT1_DIGITAL_IN_1", \
+				  "PORT1_DIGITAL_OUT_2", "PORT1_DIGITAL_OUT_1", "PORT2_DIGITAL_OUT_1", "PORT2_DIGITAL_OUT_2", "PORT2_DIGITAL_IN_2", "PORT2_DIGITAL_IN_1";
+	};
+
 	rv3028: rtc@52 {
 		compatible = "microcrystal,rv3028";
 		reg = <0x52>;
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_rtc>;
-		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
 		interrupt-parent = <&gpio4>;
+		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
 		wakeup-source;
 		trickle-resistor-ohms = <3000>;
 	};
@@ -386,6 +404,9 @@
 		compatible = "microchip,ksz8895";
 		reg = <0>;
 
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_ksz8895>;
+
 		spi-max-frequency = <1000000>;
 
 		ethernet-ports {
@@ -424,33 +445,58 @@
 &lpspi6 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_lpspi6>;
-	num-cs = <2>;
+	num-cs = <3>;
 	cs-gpios = <&gpio2 0 GPIO_ACTIVE_LOW>,
-	           <&gpio3 21 GPIO_ACTIVE_LOW>;
+	           <&gpio3 21 GPIO_ACTIVE_LOW>,
+	           <&gpio1 2 GPIO_ACTIVE_LOW>;
 	status = "okay";
 
 	ethernet@0 {
-		compatible = "vertexcom,mse1021";
+		compatible = "qca,qca7000";
 		reg = <0>;
 		int-gpios = <&gpio2 7 GPIO_ACTIVE_HIGH>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_qca700x_1>;
+		interrupt-parent = <&gpio2>;
+		interrupts = <7 IRQ_TYPE_EDGE_RISING>;
+
 		spi-cpha;
 		spi-cpol;
-		spi-max-frequency = <7142857>;
+		spi-max-frequency = <12000000>;
 
 		nvmem-cells = <&eth1_host_mac_address 0>;
 		nvmem-cell-names = "mac-address";
 	};
 
 	ethernet@1 {
-		compatible = "vertexcom,mse1021";
+		compatible = "qca,qca7000";
 		reg = <1>;
-		int-gpios = <&gpio1 10 GPIO_ACTIVE_HIGH>;
+
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_qca700x_2>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <29 IRQ_TYPE_EDGE_RISING>;
+
 		spi-cpha;
 		spi-cpol;
-		spi-max-frequency = <7142857>;
+		spi-max-frequency = <12000000>;
 
 		nvmem-cells = <&eth2_host_mac_address 0>;
 		nvmem-cell-names = "mac-address";
+	};
+
+	serial@2 {
+		compatible = "nxp,sc16is762";
+		reg = <0x2>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_sc16is762>;
+		clock-frequency = <14745600>;
+		reset-gpios = <&gpio3 23 GPIO_ACTIVE_LOW>;
+		interrupt-parent = <&gpio1>;
+		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
+		spi-max-frequency = <4000000>;
+		linux,rs485-enabled-at-boot-time;
 	};
 };
 
@@ -590,13 +636,28 @@
 	pinctrl_lpspi6: lpspi6grp {
 		/* drive strength: X2, slew rate: fast, no pull */
 		fsl,pins = <
-			MX93_PAD_GPIO_IO07__GPIO2_IO07		0x186 // SPI_PLC_nINT0
 			MX93_PAD_GPIO_IO00__GPIO2_IO00		0x186 // SPI_PLC_nCS0
-			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x186 // SPI_PLC_nINT1
 			MX93_PAD_SD3_CMD__GPIO3_IO21		0x186 // SPI_PLC_nCS1
+			MX93_PAD_I2C2_SCL__GPIO1_IO02		0x186 // SC16IS762_CS
 			MX93_PAD_GPIO_IO01__LPSPI6_SIN		0x186
 			MX93_PAD_GPIO_IO02__LPSPI6_SOUT		0x186
 			MX93_PAD_GPIO_IO03__LPSPI6_SCK		0x186
+		>;
+	};
+
+	pinctrl_qca700x_1: qca700x1grp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO07__GPIO2_IO07		0x186 // SPI_PLC_nINT0
+			MX93_PAD_GPIO_IO17__GPIO2_IO17		0x31e // PLC1_PWR_EN_L
+			MX93_PAD_ENET1_TXC__GPIO4_IO07		0x31e // PLC1_RESET_L
+		>;
+	};
+
+	pinctrl_qca700x_2: qca700x2grp {
+		fsl,pins = <
+			MX93_PAD_DAP_TMS_SWDIO__GPIO3_IO29	0x186 // SPI_PLC_nINT1
+			MX93_PAD_ENET1_RXC__GPIO4_IO09		0x31e // PLC2_RESET_L
+			MX93_PAD_ENET1_RD1__GPIO4_IO11		0x31e // PLC2_PWR_EN_L
 		>;
 	};
 
@@ -612,28 +673,37 @@
 		>;
 	};
 
-	pinctrl_gpio1: gpio1grp {
+	pinctrl_sc16is762: sc16is762grp {
 		fsl,pins = <
-			MX93_PAD_I2C2_SCL__GPIO1_IO02		0x31e // TTL_PORT1_RCD_TEST
-			MX93_PAD_I2C2_SDA__GPIO1_IO03		0x31e // TTL_PORT2_RCD_TEST
+			MX93_PAD_I2C2_SDA__GPIO1_IO03		0x31e // SC16IS762_IRQ
+			MX93_PAD_SD3_DATA1__GPIO3_IO23		0x31e // SC16IS762_RESET_N
 		>;
 	};
 
-	pinctrl_gpio2: gpio2grp {
+	pinctrl_ksz8895: ksz8895grp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO17__GPIO2_IO17		0x31e // EN_PORT1_GP_OUT1
+			MX93_PAD_GPIO_IO26__GPIO2_IO26		0x31e // KSZ8895_RESET_L
+		>;
+	};
+
+	pinctrl_pcal9535: pcal9535grp {
+		fsl,pins = <
+			MX93_PAD_DAP_TCLK_SWCLK__GPIO3_IO30	0x31e // PCA9673_INT
+		>;
+	};
+
+	pinctrl_gpio1: gpio1grp {
+		fsl,pins = <
+			MX93_PAD_PDM_BIT_STREAM1__GPIO1_IO10	0x31e // CP2108_RESET_L
 		>;
 	};
 
 	pinctrl_gpio3: gpio3grp {
 		fsl,pins = <
-			MX93_PAD_GPIO_IO26__GPIO2_IO26		0x31e // TTL_PORT1_GP_IN_1
 			MX93_PAD_SD3_DATA2__GPIO3_IO24		0x31e // TTL_PORT2_SHUTTER_1
 			MX93_PAD_SD3_DATA3__GPIO3_IO25		0x31e // TTL_PORT2_SHUTTER_2
 			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x31e // TTL_PORT1_SHUTTER_1
 			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x31e // TTL_PORT1_SHUTTER_2
-			MX93_PAD_DAP_TCLK_SWCLK__GPIO3_IO30	0x31e // TTL_PORT2_GP_IN_2
-
 		>;
 	};
 
@@ -641,9 +711,6 @@
 		fsl,pins = <
 			MX93_PAD_ENET1_TD2__GPIO4_IO03		0x31e // nSAFETY2_RESET_INT
 			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x31e // nSAFETY_RESET_INT
-			MX93_PAD_ENET1_TXC__GPIO4_IO07		0x31e // EN_PORT1_GP_OUT2
-			MX93_PAD_ENET1_RXC__GPIO4_IO09		0x31e // TTL_PORT2_GP_IN_1
-			MX93_PAD_ENET1_RD1__GPIO4_IO11		0x31e // TTL_PORT1_GP_IN_2
 			MX93_PAD_ENET1_RD2__GPIO4_IO12 		0x31e // SAFETY_BOOTMODE_SET
 			MX93_PAD_ENET1_RD3__GPIO4_IO13		0x31e // SAFETY2_BOOTMODE_SET
 			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x31e // LED_DRIVER_EN
