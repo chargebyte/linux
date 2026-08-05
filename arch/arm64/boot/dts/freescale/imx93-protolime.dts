@@ -279,6 +279,21 @@
 		reg = <0x18>;
 	};
 
+	pcal9535: gpio@21 {
+		compatible = "nxp,pcal9535";
+		reg = <0x21>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_pcal9535>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		interrupt-parent = <&gpio3>;
+		interrupts = <30 IRQ_TYPE_LEVEL_LOW>;
+
+		// 16 pins (0..15)
+		gpio-line-names = "", "", "", "", "", "", "", "HEATER_RELAY", "PORT1_DIGITAL_IN_2", "PORT1_DIGITAL_IN_1", \
+				  "PORT1_DIGITAL_OUT_2", "PORT1_DIGITAL_OUT_1", "PORT2_DIGITAL_OUT_1", "PORT2_DIGITAL_OUT_2", "PORT2_DIGITAL_IN_2", "PORT2_DIGITAL_IN_1";
+	};
+
 	fanctl: fan-controller@2e {
 		compatible = "microchip,emc2302", "microchip,emc2305";
 		reg = <0x2e>;
@@ -309,21 +324,6 @@
 	temperature-humidity-sensor@44 {
 		compatible = "sensirion,sht4x";
 		reg = <0x44>;
-	};
-
-	pcal9535: gpio@48 {
-		compatible = "nxp,pcal9535";
-		reg = <0x48>;
-		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_pcal9535>;
-		gpio-controller;
-		#gpio-cells = <2>;
-		interrupt-parent = <&gpio3>;
-		interrupts = <30 IRQ_TYPE_LEVEL_LOW>;
-
-		// 16 pins (0..15)
-		gpio-line-names = "", "", "", "", "", "", "", "HEATER_RELAY", "PORT1_DIGITAL_IN_2", "PORT1_DIGITAL_IN_1", \
-				  "PORT1_DIGITAL_OUT_2", "PORT1_DIGITAL_OUT_1", "PORT2_DIGITAL_OUT_1", "PORT2_DIGITAL_OUT_2", "PORT2_DIGITAL_IN_2", "PORT2_DIGITAL_IN_1";
 	};
 
 	rv3028: rtc@52 {
