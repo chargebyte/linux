@@ -496,7 +496,12 @@
 		interrupt-parent = <&gpio1>;
 		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
 		spi-max-frequency = <4000000>;
+		rs485-rts-active-low;
 		linux,rs485-enabled-at-boot-time;
+		gpio-controller;
+		#gpio-cells = <2>;
+		gpio-line-names = "SC16IS762-0", "SC16IS762-1", "SC16IS762-2", "SC16IS762-3", \
+		                  "SC16IS762-4", "SC16IS762-5", "SC16IS762-6", "SC16IS762-7";
 	};
 };
 
