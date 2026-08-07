@@ -407,6 +407,7 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_ksz8895>;
 
+		reset-gpios = <&gpio2 26 GPIO_ACTIVE_LOW>;
 		spi-max-frequency = <1000000>;
 
 		ethernet-ports {
