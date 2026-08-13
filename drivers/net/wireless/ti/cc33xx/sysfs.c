@@ -340,14 +340,14 @@ static ssize_t wowlan_pattern_search_store(struct device *dev,
 
 		ret = kstrtou16(offset_str, 10, &starting_offset);
 		if (ret < 0) {
-			cc33xx_error("Invalid offset '%s': must be 0-%d",
+			cc33xx_error("Invalid offset '%s': must be 0-%zu",
 				     offset_str, CC33XX_RX_FILTER_MAX_PATTERN_SIZE - 1);
 			ret = -EINVAL;
 			goto out_free;
 		}
 
 		if (starting_offset >= CC33XX_RX_FILTER_MAX_PATTERN_SIZE) {
-			cc33xx_error("Offset %d too large (max %d)",
+			cc33xx_error("Offset %u too large (max %zu)",
 				     starting_offset, CC33XX_RX_FILTER_MAX_PATTERN_SIZE - 1);
 			ret = -EINVAL;
 			goto out_free;
@@ -463,7 +463,7 @@ static ssize_t wowlan_pattern_search_show(struct device *dev,
 	len += sysfs_emit_at(buf, len, "Offset 0 = first payload byte.\n");
 	len += sysfs_emit_at(buf, len, "\nLimits:\n");
 	len += sysfs_emit_at(buf, len, "  Max filters: %d\n", CC33XX_MAX_RX_FILTERS);
-	len += sysfs_emit_at(buf, len, "  Max pattern size: %d bytes\n",
+	len += sysfs_emit_at(buf, len, "  Max pattern size: %zu bytes\n",
 			     CC33XX_RX_FILTER_MAX_PATTERN_SIZE);
 	len += sysfs_emit_at(buf, len, "\nTo clear: echo 1 > wowlan_pattern_clear\n");
 
