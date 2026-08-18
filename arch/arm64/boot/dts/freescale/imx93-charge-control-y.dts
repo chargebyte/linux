@@ -103,11 +103,6 @@
 	status = "okay";
 };
 
-/* Ethernet 1 PHY */
-&ethphy1 {
-	ti,leds-polarity = <1>; // active-high
-};
-
 /* Ethernet 1 */
 &fec {
 	/* Since MDIO bus is handled by FEC, all PHY strap pins and
@@ -242,7 +237,6 @@
 		reset-gpios = <&gpio4 13 GPIO_ACTIVE_HIGH>;
 		reset-assert-us = <30>;
 		reset-deassert-us = <50000>;
-		ti,leds-polarity = <1>; // active-high
 	};
 };
 
