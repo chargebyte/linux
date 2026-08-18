@@ -128,8 +128,8 @@
 };
 
 &gpio2 {
-	gpio-line-names = "X_LAN_nCS", "", "", "", "",
-			  "", "", "X_LAN_nIRQ", "", "",
+	gpio-line-names = "", "", "", "", "",
+			  "", "", "X_LAN_nIRQ", "X_LAN_nCS", "",
 			  "", "", "", "", "",
 			  "", "", "", "", "",
 			  "", "", "", "", "GREEN_LED",
