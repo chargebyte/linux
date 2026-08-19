@@ -40,7 +40,6 @@ config HAVE_IMX_AMP
 
 config HAVE_IMX_DDRC
        bool
-       select HAVE_IMX_BUSFREQ
 
 config HAVE_IMX_BUSFREQ
        bool
