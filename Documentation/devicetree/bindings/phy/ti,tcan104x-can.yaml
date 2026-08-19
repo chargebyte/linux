@@ -18,13 +18,13 @@ properties:
       - items:
           - enum:
               - microchip,ata6561
+              - microchip,mcp2542
               - ti,tcan1051
           - const: ti,tcan1042
       - items:
           - const: ti,tcan1046
           - const: nxp,tja1048
       - enum:
-          - microchip,mcp2542
           - ti,tcan1042
           - ti,tcan1043
           - nxp,tja1048
@@ -73,7 +73,6 @@ allOf:
       properties:
         compatible:
           enum:
-            - microchip,mcp2542
             - nxp,tjr1443
             - ti,tcan1042
             - ti,tcan1043
