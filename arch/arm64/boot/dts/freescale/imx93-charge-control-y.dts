@@ -39,7 +39,7 @@
 	/delete-node/ leds;
 
 	flexcan1_tc: can-phy0 {
-		compatible = "microchip,mcp2542";
+		compatible = "microchip,mcp2542", "ti,tcan1042";
 		#phy-cells = <0>;
 		max-bitrate = <1000000>;
 	};
