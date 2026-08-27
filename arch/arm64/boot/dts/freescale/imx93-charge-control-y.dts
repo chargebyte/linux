@@ -85,7 +85,7 @@
 
 &gpio2 {
 	// 30 pins (0..29)
-	gpio-line-names = "X_LAN_nCS", "", "", "", "", "", "", "X_LAN_nIRQ", "", "", \
+	gpio-line-names = "", "", "", "", "", "", "", "X_LAN_nIRQ", "X_LAN_nCS", "", \
 			  "", "", "", "", "", "", "", "", "", "", \
 			  "", "", "", "", "GREEN_LED", "RED_LED", "", "", "", "";
 };
