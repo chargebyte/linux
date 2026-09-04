@@ -76,6 +76,9 @@
 	};
 };
 
+// Heartbeat LED of phyCore is not populated
+/delete-node/ &pinctrl_leds;
+
 &eeprom0 {
 	nvmem-layout {
 		compatible = "fixed-layout";
@@ -273,10 +276,6 @@
 };
 
 &iomuxc {
-
-	// Heartbeat LED of phyCore is not populated
-	/delete-node/ pinctrl_leds;
-
 	pinctrl_eqos: eqosgrp {
 		fsl,pins = <
 			MX93_PAD_ENET1_TD2__CCM_ENET_QOS_CLOCK_GENERATE_REF_CLK		0x4000057e
