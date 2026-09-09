@@ -67,6 +67,9 @@
 	};
 };
 
+// Heartbeat LED of phyCore is not populated
+/delete-node/ &pinctrl_leds;
+
 /* CAN */
 &flexcan1 {
 	pinctrl-names = "default";
@@ -279,9 +282,6 @@
 };
 
 &iomuxc {
-
-	/delete-node/ pinctrl_leds;
-
 	pinctrl_user_leds: userledgrp {
 		fsl,pins = <
 			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // USER_GREEN
