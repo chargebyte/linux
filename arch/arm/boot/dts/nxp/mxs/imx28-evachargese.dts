@@ -22,6 +22,12 @@
 		device_type = "memory";
 	};
 
+	flexcan1_tc: can-phy0 {
+		compatible = "microchip,mcp2562", "ti,tcan1042";
+		max-bitrate = <1000000>;
+		#phy-cells = <0>;
+	};
+
 	emmc_pwrseq: emmc-pwrseq {
 		compatible = "mmc-pwrseq-emmc";
 		pinctrl-0 = <&emmc_reset_pin>;
@@ -29,16 +35,10 @@
 		reset-gpios = <&gpio2 20 GPIO_ACTIVE_LOW>;
 	};
 
-	flexcan1_tc: can-phy0 {
-		compatible = "microchip,mcp2562", "ti,tcan1042";
-		#phy-cells = <0>;
-		max-bitrate = <1000000>;
-	};
-
 	leds {
 		compatible = "gpio-leds";
-		pinctrl-names = "default";
 		pinctrl-0 = <&led_pins>;
+		pinctrl-names = "default";
 
 		led-0 {
 			color = <LED_COLOR_ID_RED>;
@@ -49,6 +49,7 @@
 
 		led-1 {
 			color = <LED_COLOR_ID_YELLOW>;
+			function = LED_FUNCTION_PROGRAMMING;
 			gpios = <&gpio3 4 GPIO_ACTIVE_HIGH>;
 		};
 
@@ -68,41 +69,43 @@
 
 	reg_3p3v: regulator-3p3v {
 		compatible = "regulator-fixed";
-		regulator-name = "3P3V";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
 		regulator-always-on;
+		regulator-max-microvolt = <3300000>;
+		regulator-min-microvolt = <3300000>;
+		regulator-name = "3P3V";
 	};
 };
 
 &auart0 {
-	pinctrl-names = "default";
 	pinctrl-0 = <&auart0_2pins_a>;
+	pinctrl-names = "default";
+
 	status = "okay";
 };
 
 &auart2 {
-	pinctrl-names = "default";
 	pinctrl-0 = <&auart2_2pins_b>;
+	pinctrl-names = "default";
+
 	status = "okay";
 };
 
 &can1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&can1_pins_b>;
 	phys = <&flexcan1_tc>;
+	pinctrl-0 = <&can1_pins_b>;
+	pinctrl-names = "default";
+
 	status = "okay";
 };
 
 &duart {
-	pinctrl-names = "default";
 	pinctrl-0 = <&duart_pins_a>;
+	pinctrl-names = "default";
+
 	status = "okay";
 };
 
 &gpio1 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&daughter>;
 	gpio-line-names = "", "", "", "", "",
 			  "", "", "DAUGHTER_GPIO_0", "LED_3", "",
 			  "DAUGHTER_GPIO_1", "", "", "QCA7K_RESET", "QCA7K_GPIO_0",
@@ -110,6 +113,8 @@
 			  "", "QCA7K_GPIO_3", "", "", "",
 			  "DAUGHTER_GPIO_2", "", "", "DAUGHTER_GPIO_3", "DAUGHTER_GPIO_4",
 			  "DAUGHTER_GPIO_5";
+	pinctrl-0 = <&daughter>;
+	pinctrl-names = "default";
 };
 
 &gpio3 {
@@ -122,8 +127,9 @@
 };
 
 &i2c1 {
-	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins_b>;
+	pinctrl-names = "default";
+
 	status = "okay";
 };
 
@@ -132,10 +138,12 @@
 };
 
 &mac0 {
+	phy-handle = <&ethphy>;
 	phy-mode = "rmii";
-	pinctrl-names = "default";
-	pinctrl-0 = <&mac0_pins_a &mac0_phy_reset_pin>;
 	phy-supply = <&reg_3p3v>;
+	pinctrl-0 = <&mac0_pins_a &mac0_phy_reset_pin>;
+	pinctrl-names = "default";
+
 	status = "okay";
 
 	mdio {
@@ -146,7 +154,11 @@
 			compatible = "ethernet-phy-ieee802.3-c22";
 			reg = <0>;
 			clocks = <&clks 64>; /* enet_out */
+			interrupt-parent = <&gpio4>;
+			interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
 			max-speed = <100>;
+			pinctrl-0 = <&mac0_phy_int_pin>;
+			pinctrl-names = "default";
 			reset-assert-us = <500>;
 			reset-deassert-us = <500>;
 			reset-gpios = <&gpio4 13 GPIO_ACTIVE_LOW>;
@@ -162,8 +174,8 @@
 			MX28_PAD_ENET0_RX_CLK__GPIO_4_13
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 	};
 
 	mac0_phy_int_pin: mac0-phy-int@0 {
@@ -172,8 +184,8 @@
 			MX28_PAD_ENET0_TX_CLK__GPIO_4_5
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 	};
 
 	daughter: daughter-pins@0 {
@@ -187,8 +199,8 @@
 			MX28_PAD_LCD_DOTCLK__GPIO_1_30 /* DAUGHTER_GPIO_5 */
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 	};
 
 	qca7k_pins: qca7k-pins@0 {
@@ -202,8 +214,8 @@
 			MX28_PAD_LCD_D21__GPIO_1_21  /* GPIO_3 */
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 	};
 
 	led_pins: led-pins@0 {
@@ -215,8 +227,8 @@
 			MX28_PAD_AUART1_TX__GPIO_3_5 /* LED_0 */
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 	};
 
 	emmc_reset_pin: emmc-reset@0 {
@@ -225,29 +237,31 @@
 			MX28_PAD_SSP2_SS1__GPIO_2_20
 		>;
 		fsl,drive-strength = <MXS_DRIVE_4mA>;
-		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 		fsl,pull-up = <MXS_PULL_DISABLE>;
+		fsl,voltage = <MXS_VOLTAGE_HIGH>;
 	};
 };
 
 &ssp0 {
 	compatible = "fsl,imx28-mmc";
-	pinctrl-names = "default";
-	pinctrl-0 = <&mmc0_8bit_pins_a &mmc0_cd_cfg &mmc0_sck_cfg>;
 	bus-width = <8>;
-	non-removable;
-	no-sdio;
-	vmmc-supply = <&reg_3p3v>;
 	mmc-pwrseq = <&emmc_pwrseq>;
+	no-sdio;
+	non-removable;
+	pinctrl-0 = <&mmc0_8bit_pins_a &mmc0_cd_cfg &mmc0_sck_cfg>;
+	pinctrl-names = "default";
+	vmmc-supply = <&reg_3p3v>;
+
 	status = "okay";
 };
 
 &ssp2 {
 	compatible = "fsl,imx28-spi";
-	pinctrl-names = "default";
-	pinctrl-0 = <&spi2_pins_a &qca7k_pins>;
 	#address-cells = <1>;
 	#size-cells = <0>;
+	pinctrl-0 = <&spi2_pins_a &qca7k_pins>;
+	pinctrl-names = "default";
+
 	status = "okay";
 
 	qca7000: ethernet@0 {
@@ -263,6 +277,7 @@
 
 &usb0 {
 	dr_mode = "host";
+
 	status = "okay";
 };
 
