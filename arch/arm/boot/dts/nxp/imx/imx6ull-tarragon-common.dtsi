@@ -40,6 +40,7 @@
 	};
 
 	reg_1v8: regulator-1v8 {
+		/* This is a fake entry to represent VCCSD in 1.8V mode */
 		compatible = "regulator-fixed";
 		regulator-name = "ldo-1v8";
 		regulator-min-microvolt = <1800000>;
