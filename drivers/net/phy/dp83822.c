@@ -772,6 +772,44 @@ static int dp8382x_phy_fixup(struct phy_device *phydev)
 	return 0;
 }
 
+static int dp8382x_chargebyte_phy_fixup(struct phy_device *phydev)
+{
+	int pid;
+
+	/* Read PHYIDR2 for model number */
+	pid = phy_read_mmd(phydev, DP83822_DEVADDR, 0x3);
+
+	/* DP83825I fixup */
+	if (((pid >> 4) & 0x3F) == 0x14) {
+		/* LED_2_Control: Speed, high for 100BASE-TX */
+		phy_clear_bits_mmd(phydev, DP83822_DEVADDR, 0x460,
+				   GENMASK(7, 4));
+		phy_set_bits_mmd(phydev, DP83822_DEVADDR, 0x460,
+				 BIT(6) | BIT(4));
+		/* LED_0_Configuration: Link OK / blink on RX/TX activity */
+		phy_clear_bits_mmd(phydev, DP83822_DEVADDR, 0x25,
+				   GENMASK(6, 3));
+		phy_set_bits_mmd(phydev, DP83822_DEVADDR, 0x25,
+				 BIT(6) | BIT(0));
+	}
+
+	/* DP83826I fixup */
+	if (((pid >> 4) & 0x3F) == 0x11) {
+		/* LED_2_Control: Speed, high for 100BASE-TX */
+		phy_clear_bits_mmd(phydev, DP83822_DEVADDR, 0x460,
+				   GENMASK(11, 8));
+		phy_set_bits_mmd(phydev, DP83822_DEVADDR, 0x460,
+				 BIT(10) | BIT(8));
+		/* LED_0_Configuration: Link OK / blink on RX/TX activity */
+		phy_clear_bits_mmd(phydev, DP83822_DEVADDR, 0x25,
+				   GENMASK(6, 3));
+		phy_set_bits_mmd(phydev, DP83822_DEVADDR, 0x25,
+				 BIT(6) | BIT(0));
+	}
+
+	return 0;
+}
+
 static int dp8382x_probe(struct phy_device *phydev)
 {
 	struct device *dev = &phydev->mdio.dev;
@@ -796,6 +834,11 @@ static int dp8382x_probe(struct phy_device *phydev)
 	    of_machine_is_compatible("phytec,imx93-phycore-som"))
 		phy_register_fixup_for_uid(DP83822_PHY_ID, 0xffff0000,
 					   dp8382x_phy_fixup);
+
+	if (of_machine_is_compatible("chargebyte,imx93-charge-som") ||
+	    of_machine_is_compatible("chargebyte,imx93-charge-control-y"))
+		phy_register_fixup_for_uid(DP83822_PHY_ID, 0xffff0000,
+					   dp8382x_chargebyte_phy_fixup);
 
 	ret = dp8382x_read_straps(phydev);
 	if (ret)
