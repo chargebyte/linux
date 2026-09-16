@@ -30,16 +30,8 @@
 		reset-gpios = <&gpio4 10 GPIO_ACTIVE_LOW>;
 	};
 
-	reg_dcdc_3v3: regulator-dcdc-3v3 {
-		compatible = "regulator-fixed";
-		regulator-name = "dcdc-3v3";
-		regulator-min-microvolt = <3300000>;
-		regulator-max-microvolt = <3300000>;
-		regulator-boot-on;
-		regulator-always-on;
-	};
-
 	reg_1v8: regulator-1v8 {
+		/* This is a fake entry to represent VCCSD in 1.8V mode */
 		compatible = "regulator-fixed";
 		regulator-name = "ldo-1v8";
 		regulator-min-microvolt = <1800000>;
@@ -302,7 +294,7 @@
 		reg = <0x08>;
 
 		regulators {
-			sw1_reg: sw1 {
+			vdd_arm_soc_in: sw1 {
 				regulator-name = "SW1";
 				regulator-min-microvolt = <700000>;
 				regulator-max-microvolt = <3300000>;
@@ -310,7 +302,7 @@
 				regulator-always-on;
 			};
 
-			sw2_reg: sw2 {
+			reg_dcdc_3v3: sw2 {
 				regulator-name = "SW2";
 				regulator-min-microvolt = <1500000>;
 				regulator-max-microvolt = <3300000>;
@@ -345,7 +337,6 @@
 				regulator-name = "VLDO2";
 				regulator-min-microvolt = <800000>;
 				regulator-max-microvolt = <1550000>;
-				regulator-always-on;
 			};
 
 			vgen3_reg: vccsd {
@@ -366,14 +357,12 @@
 				regulator-name = "VLDO3";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
-				regulator-always-on;
 			};
 
 			vgen6_reg: vldo4 {
 				regulator-name = "VLDO4";
 				regulator-min-microvolt = <1800000>;
 				regulator-max-microvolt = <3300000>;
-				regulator-always-on;
 			};
 		};
 	};
@@ -801,6 +790,16 @@
 	status = "okay";
 };
 
+&reg_arm {
+	vin-supply = <&vdd_arm_soc_in>;
+	regulator-allow-bypass;
+};
+
+&reg_soc {
+	vin-supply = <&vdd_arm_soc_in>;
+	regulator-allow-bypass;
+};
+
 &uart1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_rs485_1>;
@@ -863,7 +862,7 @@
 	pinctrl-0 = <&pinctrl_usdhc2>;
 	pinctrl-1 = <&pinctrl_usdhc2_100mhz>;
 	pinctrl-2 = <&pinctrl_usdhc2_200mhz>;
-	vmmc-supply = <&sw2_reg>;
+	vmmc-supply = <&reg_dcdc_3v3>;
 	vqmmc-supply = <&reg_1v8>;
 	mmc-pwrseq = <&emmc_pwrseq>;
 	bus-width = <8>;
