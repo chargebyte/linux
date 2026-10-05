@@ -486,6 +486,12 @@
 				compatible = "nxp,imx93-bbnsm", "syscon", "simple-mfd";
 				reg = <0x44440000 0x10000>;
 
+				bbnsm_nvmem: nvmem {
+					compatible = "nxp,imx93-bbnsm-nvmem";
+					#address-cells = <1>;
+					#size-cells = <1>;
+				};
+
 				bbnsm_rtc: rtc {
 					compatible = "nxp,imx93-bbnsm-rtc";
 					interrupts = <GIC_SPI 73 IRQ_TYPE_LEVEL_HIGH>;
