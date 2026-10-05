@@ -31,6 +31,20 @@ properties:
   reg:
     maxItems: 1
 
+  nvmem:
+    type: object
+    $ref: /schemas/nvmem/nvmem.yaml#
+
+    properties:
+      compatible:
+        enum:
+          - nxp,imx93-bbnsm-nvmem
+
+    required:
+      - compatible
+
+    additionalProperties: false
+
   rtc:
     type: object
     $ref: /schemas/rtc/rtc.yaml#
@@ -87,6 +101,12 @@ examples:
     bbnsm: bbnsm@44440000 {
         compatible = "nxp,imx93-bbnsm", "syscon", "simple-mfd";
         reg = <0x44440000 0x10000>;
+
+        nvmem {
+            compatible = "nxp,imx93-bbnsm-nvmem";
+            #address-cells = <1>;
+            #size-cells = <1>;
+        };
 
         bbnsm_rtc: rtc {
             compatible = "nxp,imx93-bbnsm-rtc";
