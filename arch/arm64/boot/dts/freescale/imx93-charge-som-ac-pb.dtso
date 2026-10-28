@@ -1,0 +1,400 @@
+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
+/*
+ * Copyright (C) 2026 chargebyte GmbH
+ */
+
+/dts-v1/;
+/plugin/;
+
+#include <dt-bindings/gpio/gpio.h>
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/leds/common.h>
+#include "imx93-pinfunc.h"
+
+&{/} {
+	model = "chargebyte AC Power board";
+	compatible = "chargebyte,imx93-ac-power-board", "chargebyte,imx93-charge-som",
+		     "phytec,imx93-phycore-som", "fsl,imx93";
+
+	aliases {
+		rtc0 = &rv3028;
+	};
+
+	pwm-beeper {
+		compatible = "pwm-beeper";
+		pwms = <&tpm5 3 5000 0>;
+	};
+
+	reg_usb_otg1_vbus: regulator-usb-otg1-vbus {
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_usbotg1grp>;
+		compatible = "regulator-fixed";
+		regulator-name = "usb_otg1_vbus";
+		regulator-min-microvolt = <5000000>;
+		regulator-max-microvolt = <5000000>;
+		gpio = <&gpio4 13 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+		regulator-boot-on;
+	};
+
+	reg_wifi: regulator-wifi {
+		compatible = "regulator-fixed";
+		regulator-max-microvolt = <1800000>;
+		regulator-min-microvolt = <1800000>;
+		regulator-name = "VCC_1V8";
+		gpio = <&gpio3 7 GPIO_ACTIVE_HIGH>;
+		enable-active-high;
+	};
+
+	multi-led {
+		compatible = "leds-group-multicolor";
+		color = <LED_COLOR_ID_RGB>;
+		function = LED_FUNCTION_STATUS;
+		leds = <&led0>, <&led1>, <&led2>, <&led3>;
+		linux,default-trigger = "timer";
+	};
+};
+
+&bbnsm_pwrkey {
+	status = "disabled";
+};
+
+/* Ethernet */
+&ethphy1 {
+	ti,leds-polarity = <1>;
+};
+
+&gpio1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_current>;
+	// 16 pins (0..15)
+	gpio-line-names = "I2C1_SCL", "I2C1_SDA", "", "", "", "", "X15_6", "X15_7", "CURRENT_SETTING_2", "CURRENT_SETTING_1", \
+			  "", "SPI_TPM_nCS0", "", "", "", "";
+};
+
+&gpio2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_rfid>, <&pinctrl_input>, <&pinctrl_output>;
+	// 30 pins (0..29)
+	gpio-line-names = "SPI_PLC_nCS0", "", "", "", "", "", "", "SPI_PLC_nINT0", "SPI_EXT_CS0", "SPI_EXT_MISO", \
+			  "SPI_EXT_MOSI", "SPI_EXT_CLK", "", "", "LPUART4_TX", "LPUART4_RX", "", "LPUART4_RTS_B", "DIGITAL_OUTPUT_3", "", \
+			  "", "", "DIGITAL_INPUT_1", "GPIO_IO23", "nRESET_RFID", "nIRQ_WL", "BUZZER", "OUTPUT_nFAIL", "", "";
+};
+
+&gpio3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_wifi_rst>;
+	// 32 pins (0..31)
+	gpio-line-names = "nIRQ_BLE", "", "", "", "", "", "", "nRESET_WL", "", "", \
+			  "", "", "", "", "", "", "", "", "", "", \
+			  "SOM_EMMC_nRESET", "DIGITAL_INPUT_2", "DIGITAL_INPUT_3", "DIGITAL_INPUT_4", "DIGITAL_OUTPUT_1", "DIGITAL_OUTPUT_2", "CURRENT_SETTING_3", "CURRENT_SETTING_4", "LPUART5_RX", "LPUART5_RTS_B", \
+			  "LPUART5_CTS", "LPUART5_TX";
+};
+
+&gpio4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_m90e36_rst>, <&pinctrl_factory_rst>, <&pinctrl_residual_cur>;
+	// 30 pins (0..29)
+	gpio-line-names = "USB1_ID", "", "RTC_nINT", "FACTORY_RESET", "USB1_OC", "", "nRESET_ATM90E36", "DL_REQ_INTR_SPI", "ATM90E36_IRQ", "nPLC_RESET_INT", \
+			  "", "WS2812B", "SAFETY_BOOTMODE_SET", "USB1_PWREN_GPIO", "", "", "DIGITAL_OUTPUT_4", "", "", "", \
+			  "", "SOM_EEPROM_WP", "", "SOM_PHY_RESET", "", "", "RESIDUAL_CURRENT", "PMIC_IRQ_B", "nSAFETY_RESET_INT", "SPI_TPM_nINT0";
+
+	m90e36-reset-hog {
+		gpio-hog;
+		gpios = <6 GPIO_ACTIVE_LOW>;
+		output-low;
+	};
+};
+
+&iomuxc {
+	/* need to config the SION for data and cmd pad, refer to ERR052021 */
+	pinctrl_usdhc2_default: usdhc2grp {
+		fsl,pins = <
+			MX93_PAD_SD2_CLK__USDHC2_CLK		0x119e
+			MX93_PAD_SD2_CMD__USDHC2_CMD		0x4000139e
+			MX93_PAD_SD2_DATA0__USDHC2_DATA0	0x4000138e
+			MX93_PAD_SD2_DATA1__USDHC2_DATA1	0x4000138e
+			MX93_PAD_SD2_DATA2__USDHC2_DATA2	0x4000138e
+			MX93_PAD_SD2_DATA3__USDHC2_DATA3	0x4000139e
+			MX93_PAD_GPIO_IO25__GPIO2_IO25		0x31e // nIRQ_WL
+		>;
+	};
+
+	pinctrl_lpi2c1: lpi2c1grp {
+		/* sion, drive strength: X2, slew rate: fast, pull up, open drain */
+		fsl,pins = <
+			MX93_PAD_I2C1_SCL__LPI2C1_SCL		0x40000b86
+			MX93_PAD_I2C1_SDA__LPI2C1_SDA		0x40000b86
+		>;
+	};
+
+	pinctrl_lpi2c1_gpio: lpi2c1gpiogrp {
+		fsl,pins = <
+			MX93_PAD_I2C1_SCL__GPIO1_IO00		0x40000b9e
+			MX93_PAD_I2C1_SDA__GPIO1_IO01		0x40000b9e
+		>;
+	};
+
+	pinctrl_lpspi3: lpspi3grp {
+		/* drive strength: X2, slew rate: fast, no pull */
+		fsl,pins = <
+			MX93_PAD_GPIO_IO08__GPIO2_IO08		0x186 // SPI_EXT_CS0
+			MX93_PAD_GPIO_IO09__LPSPI3_SIN		0x186
+			MX93_PAD_GPIO_IO10__LPSPI3_SOUT		0x186
+			MX93_PAD_GPIO_IO11__LPSPI3_SCK		0x186
+		>;
+	};
+
+	pinctrl_usbotg1grp: usb1grp {
+		fsl,pins = <
+			MX93_PAD_ENET1_TD1__HSIOMIX_OTG_OC1	0x31e
+			MX93_PAD_ENET1_RD3__GPIO4_IO13		0x31e // USB1_PWREN_GPIO
+			// MX93_PAD_ENET1_MDIO__HSIOMIX_OTG_PWR1 not connected
+		>;
+	};
+
+	pinctrl_current: currentgrp {
+		fsl,pins = <
+			MX93_PAD_PDM_BIT_STREAM0__GPIO1_IO09	0x51e // Current Setting 1
+			MX93_PAD_PDM_CLK__GPIO1_IO08		0x51e // Current Setting 2
+			MX93_PAD_CCM_CLKO1__GPIO3_IO26		0x51e // Current Setting 3
+			MX93_PAD_CCM_CLKO2__GPIO3_IO27		0x51e // Current Setting 4
+		>;
+	};
+
+	pinctrl_input: inputgrp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO22__GPIO2_IO22		0x31e // INPUT_1
+			MX93_PAD_SD3_CMD__GPIO3_IO21		0x31e // INPUT_2
+			MX93_PAD_SD3_DATA0__GPIO3_IO22		0x31e // INPUT_3
+			MX93_PAD_SD3_DATA1__GPIO3_IO23		0x31e // INPUT_4
+		>;
+	};
+
+	pinctrl_output: outputgrp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO27__GPIO2_IO27		0x31e // OUTPUT_nFAIL
+			MX93_PAD_SD3_DATA2__GPIO3_IO24		0x51e // OUTPUT_1
+			MX93_PAD_SD3_DATA3__GPIO3_IO25		0x51e // OUTPUT_2
+			MX93_PAD_GPIO_IO18__GPIO2_IO18		0x51e // OUTPUT_3
+			MX93_PAD_ENET2_TD3__GPIO4_IO16		0x51e // OUTPUT_4
+		>;
+	};
+
+	pinctrl_rtc: rtcgrp {
+		fsl,pins = <
+			MX93_PAD_ENET1_TD3__GPIO4_IO02		0x31e // RTC_nINT
+		>;
+	};
+
+	pinctrl_uart4: uart4grp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO15__LPUART4_RX		0x31e // drive strength: X4, slew rate: slightly fast, pull up
+			MX93_PAD_GPIO_IO14__LPUART4_TX		0x30e // drive strength: X3, slew rate: slightly fast, pull up
+			MX93_PAD_GPIO_IO17__LPUART4_RTS_B	0x31e // drive strength: X4, slew rate: slightly fast, pull up
+		>;
+	};
+
+	pinctrl_uart5: uart5grp {
+		fsl,pins = <
+			MX93_PAD_DAP_TDI__LPUART5_RX		0x31e
+			MX93_PAD_DAP_TDO_TRACESWO__LPUART5_TX	0x30e
+			MX93_PAD_DAP_TMS_SWDIO__LPUART5_RTS_B	0x31e
+			MX93_PAD_DAP_TCLK_SWCLK__LPUART5_CTS_B	0x30e
+		>;
+	};
+
+	pinctrl_ws2812b: ws2812bgrp {
+		fsl,pins = <
+			MX93_PAD_ENET1_RD1__FLEXIO2_FLEXIO11	0x11e // WS2812B
+		>;
+	};
+
+	pinctrl_rfid: rfidgrp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO24__GPIO2_IO24		0x31e // nRESET_RFID
+		>;
+	};
+
+	pinctrl_buzzer: buzzergrp {
+		fsl,pins = <
+			MX93_PAD_GPIO_IO26__TPM5_CH3		0x11e // BUZZER
+		>;
+	};
+
+	pinctrl_wifi_rst: wifirstgrp {
+		fsl,pins = <
+			MX93_PAD_SD2_RESET_B__GPIO3_IO07	0x31e // nRESET_WL
+		>;
+	};
+
+	pinctrl_bt: btgrp {
+		fsl,pins = <
+			MX93_PAD_SD2_CD_B__GPIO3_IO00		0x31e // nIRQ_BLE
+		>;
+	};
+
+	pinctrl_m90e36_rst: m90e36rstgrp {
+		fsl,pins = <
+			MX93_PAD_ENET1_TX_CTL__GPIO4_IO06	0x31e // nRESET_ATM90E36
+		>;
+	};
+
+	pinctrl_factory_rst: factoryrstgrp {
+		fsl,pins = <
+			// HACK: some boards do not have the R129,
+			//       so fix this here with a pulldown
+			MX93_PAD_ENET1_TD2__GPIO4_IO03		0x51e // FACTORY_RESET
+		>;
+	};
+
+	pinctrl_residual_cur: residualcurgrp {
+		fsl,pins = <
+			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x51e // RESIDUAL_CURRENT
+		>;
+	};
+};
+
+&lpi2c1 {
+	clock-frequency = <400000>;
+	pinctrl-names = "default", "gpio";
+	pinctrl-0 = <&pinctrl_lpi2c1>;
+	pinctrl-1 = <&pinctrl_lpi2c1_gpio>;
+	scl-gpios = <&gpio1 00 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	sda-gpios = <&gpio1 01 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	eeprom@50 {
+		compatible = "microchip,24c256";
+		reg = <0x50>;
+		pagesize = <64>;
+	};
+
+	rv3028: rtc@52 {
+		compatible = "microcrystal,rv3028";
+		reg = <0x52>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_rtc>;
+		interrupts = <2 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&gpio4>;
+		wakeup-source;
+		trickle-resistor-ohms = <3000>;
+	};
+
+	pca9632: led-controller@62 {
+		compatible = "nxp,pca9632";
+		reg = <0x62>;
+		#address-cells = <1>;
+		#size-cells = <0>;
+		nxp,inverted-out;
+		nxp,totem-pole;
+
+		led0: led@0 {
+			reg = <0>;
+			color = <LED_COLOR_ID_RED>;
+			function = LED_FUNCTION_STATUS;
+			default-intensity = <0>;
+		};
+
+		led1: led@1 {
+			reg = <1>;
+			color = <LED_COLOR_ID_GREEN>;
+			function = LED_FUNCTION_STATUS;
+			default-intensity = <0>;
+		};
+
+		led2: led@2 {
+			reg = <2>;
+			color = <LED_COLOR_ID_BLUE>;
+			function = LED_FUNCTION_STATUS;
+			default-intensity = <0>;
+		};
+
+		led3: led@3 {
+			reg = <3>;
+			color = <LED_COLOR_ID_WHITE>;
+			function = LED_FUNCTION_STATUS;
+			default-intensity = <255>;
+		};
+	};
+};
+
+/* Internal powermeter */
+&lpspi3 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_lpspi3>;
+	num-cs = <1>;
+	cs-gpios = <&gpio2 8 GPIO_ACTIVE_LOW>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	meter@0 {
+		compatible = "atmel,m90e36";
+		reg = <0>;
+	};
+};
+
+/* RS485 */
+&lpuart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart4>;
+	rs485-rts-active-high;
+	linux,rs485-enabled-at-boot-time;
+	status = "okay";
+};
+
+/* Bluetooth */
+&lpuart5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart5>;
+	uart-has-rtscts;
+	status = "okay";
+
+	bluetooth {
+		compatible = "ti,cc33xx-bt";
+		pinctrl-names = "default";
+		pinctrl-0 = <&pinctrl_bt>;
+		cc33xx-supply = <&reg_wifi>;
+		max-speed = <115200>;
+ 	};
+};
+
+/* Buzzer */
+&tpm5 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_buzzer>;
+	status = "okay";
+};
+
+/* USB host */
+&usbotg1 {
+	vbus-supply = <&reg_usb_otg1_vbus>;
+	over-current-active-low;
+	dr_mode = "host";
+	status = "okay";
+};
+
+/* Wifi */
+&usdhc2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_usdhc2_default>;
+	bus-width = <4>;
+	keep-power-in-suspend;
+	cap-power-off-card;
+	non-removable;
+	vmmc-supply = <&reg_wifi>;
+	// max-frequency = <10000000>;
+	#address-cells = <1>;
+	#size-cells = <0>;
+	status = "okay";
+
+	cc3301: wifi@2 {
+		compatible = "ti,cc3301", "ti,cc3300";
+		reg = <2>;
+		interrupts = <25 IRQ_TYPE_LEVEL_LOW>;
+		interrupt-parent = <&gpio2>;
+	};
+};
