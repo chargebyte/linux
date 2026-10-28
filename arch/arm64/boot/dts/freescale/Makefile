@@ -679,6 +679,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som.dtb
 DTC_FLAGS_imx93-charge-som-dc-evb := -@
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y-testfixture.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y-V0R4.dtb
 DTC_FLAGS_imx93-protolime := -@
 dtb-$(CONFIG_ARCH_MXC) += imx93-protolime.dtb
