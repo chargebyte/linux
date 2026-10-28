@@ -677,6 +677,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx93-phyboard-segin.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-som-dc-evb.dtb
 dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y.dtb
+dtb-$(CONFIG_ARCH_MXC) += imx93-charge-control-y-testfixture.dtb
 DTC_FLAGS_imx93-protolime := -@
 dtb-$(CONFIG_ARCH_MXC) += imx93-protolime.dtb
 
