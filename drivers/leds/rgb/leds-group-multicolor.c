@@ -17,6 +17,7 @@
 #include <linux/math.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
+#include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/property.h>
 
@@ -109,8 +110,16 @@ static int leds_gmc_probe(struct platform_device *pdev)
 
 		subled[i].color_index = led_cdev->color;
 
-		/* Configure the LED intensity to its maximum */
-		subled[i].intensity = max_brightness;
+		ret = fwnode_property_read_u32(led_cdev->dev->fwnode, "default-intensity",
+					       &subled[i].intensity);
+		if (ret) {
+			subled[i].intensity = max_brightness;
+		} else if (subled[i].intensity > max_brightness) {
+			subled[i].intensity = max_brightness;
+		}
+
+		dev_dbg(dev, "subled[%d]: color_index: %u, intensity: %u\n",
+			i, subled[i].color_index, subled[i].intensity);
 	}
 
 	/* Initialise the multicolor's LED class device */
