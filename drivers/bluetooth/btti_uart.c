@@ -313,8 +313,11 @@ static void sm_process(struct btti_uart_dev *bdev, enum sm_event event)
 	switch (bdev->sm_state) {
 	case STATE_PROBING:
 		switch (event) {
+		case EVENT_REGULATOR_ENABLE:
+			break;
+
 		case EVENT_PROBE_DONE:
-			if (regulator_is_enabled(bdev->reg))
+			if (bdev->reg && regulator_is_enabled(bdev->reg))
 				btti_uart_sm_post_event(bdev, EVENT_REGULATOR_ENABLE);
 
 			next_state = STATE_HW_OFF;
@@ -554,9 +557,11 @@ static void btti_uart_host_wake_init(struct serdev_device *serdev)
 		bdev->pins_sleep = NULL;
 
 	bdev->host_wakeup = devm_gpiod_get_optional(&serdev->dev, "host-wakeup", GPIOD_IN);
-	if (IS_ERR(bdev->host_wakeup)) {
-		dev_err_probe(&serdev->dev, PTR_ERR(bdev->host_wakeup),
-			      "can't get host-wakeup gpio\n");
+	if (IS_ERR_OR_NULL(bdev->host_wakeup)) {
+		if (IS_ERR(bdev->host_wakeup)) {
+			dev_err_probe(&serdev->dev, PTR_ERR(bdev->host_wakeup),
+				      "can't get host-wakeup gpio\n");
+		}
 		goto out_err;
 	}
 
@@ -610,16 +615,6 @@ static int btti_uart_probe(struct serdev_device *serdev)
 	bdev->serdev = serdev;
 	serdev_device_set_drvdata(serdev, bdev);
 
-	/* Using the optional get regulator API as normal get returns a dummy
-	if the regulator is not found. */
-	bdev->reg = devm_regulator_get_optional(&serdev->dev, "cc33xx");
-	if (PTR_ERR(bdev->reg) == -EPROBE_DEFER)
-		return -EPROBE_DEFER;
-	if (IS_ERR(bdev->reg)) {
-		dev_err(&serdev->dev, "can't get regulator");
-		return PTR_ERR(bdev->reg);
-	}
-
 	of_property_read_u32(serdev->dev.of_node, "max-speed", &bdev->max_speed);
 	if (!bdev->max_speed || (bdev->max_speed > 3000000))
 		bdev->max_speed = 3000000;
@@ -628,26 +623,14 @@ static int btti_uart_probe(struct serdev_device *serdev)
 	if (!IS_ERR(bdev->pinctrl)) {
 		bdev->pins_runtime = pinctrl_lookup_state(bdev->pinctrl, "default");
 		if (IS_ERR(bdev->pins_runtime)) {
-			dev_err(&serdev->dev, "can't lookup default pin state");
-			return PTR_ERR(bdev->pins_runtime);
+			return dev_err_probe(&serdev->dev, PTR_ERR(bdev->pins_runtime),
+					     "can't lookup default pin state\n");
 		}
+
+		pinctrl_select_state(bdev->pinctrl, bdev->pins_runtime);
 	} else {
 		bdev->pinctrl = NULL;
 		bdev->pins_runtime = NULL;
-	}
-
-	btti_uart_host_wake_init(serdev);
-
-	if (bdev->pins_runtime)
-		pinctrl_select_state(bdev->pinctrl, bdev->pins_runtime);
-
-	bdev->nb.notifier_call = btti_uart_regulator_event;
-
-	ret = regulator_register_notifier(bdev->reg, &bdev->nb);
-	if (ret != 0) {
-		dev_err(&serdev->dev,
-			"Failed to register regulator notifier (%d)", ret);
-		return ret;
 	}
 
 	serdev_device_set_client_ops(serdev, &btti_uart_client_ops);
@@ -657,6 +640,25 @@ static int btti_uart_probe(struct serdev_device *serdev)
 
 	INIT_WORK(&bdev->btti_uart_sm_work, btti_uart_sm_work);
 	init_llist_head(&bdev->sm_event_list);
+
+	bdev->reg = devm_regulator_get_optional(&serdev->dev, "cc33xx");
+	if (IS_ERR(bdev->reg)) {
+		if (PTR_ERR(bdev->reg) != -ENODEV)
+			return dev_err_probe(&serdev->dev, PTR_ERR(bdev->reg),
+					     "can't get regulator\n");
+
+		bdev->reg = NULL;
+	} else {
+		bdev->nb.notifier_call = btti_uart_regulator_event;
+
+		ret = regulator_register_notifier(bdev->reg, &bdev->nb);
+		if (ret) {
+			return dev_err_probe(&serdev->dev, ret,
+					     "Failed to register regulator notifier\n");
+		}
+	}
+
+	btti_uart_host_wake_init(serdev);
 
 	btti_uart_sm_post_event(bdev, EVENT_PROBE_DONE);
 
@@ -672,7 +674,9 @@ static void btti_uart_remove(struct serdev_device *serdev)
 		disable_irq_wake(gpiod_to_irq(bdev->host_wakeup));
 	}
 
-	regulator_unregister_notifier(bdev->reg, &bdev->nb);
+	if (bdev->reg)
+		regulator_unregister_notifier(bdev->reg, &bdev->nb);
+
 	btti_uart_sm_post_event(bdev, EVENT_REMOVE);
 	flush_work(&bdev->btti_uart_sm_work);
 }
