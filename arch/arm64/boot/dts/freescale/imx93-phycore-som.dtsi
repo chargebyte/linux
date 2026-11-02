@@ -41,7 +41,7 @@
 		};
 	};
 
-	leds {
+	som_leds: leds {
 		compatible = "gpio-leds";
 		pinctrl-names = "default";
 		pinctrl-0 = <&pinctrl_leds>;
