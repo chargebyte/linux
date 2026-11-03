@@ -21,9 +21,6 @@
 		stdout-path = &lpuart1;
 	};
 
-	// avoid conflict with Heartbeat LED on phyCore
-	/delete-node/ leds;
-
 	// prefer custom RTC
 	aliases {
 		rtc0 = &rv3028;
@@ -120,9 +117,6 @@
 		#pwm-cells = <3>;
 	};
 };
-
-// Heartbeat LED of phyCore is not populated
-/delete-node/ &pinctrl_leds;
 
 &gpio1 {
 	pinctrl-names = "default";
@@ -723,4 +717,9 @@
 			MX93_PAD_ENET2_RD2__GPIO4_IO26		0x31e // LED_DRIVER_EN
 		>;
 	};
+};
+
+/* Heartbeat LED of phyCore is not populated */
+&som_leds {
+	status = "disabled";
 };

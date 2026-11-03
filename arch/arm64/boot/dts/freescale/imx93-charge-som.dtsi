@@ -15,17 +15,11 @@
 		stdout-path = &lpuart1;
 	};
 
-	// Avoid conflict with Heartbeat LED on phyCore
-	/delete-node/ leds;
-
 	// allow carrier boards to prefer custom RTC as rtc0
 	aliases {
 		rtc1 = &bbnsm_rtc;
 	};
 };
-
-// Heartbeat LED of phyCore is not populated
-/delete-node/ &pinctrl_leds;
 
 &gpio2 {
 	// 30 pins (0..29)
@@ -131,6 +125,11 @@
 		nvmem-cells = <&eth1_host_mac_address 0>;
 		nvmem-cell-names = "mac-address";
 	};
+};
+
+/* Heartbeat LED of phyCore is not populated */
+&som_leds {
+	status = "disabled";
 };
 
 /* eMMC */
