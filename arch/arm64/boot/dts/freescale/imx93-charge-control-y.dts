@@ -55,9 +55,6 @@
 		};
 	};
 
-	// Avoid conflict with Heartbeat LED on phyCore
-	/delete-node/ leds;
-
 	/* Regulator switch for IO */
 	reg_vdd_3v3_io: regulator-vdd-3v3_io {
 		compatible = "regulator-fixed";
@@ -66,9 +63,6 @@
 		regulator-name = "VDD_IO_3V3_IO";
 	};
 };
-
-// Heartbeat LED of phyCore is not populated
-/delete-node/ &pinctrl_leds;
 
 /* CAN */
 &flexcan1 {
@@ -256,6 +250,11 @@
 			};
 		};
 	};
+};
+
+/* Heartbeat LED of phyCore is not populated */
+&som_leds {
+	status = "disabled";
 };
 
 &usbphynop1 {
