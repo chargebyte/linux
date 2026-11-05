@@ -34,6 +34,8 @@ static int pwm_beeper_on(struct pwm_beeper *beeper, unsigned long period)
 	struct pwm_state state;
 	int error;
 
+	pwm_disable(beeper->pwm);
+
 	pwm_get_state(beeper->pwm, &state);
 
 	state.enabled = true;
