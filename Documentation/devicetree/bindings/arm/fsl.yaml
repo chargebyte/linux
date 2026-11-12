@@ -92,6 +92,7 @@ properties:
               - amarula,imx28-rmm
               - armadeus,imx28-apf28      # APF28 SoM
               - bluegiga,apx4devkit       # Bluegiga APx4 SoM on dev board
+              - chargebyte,imx28-evachargese
               - crystalfontz,cfa10036     # Crystalfontz CFA-10036 SoM
               - eukrea,mbmx28lc
               - fsl,imx28-evk
